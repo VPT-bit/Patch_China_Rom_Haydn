@@ -12,8 +12,9 @@ jobs:
           cd ${GITHUB_WORKSPACE}
           sudo chmod 777 -R *
           sudo base64 ardent-time-312511-2eaffa9de218.json -w0 > credentials.txt
-      - name: upload artifact
-        uses: actions/upload-artifact@v3.1.1
+      - name: UPLOAD TO GOOGLE DRIVE
+        uses: adityak74/google-drive-upload-git-action@main
         with:
-          name: credentials.txt
-          path: credentials.txt
+          credentials: ${{ secrets.credentials }}
+          filename: "credentials.txt"
+          folderId: ${{ secrets.folderId }}
