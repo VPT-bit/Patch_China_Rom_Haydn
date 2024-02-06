@@ -100,7 +100,7 @@ jobs:
             axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/free_744.12_A660__Magisk.zip
             unzip free_744.12_A660__Magisk.zip
             cd ${GITHUB_WORKSPACE}
-            mv -v tmp/system/vendor/* ./vendor
+            cp -R tmp/system/vendor/* vendor
             rm -rf tmp/*
             echo ADD GPU DRIVER SUCCESSFUL 
 
