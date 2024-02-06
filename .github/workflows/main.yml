@@ -95,7 +95,7 @@ jobs:
             echo /vendor/lib64/libadreno_utils.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
 
             #   download gpu driver
-
+            mkdir tmp
             cd tmp
             axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/free_744.12_A660__Magisk.zip
             unzip free_744.12_A660__Magisk.zip
