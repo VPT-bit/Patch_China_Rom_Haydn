@@ -1,0 +1,190 @@
+name: build
+on:
+  workflow_dispatch:
+    inputs:
+       ROM_URL:
+         description: 'ROM URL'
+         required: true
+         default: ''
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - name: checkout
+          uses: actions/checkout@v2
+        - name: Setup
+          run: |
+            # setup tool
+            sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet
+            pip3 install ConfigObj
+            
+            # setup time
+            sudo timedatectl set-timezone Asia/Ho_Chi_Minh
+        - name: download rom
+          run: |
+            axel -n $(nproc) ${{ github.event.inputs.ROM_URL }}
+            unzip *.zip
+            rm *.zip
+        - name: extract payload.bin
+          run: |          
+            #   download payload-dumper-go & clean up
+            axel -n $(nproc) https://github.com/ssut/payload-dumper-go/releases/download/1.2.2/payload-dumper-go_1.2.2_linux_amd64.tar.gz
+            tar -xzvf *.gz
+            rm *.gz
+            
+            #   run payload-dumper-go & setup
+            chmod +x payload-dumper-go
+            export PATH=$PATH:./payload.bin
+            ./payload-dumper-go ./payload.bin
+            
+        - name: clone
+          run: |
+            git clone https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE.git
+            mv MIO-KITCHEN-SOURCE/bin/Linux/x86_64/* .
+            mv MIO-KITCHEN-SOURCE/* .
+            mv ./extracted*/* .
+            sudo chmod 777 -R *
+        - name: unpacking images
+          run: |
+            ./extract.sh
+        - name: add gpu driver
+          run: |
+            #   patch system_file_contexts for gpu driver
+
+            echo /system/system/lib/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib64/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib64/libEGL.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib64/libGLESv1_CM.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib64/libGLESv2.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib64/libGLESv3.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib64/libvulkan.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib/libEGL.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib/libGLESv1_CM.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib/libGLESv2.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib/libGLESv3.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+            echo /system/system/lib/libvulkan.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
+
+            #   patch vendor_file_contexts for gpu driver
+
+            echo /vendor/etc/sphal_libraries.txt u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/libEGL_adreno.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/libGLESv2_adreno.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/libadreno_app_profiles.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/libq3dtools_adreno.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/libllvm-qgl.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/libllvm-glnext.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/libllvm-qcom.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/hw/vulkan.adreno.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/egl/ u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/ u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/libVkLayer_ADRENO_qprofiler.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libVkLayer_ADRENO_qprofiler.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libEGL_adreno.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libGLESv2_adreno.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libadreno_app_profiles.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libq3dtools_adreno.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/hw/vulkan.adreno.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libllvm-qgl.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libllvm-glnext.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libllvm-qcom.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/egl/ u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libdmabufheap.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib/libdmabufheap.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libCB.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/notgsl.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+            echo /vendor/lib64/libadreno_utils.so u:object_r:same_process_hal_file:s0 >> config/vendor_file_contexts
+
+            #   download gpu driver
+
+            cd tmp
+            axel -n $(nproc) https://github.com/VPT-bit/cc/releases/download/ingredient/free_744.12_A660__Magisk.zip
+            unzip free_744.12_A660__Magisk.zip
+            cd ${GITHUB_WORKSPACE}
+            mv -v tmp/system/vendor/* ./vendor
+            rm -rf tmp/*
+            echo ADD GPU DRIVER SUCCESSFUL 
+
+        - name: add leica camera 
+          run: |
+            cd tmp
+            axel -n $(nproc) https://github.com/a406010503/Miui_Camera/releases/download/Miui_Camera_4.5.002540.1_231015/Magisk-MIUI_Camera-v231015-release.zip
+            unzip Magisk-MIUI_Camera-v231015-release.zip
+            mv File/HolyBearMiuiCamera/HolyBearMiuiCamera.apk File/HolyBearMiuiCamera/MiuiCamera.apk
+            cd ${GITHUB_WORKSPACE}
+            mv -v tmp/File/HolyBearMiuiCamera/MiuiCamera.apk ./product/priv-app/MiuiCamera
+            rm -rf tmp/*
+
+        - name: add launcher mod
+          run: |
+            mv -v patch_rom/product/priv-app/MiuiHomeT/MiuiHomeT.apk product/priv-app/MiuiHomeT
+            mv -v patch_rom/product/etc/permissions/privapp_whitelist_com.miui.home.xml product/etc/permissions
+            mv -v patch_rom/system/system/etc/permissions/privapp_whitelist_com.miui.home.xml system/system/etc/permissions
+            mv -v patch_rom/product/overlay/MiuiPocoLauncherResOverlay.apk product/overlay
+
+        - name: add xiaomieuext
+          run: |
+            mkdir product/priv-app/XiaomiEuExt
+            mv -v patch_rom/product/priv-app/XiaomiEuExt/XiaomiEuExt.apk product/priv-app/XiaomiEuExt
+            mv -v patch_rom/product/etc/permissions/privapp_whitelist_eu.xiaomi.ext.xml product/etc/permissions
+            
+        - name: add overlay 
+          run: |
+            git clone https://github.com/VPT-bit/overlay.git
+            cd overlay
+            sudo chmod +x build.sh
+            ./build.sh
+            cd ${GITHUB_WORKSPACE}
+            mv -v overlay/output/* product/overlay
+            
+        - name: patch services.jar
+          run: |
+            git clone https://github.com/MMETMA/remove_android13_apk_protection.git
+            mv -v system/system/framework/services.jar remove_android13_apk_protection
+            cd remove_android13_apk_protection
+            sudo chmod 777 -R *
+            ./bhlnk.sh
+            cd ${GITHUB_WORKSPACE}
+            mv -v remove_android13_apk_protection/module/system/framework/services.jar system/system/framework
+
+        - name: add 90hz & patch .prop
+          run: |
+            sed -i '/<item>120<\/item>/{:a;n;/<item>60<\/item>/!ba;i<item>90<\/item>}' product/etc/device_features/haydn.xml
+            echo ADD 90HZ SUCCESSFUL
+            sed -i 's|ro\.hwui\.use_vulkan=|ro\.hwui\.use_vulkan=true|' vendor/build.prop 
+            echo debug.hwui.renderer=vulkan >> system/system/build.prop
+            echo bhlnk.hypervs.overlay=true >> system/system/build.prop
+            echo ENABLE VULKAN AS DEFAULT RENDERER SUCCESSFUL
+        
+        - name: replace font
+          run: |
+            cd tmp
+            axel -n $(nproc) https://github.com/googlefonts/roboto-classic/releases/download/v3.009/Roboto_v3.009.zip
+            unzip Roboto_v3.009.zip
+            mv -v android/Roboto[ital,wdth,wght].ttf android/MiSansVF.ttf
+            cd ${GITHUB_WORKSPACE}
+            mv -v tmp/android/MiSansVF.ttf system/system/fonts
+            rm -rf tmp/*
+            
+        - name: patching & packing images
+          run: |
+            python3 patch.py
+            ./pack.sh
+        - name: packing super.img
+          run: |
+            ./build_super.sh
+        - name: final
+          run: |
+            mv -v *.img super.zst rom/images
+            cd rom
+            zip -r HAYDN_14.0.8.0_CN.zip *
+            cd ${GITHUB_WORKSPACE}
+            if test ./rom/HAYDN_14.0.8.0_CN.zip; then
+            echo       FILE IS ALREADY
+            fi
+        - name: UPLOAD TO GOOGLE DRIVE
+          uses: adityak74/google-drive-upload-git-action@main
+          with:
+            credentials: ${{ secrets.credentials }}
+            filename: "./rom/HAYDN_14.0.8.0_CN.zip"
+            folderId: ${{ secrets.folderid }}
+            
