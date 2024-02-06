@@ -1,0 +1,15 @@
+name: test
+on:
+  workflow_dispatch:
+job:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: encode
+        run: |
+          base64 ardent-time-312511-2eaffa9de218.json -w0 > credentials.txt
+      - name: upload artifact
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: credentials.txt
+          path: credentials.txt
