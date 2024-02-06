@@ -36,7 +36,7 @@ jobs:
             chmod +x payload-dumper-go
             export PATH=$PATH:./payload.bin
             ./payload-dumper-go ./payload.bin
-            
+            rm payload.bin
         - name: clone
           run: |
             git clone https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE.git
@@ -135,7 +135,7 @@ jobs:
             ./build.sh
             cd ${GITHUB_WORKSPACE}
             mv -v overlay/output/* product/overlay
-            
+            rm -rf overlay/*
         - name: patch services.jar
           run: |
             git clone https://github.com/MMETMA/remove_android13_apk_protection.git
@@ -145,7 +145,7 @@ jobs:
             ./bhlnk.sh
             cd ${GITHUB_WORKSPACE}
             mv -v remove_android13_apk_protection/module/system/framework/services.jar system/system/framework
-
+            rm -rf remove_android13_apk_protection/*
         - name: add 90hz & patch .prop
           run: |
             sed -i 's/<item>120<\/item>/<item>120<\/item>\n\t\t<item>90<\/item>/g' product/etc/device_features/haydn.xml
