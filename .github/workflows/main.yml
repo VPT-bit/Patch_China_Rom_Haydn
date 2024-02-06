@@ -148,9 +148,9 @@ jobs:
 
         - name: add 90hz & patch .prop
           run: |
-            sed -i '/<item>120<\/item>/{:a;n;/<item>60<\/item>/!ba;i<item>90<\/item>}' product/etc/device_features/haydn.xml
+            sed -i 's/<item>120<\/item>/<item>120<\/item>\n\t\t<item>90<\/item>/g' product/etc/device_features/haydn.xml
             echo ADD 90HZ SUCCESSFUL
-            sed -i 's|ro\.hwui\.use_vulkan=|ro\.hwui\.use_vulkan=true|' vendor/build.prop 
+            sed -i 's|ro\.hwui\.use_vulkan=|ro\.hwui\.use_vulkan=true|' vendor/build.prop
             echo debug.hwui.renderer=vulkan >> system/system/build.prop
             echo bhlnk.hypervs.overlay=true >> system/system/build.prop
             echo ENABLE VULKAN AS DEFAULT RENDERER SUCCESSFUL
