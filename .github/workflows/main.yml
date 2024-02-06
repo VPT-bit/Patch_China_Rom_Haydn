@@ -178,13 +178,15 @@ jobs:
             cd rom
             zip -r HAYDN_14.0.8.0_CN.zip *
             cd ${GITHUB_WORKSPACE}
-            if test ./rom/HAYDN_14.0.8.0_CN.zip; then
+            mv rom/HAYDN_14.0.8.0_CN.zip .
+            rm -rf rom/*
+            if test HAYDN_14.0.8.0_CN.zip; then
             echo       FILE IS ALREADY
             fi
         - name: UPLOAD TO GOOGLE DRIVE
           uses: adityak74/google-drive-upload-git-action@main
           with:
             credentials: ${{ secrets.credentials }}
-            filename: "./rom/HAYDN_14.0.8.0_CN.zip"
+            filename: "HAYDN_14.0.8.0_CN.zip"
             folderId: ${{ secrets.folderId }}
             
