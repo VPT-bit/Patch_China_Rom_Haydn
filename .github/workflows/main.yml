@@ -184,9 +184,9 @@ jobs:
             echo       FILE IS ALREADY
             fi
         - name: UPLOAD TO GOOGLE DRIVE
-          uses: adityak74/google-drive-upload-git-action@main
+          uses: Jodebu/upload-to-drive@master
           with:
             credentials: ${{ secrets.credentials }}
-            filename: "HAYDN_14.0.8.0_CN.zip"
-            folderId: ${{ secrets.folderId }}
+            target: HAYDN_14.0.8.0_CN.zip
+            folder: ${{ secrets.folderId }}
             
