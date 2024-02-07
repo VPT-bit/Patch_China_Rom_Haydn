@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
-from re import sub
 from difflib import SequenceMatcher
+from re import escape
 import fspatch
 import contextpatch
 def patchcfs(name): 
