@@ -190,6 +190,7 @@ jobs:
         - name: final
           run: |
             mv -v *.img super.zst rom/images
+            rm rom/images/cc
             cd rom
             zip -r HAYDN_14.0.8.0_CN.zip *
             cd ${GITHUB_WORKSPACE}
