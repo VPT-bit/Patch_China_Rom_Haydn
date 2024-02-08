@@ -161,7 +161,24 @@ jobs:
             cd ${GITHUB_WORKSPACE}
             mv -v tmp/android/MiSansVF.ttf system/system/fonts
             rm -rf tmp/*
-            
+        - name: debloat useless app
+          run: |
+            cp -r product/data-app/MIMediaEditor tmp
+            cp -r product/data-app/MIUICleanMaster tmp
+            cp -r product/data-app/MIUINotes tmp
+            cp -r product/data-app/MiuiScanner tmp
+            cp -r product/data-app/MIUIScreenRecorder tmp
+            cp -r product/data-app/MIUISoundRecorderTargetSdk30 tmp
+            cp -r product/data-app/MIUIWeather tmp
+            cp -r product/data-app/SmartHome tmp
+            cp -r product/data-app/ThirdAppAssistant tmp
+            rm -rf product/data-app/*
+            rm -rf product/app/AnalyticsCore
+            rm -rf product/app/MSA
+            rm -rf product/priv-app/MIUIBrowser
+            rm -rf product/priv-app/MIUIQuickSearchBox
+            cp -r tmp/* product/data-app
+            rm -rf tmp/*
         - name: patching & packing images
           run: |
             cd ${GITHUB_WORKSPACE}
