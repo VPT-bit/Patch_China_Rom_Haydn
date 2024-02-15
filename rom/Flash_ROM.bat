@@ -1,10 +1,10 @@
 @echo off
 if exist bin\platform-tools-windows\fastboot.exe PATH=%PATH%;bin\platform-tools-windows
 setlocal enabledelayedexpansion
-title HyperOS line brush script [Do not select the window, otherwise you deserve to be stuck. If you are stuck, press the right button or press Enter or zoom in and out to recover]
+title Fastboot Flash Rom Script [Do not select the window, otherwise you deserve to be stuck. If you are stuck, press the right button or press Enter or zoom in and out to recover]
 echo.
 echo.Notes on flashing:
-echo.The data needs to be cleared when flashing HyperOS for the first time.
+echo.The data needs to be cleared when flashing ROM for the first time.
 echo.If packets of decrypted data and non-decrypted data are flushed each other, the data needs to be cleared.
 echo.
 zstd --rm -d images/super.zst -o images/super.img
