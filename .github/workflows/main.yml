@@ -12,19 +12,20 @@ jobs:
     steps:
         - name: checkout
           uses: actions/checkout@v2
+          
         - name: Get current time
           uses: josStorer/get-current-time@v2
           id: current-time
           with:
             format: HH:mm:ss_DD-MM-YYYY
             utcOffset: "+07:00"
+            
         - name: Setup
           run: |
             # setup tool
             sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet
             pip3 install ConfigObj
-            # setup time
-            sudo timedatectl set-timezone Asia/Ho_Chi_Minh
+            
         - name: download rom
           run: |
             axel -n $(nproc) ${{ github.event.inputs.ROM_URL }}
@@ -42,6 +43,7 @@ jobs:
             export PATH=$PATH:./payload.bin
             ./payload-dumper-go ./payload.bin
             rm payload.bin
+            
         - name: clone
           run: |
             git clone https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE.git
