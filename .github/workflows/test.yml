@@ -17,9 +17,10 @@ jobs:
         run: |
           echo ${{ steps.current-time.outputs.formattedTime }}
           zip -r HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip *
-      - name: UPLOAD TO GOOGLE DRIVE
-        uses: Jodebu/upload-to-drive@master
+      - name: Upload a file to Google Drive
+        uses: willo32/google-drive-upload-action@v1
         with:
-          credentials: ${{ secrets.credentials }}
           target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-          folder: ${{ secrets.folderId }}
+          credentials: ${{ secrets.credentials }}
+          parent_folder_id: ${{ secrets.folderId }}
+
