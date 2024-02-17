@@ -8,4 +8,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set current date as env variable
-        run: echo "NOW=Get-Date -format "yyyy-MM-dd"" >> $GITHUB_ENV
+        run: |
+          echo "NOW=Get-Date -format "yyyy-MM-dd"" >> $GITHUB_ENV
+          echo ${{ env.NOW }}
