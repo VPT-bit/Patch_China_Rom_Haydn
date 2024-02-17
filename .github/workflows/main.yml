@@ -195,7 +195,7 @@ jobs:
         - name: packing super.img
           run: |
             ./build_super.sh
-        - name: final
+        - name: packing rom & clean up
           run: |
             mv -v *.img super.zst rom/images
             rm rom/images/cc
@@ -205,10 +205,10 @@ jobs:
             mv -v rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
             rm -rf rom
             ls -al .
-        - name: UPLOAD TO GOOGLE DRIVE
-          uses: Jodebu/upload-to-drive@master
-          with:
-            credentials: ${{ secrets.credentials }}
-            target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-            folder: ${{ secrets.folderId }}
             
+        - name: Upload ROM to Google Drive
+          uses: willo32/google-drive-upload-action@v1
+          with:
+            target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
+            credentials: ${{ secrets.credentials }}
+            parent_folder_id: ${{ secrets.folderId }}
