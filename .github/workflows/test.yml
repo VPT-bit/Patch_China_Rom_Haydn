@@ -18,4 +18,4 @@ jobs:
           F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
         run: echo $F_TIME
       - name: test
-        run: echo $F_TIME
+        run: echo ${{ steps.current-time.outputs.formattedTime }}
