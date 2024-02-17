@@ -16,7 +16,7 @@ jobs:
           uses: josStorer/get-current-time@v2
           id: current-time
           with:
-            format: HH:mm:ss-DD/MM/YYYY
+            format: HH:mm:ss_DD-MM-YYYY
             utcOffset: "+07:00"
         - name: Setup
           run: |
@@ -200,8 +200,7 @@ jobs:
             mv -v *.img super.zst rom/images
             rm rom/images/cc
             cd rom
-            zip -r HAYDN.zip *
-            mv -v HAYDN.zip HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
+            zip -r HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip *
             cd ${GITHUB_WORKSPACE}
             mv -v rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
             rm -rf rom/*
