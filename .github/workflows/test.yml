@@ -7,9 +7,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-      - name: test
+      - name: Put current date into a variable
         run: |
-          echo ${{ steps.date.outputs.date }}
+          NOW=& Get-Date -format yyyy-MM-dd
+          echo "NOW=$NOW" >> $env:GITHUB_ENV
+      - name: Use variable
+        run: |
+          echo "${{env.NOW}}"
