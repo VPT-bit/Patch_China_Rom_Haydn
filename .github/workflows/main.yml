@@ -12,12 +12,17 @@ jobs:
     steps:
         - name: checkout
           uses: actions/checkout@v2
+        - name: Get current time
+          uses: josStorer/get-current-time@v2
+          id: current-time
+          with:
+            format: HH:mm:ss-DD/MM/YYYY
+            utcOffset: "+07:00"
         - name: Setup
           run: |
             # setup tool
             sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet
             pip3 install ConfigObj
-            
             # setup time
             sudo timedatectl set-timezone Asia/Ho_Chi_Minh
         - name: download rom
@@ -123,7 +128,10 @@ jobs:
             mkdir product/priv-app/XiaomiEuExt
             mv -v patch_rom/product/priv-app/XiaomiEuExt/XiaomiEuExt.apk product/priv-app/XiaomiEuExt
             mv -v patch_rom/product/etc/permissions/privapp_whitelist_eu.xiaomi.ext.xml product/etc/permissions
-            
+        - name: patch PowerKeeper & Joyose
+          run: |
+            mv -v patch_rom/product/pangu/system/app/Joyose/Joyose.apk product/pangu/system/app/Joyose
+            mv -v patch_rom/system/system/app/PowerKeeper/PowerKeeper.apk system/system/app/PowerKeeper
         - name: add overlay 
           run: |
             git clone https://github.com/VPT-bit/overlay.git
@@ -192,17 +200,17 @@ jobs:
             mv -v *.img super.zst rom/images
             rm rom/images/cc
             cd rom
-            zip -r HAYDN_14.0.8.0_CN.zip *
+            zip -r HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip *
             cd ${GITHUB_WORKSPACE}
-            mv rom/HAYDN_14.0.8.0_CN.zip .
+            mv rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
             rm -rf rom/*
-            if test HAYDN_14.0.8.0_CN.zip; then
-            echo       FILE IS ALREADY
+            if test HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip; then
+            echo                              FILE IS ALREADY
             fi
         - name: UPLOAD TO GOOGLE DRIVE
           uses: Jodebu/upload-to-drive@master
           with:
             credentials: ${{ secrets.credentials }}
-            target: HAYDN_14.0.8.0_CN.zip
+            target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
             folder: ${{ secrets.folderId }}
             
