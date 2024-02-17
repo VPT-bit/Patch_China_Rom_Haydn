@@ -7,14 +7,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: encode
-        run: |
-          cd ${GITHUB_WORKSPACE}
-          sudo chmod 777 -R *
-          sudo base64 ardent-time-312511-2eaffa9de218.json -w0 > credentials.txt
-      - name: UPLOAD TO GOOGLE DRIVE
-        uses: adityak74/google-drive-upload-git-action@main
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
         with:
-          credentials: ${{ secrets.credentials }}
-          filename: "credentials.txt"
-          folderId: ${{ secrets.folderId }}
+          format: HH-DDMMYYYY
+          utcOffset: "+07:00"
+      - name: Use current time
+        env:
+          TIME: "${{ steps.current-time.outputs.time }}"
+          R_TIME: "${{ steps.current-time.outputs.readableTime }}"
+          F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
+          YEAR: "${{ steps.current-time.outputs.year }}"
+          DAY: "${{ steps.current-time.outputs.day }}"
+        run: echo $TIME $R_TIME $F_TIME $YEAR $DAY
