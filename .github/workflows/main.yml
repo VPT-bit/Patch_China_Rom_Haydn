@@ -203,10 +203,8 @@ jobs:
             zip -r HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip *
             cd ${GITHUB_WORKSPACE}
             mv -v rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
-            rm -rf rom/*
-            if test HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip; then
-            echo                              FILE IS ALREADY
-            fi
+            rm -rf rom
+            ls -al .
         - name: UPLOAD TO GOOGLE DRIVE
           uses: Jodebu/upload-to-drive@master
           with:
