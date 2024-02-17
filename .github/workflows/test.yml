@@ -11,7 +11,7 @@ jobs:
         uses: josStorer/get-current-time@v2
         id: current-time
         with:
-          format: HHhmm'ss"-DD-MM-YYYY
+          format: HH-mm-ss_DD-MM-YYYY
           utcOffset: "+07:00"
       - name: test
         run: echo ${{ steps.current-time.outputs.formattedTime }}
