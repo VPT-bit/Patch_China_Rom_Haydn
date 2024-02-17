@@ -16,7 +16,8 @@ jobs:
       - name: test
         run: |
           echo ${{ steps.current-time.outputs.formattedTime }}
-          zip -r HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip *
+          axel -n $(nproc) https://bn.d.miui.com/V14.0.8.0.TKKCNXM/miui_HAYDN_V14.0.8.0.TKKCNXM_e3deaf183b_13.0.zip
+          zip *.zip HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
       - name: Upload a file to Google Drive
         uses: willo32/google-drive-upload-action@v1
         with:
