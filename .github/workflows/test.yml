@@ -11,7 +11,15 @@ jobs:
         uses: josStorer/get-current-time@v2
         id: current-time
         with:
-          format: HH"h"mm"m"ss"s"_DD-MM-YYYY
+          format: HH:mm:ss_DD-MM-YYYY
           utcOffset: "+07:00"
       - name: test
-        run: echo ${{ steps.current-time.outputs.formattedTime }}
+        run: |
+          echo ${{ steps.current-time.outputs.formattedTime }}
+          zip -r HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip *
+      - name: UPLOAD TO GOOGLE DRIVE
+        uses: Jodebu/upload-to-drive@master
+        with:
+          credentials: ${{ secrets.credentials }}
+          target: HAYDN_14.0.8.0_CN_*.zip
+          folder: ${{ secrets.folderId }}
