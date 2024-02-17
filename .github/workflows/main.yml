@@ -200,9 +200,10 @@ jobs:
             mv -v *.img super.zst rom/images
             rm rom/images/cc
             cd rom
-            zip -r HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip *
+            zip -r HAYDN.zip *
+            mv -v HAYDN.zip HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
             cd ${GITHUB_WORKSPACE}
-            mv rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
+            mv -v rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
             rm -rf rom/*
             if test HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip; then
             echo                              FILE IS ALREADY
