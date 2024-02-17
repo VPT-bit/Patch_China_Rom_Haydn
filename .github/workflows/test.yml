@@ -7,8 +7,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set current date as env variable
-        run: |
-          echo "NOW=Get-Date -format "yyyy-MM-dd"" >> $GITHUB_ENV
-          echo "NOW=$NOW" >> $env:GITHUB_ENV
-          echo ${{ env.NOW }}
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: HH:MM:SS-DDMMYYYY
+          utcOffset: "+07:00"
+      - name: Use current time
+        env:
+          TIME: "${{ steps.current-time.outputs.time }}"
+          R_TIME: "${{ steps.current-time.outputs.readableTime }}"
+          F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
+          YEAR: "${{ steps.current-time.outputs.year }}"
+          DAY: "${{ steps.current-time.outputs.day }}"
+        run: echo $TIME $R_TIME $F_TIME $YEAR $DAY
