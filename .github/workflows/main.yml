@@ -206,7 +206,6 @@ jobs:
             cd ${GITHUB_WORKSPACE}
             mv -v rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
             rm -rf rom
-            ls -al .
             
         - name: Upload ROM to Google Drive
           uses: willo32/google-drive-upload-action@v1
