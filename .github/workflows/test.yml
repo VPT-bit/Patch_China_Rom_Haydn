@@ -16,6 +16,7 @@ jobs:
       - name: Use current time
         env:
           F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
+      - name: test
         run: |
           settime=$F_TIME
           echo $settime
