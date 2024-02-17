@@ -10,4 +10,5 @@ jobs:
       - name: Set current date as env variable
         run: |
           echo "NOW=Get-Date -format "yyyy-MM-dd"" >> $GITHUB_ENV
+          echo "NOW=$NOW" >> $env:GITHUB_ENV
           echo ${{ env.NOW }}
