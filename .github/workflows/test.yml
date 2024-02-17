@@ -11,7 +11,7 @@ jobs:
         uses: josStorer/get-current-time@v2
         id: current-time
         with:
-          format: HH:MM:SS-DDMMYYYY
+          format: HH:mm:ss-DDMMYYYY
           utcOffset: "+07:00"
       - name: Use current time
         env:
