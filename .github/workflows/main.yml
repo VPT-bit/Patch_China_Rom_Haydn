@@ -211,6 +211,6 @@ jobs:
           uses: Jodebu/upload-to-drive@master
           with:
             credentials: ${{ secrets.credentials }}
-            target: HAYDN_14.0.8.0_CN_*.zip
+            target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
             folder: ${{ secrets.folderId }}
             
