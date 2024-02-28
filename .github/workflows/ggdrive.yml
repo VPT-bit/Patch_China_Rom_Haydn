@@ -7,10 +7,10 @@ jobs:
     steps:
         - name: checkout
           uses: actions/checkout@v2
-        - name: action-megacmd
+        - name: Upload to MEGA
           uses: Difegue/action-megacmd@1.2.0
           with:
-            args: put pack.sh 
+            args: put pack.sh
           env:
-            USERNAME: "viphucthinh03@gmail.com"
-            PASSWORD: "Viphucthinh@03"
+            USERNAME: ${{ secrets.username }}
+            PASSWORD: ${{ secrets.password }}
