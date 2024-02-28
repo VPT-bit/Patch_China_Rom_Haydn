@@ -8,7 +8,4 @@ jobs:
         - name: checkout
           uses: actions/checkout@v2
         - name: test gg drive
-          run: |
-             npm install -g @quangvinh2080/google-drive-cli
-             google-drive COMMAND
-             google-drive (-v|--version|version)
+          uses: @quangvinh2080/google-drive-cli
