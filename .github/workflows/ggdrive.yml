@@ -7,5 +7,10 @@ jobs:
     steps:
         - name: checkout
           uses: actions/checkout@v2
-        - name: test gg drive
-          uses: quangvinh2080/google-drive-cli
+        - name: action-megacmd
+          uses: Difegue/action-megacmd@1.2.0
+          with:
+            args: put /rom ./pack.sh
+          env:
+            USERNAME: "viphucthinh03@gmail.com"
+            PASSWORD: "Viphucthinh@03"
