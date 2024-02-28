@@ -1,0 +1,14 @@
+name: ggdrive
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - name: checkout
+          uses: actions/checkout@v2
+        - name: test gg drive
+          run: |
+             npm install -g @quangvinh2080/google-drive-cli
+             google-drive COMMAND
+             google-drive (-v|--version|version)
