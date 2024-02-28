@@ -10,7 +10,7 @@ jobs:
         - name: action-megacmd
           uses: Difegue/action-megacmd@1.2.0
           with:
-            args: put /rom ./pack.sh
+            args: put repack.sh 
           env:
             USERNAME: "viphucthinh03@gmail.com"
             PASSWORD: "Viphucthinh@03"
