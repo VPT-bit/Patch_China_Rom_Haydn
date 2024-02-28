@@ -207,9 +207,10 @@ jobs:
             mv -v rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
             rm -rf rom
             
-        - name: Upload ROM to Google Drive
-          uses: willo32/google-drive-upload-action@v1
+        - name: Upload to MEGA
+          uses: Difegue/action-megacmd@1.2.0
           with:
-            target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-            credentials: ${{ secrets.credentials }}
-            parent_folder_id: ${{ secrets.folderId }}
+            args: put HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
+          env:
+            USERNAME: ${{ secrets.username }}
+            PASSWORD: ${{ secrets.password }}
