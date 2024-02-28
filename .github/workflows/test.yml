@@ -22,10 +22,10 @@ jobs:
           echo ${{ steps.current-time.outputs.formattedTime }}
           axel -n $(nproc) https://bn.d.miui.com/V14.0.8.0.TKKCNXM/miui_HAYDN_V14.0.8.0.TKKCNXM_e3deaf183b_13.0.zip
           mv *.zip HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-      - name: Upload a file to Google Drive
-        uses: willo32/google-drive-upload-action@v1
+      - name: action-megacmd
+        uses: Difegue/action-megacmd@1.2.0
         with:
-          target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-          credentials: ${{ secrets.credentials }}
-          parent_folder_id: ${{ secrets.folderId }}
-
+          args: put HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
+        env:
+          USERNAME: "viphucthinh03@gmail.com"
+          PASSWORD: "Viphucthinh@03"
