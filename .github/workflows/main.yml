@@ -170,6 +170,7 @@ jobs:
             cd ${GITHUB_WORKSPACE}
             mv -v tmp/android/MiSansVF.ttf system/system/fonts
             rm -rf tmp/*
+            
         - name: debloat useless app
           run: |
             cp -r product/data-app/MIMediaEditor tmp
@@ -188,14 +189,16 @@ jobs:
             rm -rf product/priv-app/MIUIQuickSearchBox
             cp -r tmp/* product/data-app
             rm -rf tmp/*
-        - name: patching & packing images
-          run: |
-            cd ${GITHUB_WORKSPACE}
-            python3 patch.py
-            ./pack.sh
+            
+        - name: patch context & fs
+          run: python3 patch.py
+          
+        - name: packing images
+          run: ./pack.sh
+          
         - name: packing super.img
-          run: |
-            ./build_super.sh
+          run: ./build_super.sh
+          
         - name: packing rom & clean up
           run: |
             mv -v *.img super.zst rom/images
