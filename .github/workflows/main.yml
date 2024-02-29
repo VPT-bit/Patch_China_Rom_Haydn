@@ -44,11 +44,10 @@ jobs:
             ./payload-dumper-go ./payload.bin
             rm payload.bin
             
-        - name: clone
+        - name: prepare binary 
           run: |
-            git clone https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE.git
-            mv MIO-KITCHEN-SOURCE/bin/Linux/x86_64/* .
-            mv ./extracted*/* .
+            mv -v bin/* .
+            mv -v extracted*/* .
             sudo chmod 777 -R *
         - name: unpacking images
           run: |
