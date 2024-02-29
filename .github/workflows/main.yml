@@ -43,6 +43,7 @@ jobs:
             export PATH=$PATH:./payload.bin
             ./payload-dumper-go ./payload.bin
             rm payload.bin
+            rm payload-dumper-go
             
         - name: prepare binary 
           run: |
