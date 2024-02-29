@@ -132,10 +132,8 @@ jobs:
             mv -v patch_rom/product/priv-app/XiaomiEuExt/XiaomiEuExt.apk product/priv-app/XiaomiEuExt
             mv -v patch_rom/product/etc/permissions/privapp_whitelist_eu.xiaomi.ext.xml product/etc/permissions
             
-        - name: patch PowerKeeper & Joyose
-          run: |
-            mv -v patch_rom/product/pangu/system/app/Joyose/Joyose.apk product/pangu/system/app/Joyose
-            mv -v patch_rom/system/system/app/PowerKeeper/PowerKeeper.apk system/system/app/PowerKeeper
+        - name: patch Joyose
+          run: mv -v patch_rom/product/pangu/system/app/Joyose/Joyose.apk product/pangu/system/app/Joyose
             
         - name: add overlay 
           run: |
