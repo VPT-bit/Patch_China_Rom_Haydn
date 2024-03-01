@@ -60,8 +60,7 @@ fastboot flash abl_b images/abl.img
 if exist images\cust.img fastboot flash cust images/cust.img
 if exist images\super.img fastboot flash super images/super.img
 echo.
-echo Flashing process is completed
-echo Please wait until data formatting is completed!
+echo Please wait for the flashing process to complete and reboot automatically
 echo.
 if /i "!wipeData!" == "y" (
 	fastboot erase userdata
