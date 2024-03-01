@@ -1,13 +1,18 @@
 @echo off
 if exist bin\platform-tools-windows\fastboot.exe PATH=%PATH%;bin\platform-tools-windows
 setlocal enabledelayedexpansion
+echo.
 echo Modified by Telegram: vpt_19
 echo.
 echo Decompressing super.img...
 zstd --rm -d images/super.zst -o images/super.img
+echo.
 echo Decompression completed
+echo.
 set /p wipeData="Do you need to clear data? (y/n): "
+echo.
 echo Flashing process starts...
+echo.
 fastboot flash xbl_config_a images/xbl_config.img
 fastboot flash xbl_config_b images/xbl_config.img
 fastboot flash xbl_a images/xbl.img
@@ -54,8 +59,10 @@ fastboot flash abl_a images/abl.img
 fastboot flash abl_b images/abl.img
 if exist images\cust.img fastboot flash cust images/cust.img
 if exist images\super.img fastboot flash super images/super.img
+echo.
 echo Flashing process is completed
 echo Please wait until data formatting is completed!
+echo.
 if /i "!wipeData!" == "y" (
 	fastboot erase userdata
 	fastboot erase metadata
