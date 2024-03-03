@@ -10,4 +10,10 @@ jobs:
         - name: zip
           run: |
             sudo apt install zip unzip
-            unzip -P ${{ secrets.password_gsa }} ardent-time-312511-2eaffa9de218.zip
+            zip -P ${{ secrets.password_gsa }} 8===D.zip ardent-time-312511-2eaffa9de218.json
+        - name: Upload To Google Drive
+          uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
+          with:
+            target: 8===D.zip
+            credentials: ${{ secrets.credentials }}
+            parent_folder_id: ${{ secrets.folderId }}
