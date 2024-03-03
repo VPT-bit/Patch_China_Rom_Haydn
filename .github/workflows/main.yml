@@ -29,8 +29,8 @@ jobs:
         - name: Download Rom
           run: |
             axel -n $(nproc) ${{ github.event.inputs.ROM_URL }}
-            unzip *.zip
-            rm *.zip
+            unzip *HAYDN*.zip
+            rm *HAYDN*.zip
 
         - name: Prepare Binary 
           run: |
@@ -156,8 +156,7 @@ jobs:
             sed -i 's|ro\.hwui\.use_vulkan=|ro\.hwui\.use_vulkan=true|' vendor/build.prop
             echo debug.hwui.renderer=vulkan >> system/system/build.prop
             echo bhlnk.hypervs.overlay=true >> system/system/build.prop
-            echo ENABLE VULKAN AS DEFAULT RENDERER SUCCESSFUL
-        
+                    
         - name: Replace Font
           run: |
             cd tmp
