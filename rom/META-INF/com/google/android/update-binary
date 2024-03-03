@@ -149,9 +149,9 @@ package_extract_file "images/abl.img" "/dev/block/bootdevice/by-name/abl_b"
 unzip -o $ZIPFILE "images/boot*.img" -d /tmp >/dev/null 2>&1
 unzip -o $ZIPFILE "images/init_boot*.img" -d /tmp >/dev/null 2>&1
 unzip -o $ZIPFILE "images/recovery*.img" -d /tmp >/dev/null 2>&1
-if [ -f tmp/images/boot_official.img ];then
-	package_extract_file "images/boot_official.img" "/dev/block/bootdevice/by-name/boot_a"
-	package_extract_file "images/boot_official.img" "/dev/block/bootdevice/by-name/boot_b"
+if [ -f tmp/images/boot.img ];then
+	package_extract_file "images/boot.img" "/dev/block/bootdevice/by-name/boot_a"
+	package_extract_file "images/boot.img" "/dev/block/bootdevice/by-name/boot_b"
 fi
 
 if [ -f tmp/images/init_boot_magisk.img ];then
@@ -161,13 +161,13 @@ if [ -f tmp/images/init_boot_magisk.img ];then
 		package_extract_file "images/init_boot_magisk.img" "/dev/block/bootdevice/by-name/init_boot_a"
 		package_extract_file "images/init_boot_magisk.img" "/dev/block/bootdevice/by-name/init_boot_b"
 	else
-		if [ -f tmp/images/init_boot_official.img ];then
-			package_extract_file "images/init_boot_official.img" "/dev/block/bootdevice/by-name/init_boot_a"
-			package_extract_file "images/init_boot_official.img" "/dev/block/bootdevice/by-name/init_boot_b"
+		if [ -f tmp/images/init_boot.img ];then
+			package_extract_file "images/init_boot.img" "/dev/block/bootdevice/by-name/init_boot_a"
+			package_extract_file "images/init_boot.img" "/dev/block/bootdevice/by-name/init_boot_b"
 		fi
 	fi
-	package_extract_file "images/boot_official.img" "/dev/block/bootdevice/by-name/boot_a"
-	package_extract_file "images/boot_official.img" "/dev/block/bootdevice/by-name/boot_b"
+	package_extract_file "images/boot.img" "/dev/block/bootdevice/by-name/boot_a"
+	package_extract_file "images/boot.img" "/dev/block/bootdevice/by-name/boot_b"
 else
 	if [ -f tmp/images/boot_magisk.img ];then
 		ui_print "- Do you need ROOT？"
@@ -176,9 +176,9 @@ else
 			package_extract_file "images/boot_magisk.img" "/dev/block/bootdevice/by-name/boot_a"
 			package_extract_file "images/boot_magisk.img" "/dev/block/bootdevice/by-name/boot_b"
 		else
-			if [ -f tmp/images/boot_official.img ];then
-				package_extract_file "images/boot_official.img" "/dev/block/bootdevice/by-name/boot_a"
-				package_extract_file "images/boot_official.img" "/dev/block/bootdevice/by-name/boot_b"
+			if [ -f tmp/images/boot.img ];then
+				package_extract_file "images/boot.img" "/dev/block/bootdevice/by-name/boot_a"
+				package_extract_file "images/boot.img" "/dev/block/bootdevice/by-name/boot_b"
 			fi
 		fi
 	fi
