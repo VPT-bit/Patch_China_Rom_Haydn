@@ -2,7 +2,7 @@
 if exist bin\platform-tools-windows\fastboot.exe PATH=%PATH%;bin\platform-tools-windows
 setlocal enabledelayedexpansion
 echo.
-echo Modified by Telegram: vpt_19
+echo Modified by Tg: @vpt_19
 echo.
 echo Decompressing super.img...
 zstd --rm -d images/super.zst -o images/super.img
