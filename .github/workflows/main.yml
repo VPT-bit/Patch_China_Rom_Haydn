@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: checkout
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4.1.1
           
         - name: Get current time
           uses: josStorer/get-current-time@v2
@@ -213,10 +213,9 @@ jobs:
             mv -v rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
             rm -rf rom
             
-        - name: Upload to MEGA
-          uses: Difegue/action-megacmd@1.2.0
+        - name: Upload To Google Drive
+          uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
           with:
-            args: put HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-          env:
-            USERNAME: ${{ secrets.username }}
-            PASSWORD: ${{ secrets.password }}
+            target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
+            credentials: ${{ secrets.credentials }}
+            parent_folder_id: ${{ secrets.folderId }}
