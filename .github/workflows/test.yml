@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4.1.1
       - name: Setup
         run: |
           sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet
@@ -23,9 +23,9 @@ jobs:
           axel -n $(nproc) https://bn.d.miui.com/V14.0.8.0.TKKCNXM/miui_HAYDN_V14.0.8.0.TKKCNXM_e3deaf183b_13.0.zip
           mv *.zip HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
       - name: action-megacmd
-        uses: Difegue/action-megacmd@1.2.0
+      - name: Upload To Google Drive
+        uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
         with:
-          args: put HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-        env:
-          USERNAME: "viphucthinh03@gmail.com"
-          PASSWORD: "Viphucthinh@03"
+          target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
+          credentials: ${{ secrets.credentials }}
+          parent_folder_id: ${{ secrets.folderId }}
