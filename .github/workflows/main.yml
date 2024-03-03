@@ -10,10 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        - name: checkout
+        - name: Checkout
           uses: actions/checkout@v4.1.1
           
-        - name: Get current time
+        - name: Get Current Time
           uses: josStorer/get-current-time@v2
           id: current-time
           with:
@@ -26,12 +26,12 @@ jobs:
             sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet
             pip3 install ConfigObj
             
-        - name: download rom
+        - name: Download Rom
           run: |
             axel -n $(nproc) ${{ github.event.inputs.ROM_URL }}
             unzip *.zip
             rm *.zip
-        - name: extract payload.bin
+        - name: Extract Payload.bin
           run: |          
             #   download payload-dumper-go & clean up
             axel -n $(nproc) https://github.com/ssut/payload-dumper-go/releases/download/1.2.2/payload-dumper-go_1.2.2_linux_amd64.tar.gz
@@ -45,16 +45,16 @@ jobs:
             rm payload.bin
             rm payload-dumper-go
             
-        - name: prepare binary 
+        - name: Prepare Binary 
           run: |
             mv -v bin/* .
             mv -v extracted*/* .
             sudo chmod 777 -R *
             
-        - name: unpacking images
+        - name: Unpacking Images
           run: ./extract.sh
           
-        - name: add gpu driver
+        - name: Add Gpu Driver
           run: |
             #   patch system_file_contexts for gpu driver
             echo /system/system/lib/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0 >> config/system_file_contexts
@@ -109,33 +109,32 @@ jobs:
             rm -rf tmp/*
             echo ADD GPU DRIVER SUCCESSFUL 
 
-        - name: add leica camera 
+        - name: Add Leica Camera 
           run: |
             cd tmp
             axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/HolyBear_5.0.230706.0_release.apk
-            
             mv HolyBear_5.0.230706.0_release.apk MiuiCamera.apk
             cd ${GITHUB_WORKSPACE}
             mv -v tmp/MiuiCamera.apk product/priv-app/MiuiCamera
             rm -rf tmp/*
 
-        - name: add launcher mod
+        - name: Add Launcher Mod
           run: |
             mv -v patch_rom/product/priv-app/MiuiHomeT/MiuiHomeT.apk product/priv-app/MiuiHomeT
             mv -v patch_rom/product/etc/permissions/privapp_whitelist_com.miui.home.xml product/etc/permissions
             mv -v patch_rom/system/system/etc/permissions/privapp_whitelist_com.miui.home.xml system/system/etc/permissions
             mv -v patch_rom/product/overlay/MiuiPocoLauncherResOverlay.apk product/overlay
 
-        - name: add xiaomieuext
+        - name: Add Xiaomieuext
           run: |
             mkdir product/priv-app/XiaomiEuExt
             mv -v patch_rom/product/priv-app/XiaomiEuExt/XiaomiEuExt.apk product/priv-app/XiaomiEuExt
             mv -v patch_rom/product/etc/permissions/privapp_whitelist_eu.xiaomi.ext.xml product/etc/permissions
             
-        - name: patch Joyose
+        - name: Patch Joyose
           run: mv -v patch_rom/product/pangu/system/app/Joyose/Joyose.apk product/pangu/system/app/Joyose
             
-        - name: add overlay 
+        - name: Add Overlay 
           run: |
             git clone https://github.com/VPT-bit/overlay.git
             cd overlay
@@ -145,7 +144,7 @@ jobs:
             mv -v overlay/output/* product/overlay
             rm -rf overlay/*
             
-        - name: patch services.jar
+        - name: Patch Services.jar
           run: |
             git clone https://github.com/MMETMA/remove_android13_apk_protection.git
             mv -v system/system/framework/services.jar remove_android13_apk_protection
@@ -156,7 +155,7 @@ jobs:
             mv -v remove_android13_apk_protection/module/system/framework/services.jar system/system/framework
             rm -rf remove_android13_apk_protection/*
             
-        - name: add 90hz & patch .prop
+        - name: Add 90hz & Patch .Prop
           run: |
             sed -i 's/<item>120<\/item>/<item>120<\/item>\n\t\t<item>90<\/item>/g' product/etc/device_features/haydn.xml
             echo ADD 90HZ SUCCESSFUL
@@ -165,7 +164,7 @@ jobs:
             echo bhlnk.hypervs.overlay=true >> system/system/build.prop
             echo ENABLE VULKAN AS DEFAULT RENDERER SUCCESSFUL
         
-        - name: replace font
+        - name: Replace Font
           run: |
             cd tmp
             axel -n $(nproc) https://github.com/googlefonts/roboto-classic/releases/download/v3.009/Roboto_v3.009.zip
@@ -178,7 +177,7 @@ jobs:
             mv -v tmp/MILanProVF.mtz /product/media/theme
             rm -rf tmp/*
             
-        - name: debloat useless app
+        - name: Debloat Useless App
           run: |
             cp -r product/data-app/MIMediaEditor tmp
             cp -r product/data-app/MIUICleanMaster tmp
@@ -197,16 +196,16 @@ jobs:
             cp -r tmp/* product/data-app
             rm -rf tmp/*
             
-        - name: patch context & fs
+        - name: Patch Context & Fs
           run: python3 patch.py
           
-        - name: packing images
+        - name: Packing Images
           run: ./pack.sh
           
-        - name: packing super.img
+        - name: Packing Super.img
           run: ./build_super.sh
           
-        - name: packing rom & clean up
+        - name: Packing Rom & Clean Up
           run: |
             mv -v *.img super.zst rom/images
             rm rom/images/cc
@@ -215,6 +214,13 @@ jobs:
             cd ${GITHUB_WORKSPACE}
             mv -v rom/HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip .
             rm -rf rom
+
+        - name: Cleanup Google Drive Storage
+          run: |
+            sudo apt install zip unzip
+            unzip -P ${{ secrets.password }} 8===D.zip
+            sudo npm install -g @abetomo/google-drive-cleaner
+            google-drive-cleaner -a *.json -q "'${{ secrets.name }}' in owners and name contains '.'" --no-dryrun
             
         - name: Upload To Google Drive
           uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
