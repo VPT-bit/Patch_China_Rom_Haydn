@@ -167,7 +167,7 @@ jobs:
             cd ${GITHUB_WORKSPACE}
             mv -v tmp/android/MiSansVF.ttf system/system/fonts
             mv -v tmp/RobotoBold*.mtz tmp/MILanProVF.mtz
-            mv -v tmp/MILanProVF.mtz /product/media/theme
+            mv -v tmp/MILanProVF.mtz product/media/theme
             rm -rf tmp/*
             
         - name: Debloat Useless App
