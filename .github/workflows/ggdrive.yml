@@ -10,4 +10,4 @@ jobs:
         - name: test
           run: |
             sudo npm install -g @abetomo/google-drive-cleaner
-            google-drive-cleaner -a ardent-time-312511-2eaffa9de218.json -q "'viphucthinh03@gmail.com' in owners and name contains '.zip'" --no-dryrun
+            google-drive-cleaner -a ardent-time-312511-2eaffa9de218.json -q "'uploadvpt@ardent-time-312511.iam.gserviceaccount.com' in owners and name contains '.zip'" --no-dryrun
