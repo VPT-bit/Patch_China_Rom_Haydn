@@ -106,8 +106,8 @@ jobs:
         - name: Add Leica Camera 
           run: |
             cd tmp
-            axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/HolyBear_5.0.230706.0_release.apk
-            mv HolyBear_5.0.230706.0_release.apk MiuiCamera.apk
+            axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/HolyBearMiuiCamera.apk
+            mv HolyBearMiuiCamera.apk MiuiCamera.apk
             cd ${GITHUB_WORKSPACE}
             mv -v tmp/MiuiCamera.apk product/priv-app/MiuiCamera
             rm -rf tmp/*
