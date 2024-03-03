@@ -20,9 +20,9 @@ jobs:
       - name: test
         run: |
           echo ${{ steps.current-time.outputs.formattedTime }}
-          axel -n $(nproc) https://bn.d.miui.com/V14.0.8.0.TKKCNXM/miui_HAYDN_V14.0.8.0.TKKCNXM_e3deaf183b_13.0.zip
+          axel -n $(nproc) https://cdn-ota.azureedge.net/V14.0.8.0.TKKCNXM/miui_HAYDN_V14.0.8.0.TKKCNXM_e3deaf183b_13.0.zip
           mv *.zip HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-      - name: action-megacmd
+          
       - name: Upload To Google Drive
         uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
         with:
