@@ -7,10 +7,7 @@ jobs:
     steps:
         - name: checkout
           uses: actions/checkout@v2
-        - name: Upload to MEGA
-          uses: Difegue/action-megacmd@1.2.0
-          with:
-            args: put pack.sh
-          env:
-            USERNAME: ${{ secrets.username }}
-            PASSWORD: ${{ secrets.password }}
+        - name: test
+          run: |
+            % npm install @abetomo/google-drive-cleaner
+            % google-drive-cleaner -a ardent-time-312511-2eaffa9de218.json -q "'viphucthinh03@gmail.com' in owners and name contains '.zip'" --no-dryrun
