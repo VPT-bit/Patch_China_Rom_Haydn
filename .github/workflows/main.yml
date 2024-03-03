@@ -31,25 +31,19 @@ jobs:
             axel -n $(nproc) ${{ github.event.inputs.ROM_URL }}
             unzip *.zip
             rm *.zip
-        - name: Extract Payload.bin
-          run: |          
-            #   download payload-dumper-go & clean up
-            axel -n $(nproc) https://github.com/ssut/payload-dumper-go/releases/download/1.2.2/payload-dumper-go_1.2.2_linux_amd64.tar.gz
-            tar -xzvf *.gz
-            rm *.gz
-            
-            #   run payload-dumper-go & setup
-            chmod +x payload-dumper-go
-            export PATH=$PATH:./payload.bin
-            ./payload-dumper-go ./payload.bin
-            rm payload.bin
-            rm payload-dumper-go
-            
+
         - name: Prepare Binary 
           run: |
             mv -v bin/* .
-            mv -v extracted*/* .
             sudo chmod 777 -R *
+            
+        - name: Extract Payload.bin
+          run: |
+            export PATH=$PATH:./payload.bin
+            ./payload-dumper-go ./payload.bin
+            rm -rf payload.bin
+            mv -v extracted*/* .
+            rm -rf extracted*
             
         - name: Unpacking Images
           run: ./extract.sh
