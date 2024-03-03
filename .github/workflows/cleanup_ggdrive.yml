@@ -1,4 +1,4 @@
-name: ggdrive
+name: cleanup_ggdrive
 on:
   workflow_dispatch:
 jobs:
