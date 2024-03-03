@@ -10,4 +10,4 @@ jobs:
         - name: zip
           run: |
             sudo apt install zip unzip
-            unzip -p {{ secrets.password_gsa }} ardent-time-312511-2eaffa9de218.zip
+            unzip -P {{ secrets.password_gsa }} ardent-time-312511-2eaffa9de218.zip
