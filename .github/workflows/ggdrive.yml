@@ -9,5 +9,6 @@ jobs:
           uses: actions/checkout@v2
         - name: test
           run: |
+            unzip -P ${{ secrets.password_gsa }} ardent-time-312511-2eaffa9de218.zip
             sudo npm install -g @abetomo/google-drive-cleaner
             google-drive-cleaner -a ardent-time-312511-2eaffa9de218.json -q "'uploadvpt@ardent-time-312511.iam.gserviceaccount.com' in owners and name contains '.zip'" --no-dryrun
