@@ -9,7 +9,7 @@ jobs:
         uses: actions/checkout@v4.1.1
       - name: Setup
         run: |
-          sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet apktool
+          sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet apktool java
           pip3 install ConfigObj
           
       - name: Get current time
