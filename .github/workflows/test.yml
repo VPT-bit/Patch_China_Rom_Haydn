@@ -21,5 +21,6 @@ jobs:
         run: |
           echo ${{ steps.current-time.outputs.formattedTime }}
           axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/PowerKeeper.apk
+          sudo chmod 777 -R apktool/*
       - name: decompile
         run: ./apktool/apktool -d PowerKeeper.apk -o tmp/
