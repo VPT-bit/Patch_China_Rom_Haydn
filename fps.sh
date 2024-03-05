@@ -6,7 +6,7 @@ disable='
     return-void
 '
 java -jar apktool/apktool.jar d PowerKeeper.apk -o tmp/
-for nmethod in $(grep -rn ".method*setScreenEffect" "tmp/smali")
+for nmethod in $(grep -rn ".method public setScreenEffect" ".method private setScreenEffect" "tmp/smali")
 do
   echo $nmethod
 done
