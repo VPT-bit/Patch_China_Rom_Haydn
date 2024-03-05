@@ -17,15 +17,9 @@ jobs:
         with:
           format: HH:mm:ss_DD-MM-YYYY
           utcOffset: "+07:00"
-      - name: test
+      - name: download
         run: |
           echo ${{ steps.current-time.outputs.formattedTime }}
-          axel -n $(nproc) https://cdn-ota.azureedge.net/V14.0.8.0.TKKCNXM/miui_HAYDN_V14.0.8.0.TKKCNXM_e3deaf183b_13.0.zip
-          mv *.zip HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-          
-      - name: Upload To Google Drive
-        uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
-        with:
-          target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
-          credentials: ${{ secrets.credentials }}
-          parent_folder_id: ${{ secrets.folderId }}
+          axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/PowerKeeper.apk
+      - name: decompile
+        run: ./apktool/apktool -d PowerKeeper.apk -o tmp/
