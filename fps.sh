@@ -6,6 +6,6 @@ disable='
     return-void
 '
 apktool d PowerKeeper.apk -o tmp/
-smali -check -method "setScreenEffect" -remake "$disable" -dir "tmp/"
-smali -check -method "setScreenEffectInternal" -remake "$disable" -dir "tmp/"
+./apktool/smali.jar -check -method "setScreenEffect" -remake "$disable" -dir "tmp/"
+./apktool/smali.jar -check -method "setScreenEffectInternal" -remake "$disable" -dir "tmp/"
 apktool -preserve-signature -recompile "tmp/" -output .
