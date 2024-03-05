@@ -23,4 +23,4 @@ jobs:
           axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/PowerKeeper.apk
           sudo chmod 777 -R apktool/*
       - name: decompile
-        run: apktool -d PowerKeeper.apk -o tmp/
+        run: apktool d PowerKeeper.apk -o tmp/
