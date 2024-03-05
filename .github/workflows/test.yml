@@ -11,7 +11,7 @@ jobs:
         run: |
           sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet apktool
           pip3 install ConfigObj
-          sudo apt install smali
+          
       - name: Get current time
         uses: josStorer/get-current-time@v2
         id: current-time
