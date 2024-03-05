@@ -161,13 +161,11 @@ jobs:
           run: |
             cd tmp
             axel -n $(nproc) https://github.com/googlefonts/roboto-classic/releases/download/v3.009/Roboto_v3.009.zip
-            axel -n $(nproc) https://t13.market.xiaomi.com/download/ThemeMarket/09eaf36dc3c5645c1a86e187d85f74e9f2f0c4aa3/RobotoBold+18989e97-1f36-42db-8240-2ac5cc7d493e+www.mtzfile.pw+MIUI12+-FONT.mtz
             unzip Roboto_v3.009.zip
+            rm Roboto_v3.009.zip
             mv -v android/Roboto[ital,wdth,wght].ttf android/MiSansVF.ttf
             cd ${GITHUB_WORKSPACE}
             mv -v tmp/android/MiSansVF.ttf system/system/fonts
-            mv -v tmp/RobotoBold*.mtz tmp/MILanProVF.mtz
-            mv -v tmp/MILanProVF.mtz product/media/theme
             rm -rf tmp/*
             
         - name: Debloat Useless App
