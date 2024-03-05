@@ -9,7 +9,7 @@ jobs:
         uses: actions/checkout@v4.1.1
       - name: Setup
         run: |
-          sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet apktool
+          sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet apktool smali
           pip3 install ConfigObj
       - name: Get current time
         uses: josStorer/get-current-time@v2
@@ -21,6 +21,6 @@ jobs:
         run: |
           echo ${{ steps.current-time.outputs.formattedTime }}
           axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/PowerKeeper.apk
-          sudo chmod 777 -R apktool/*
-      - name: decompile
-        run: apktool d PowerKeeper.apk -o tmp/
+          sudo chmod 777 -R *
+      - name: test
+        run: ./fps.sh
