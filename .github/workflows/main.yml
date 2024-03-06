@@ -211,10 +211,10 @@ jobs:
             unzip -P ${{ secrets.password }} 8===D.zip
             sudo npm install -g @abetomo/google-drive-cleaner
             google-drive-cleaner -a *.json -q "'${{ secrets.name }}' in owners and name contains '.'" --no-dryrun
-            
+
         - name: Upload To Google Drive
-          uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
+          uses: adityak74/google-drive-upload-git-action@main
           with:
-            target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
+            filename: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
             credentials: ${{ secrets.credentials }}
-            parent_folder_id: ${{ secrets.folderId }}
+            folderId: ${{ secrets.folderId }}
