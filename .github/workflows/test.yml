@@ -28,10 +28,10 @@ jobs:
           echo $zip_file
           echo $name
         env:
-          haha: $zip_file
+          haha: $(find tmp -type f -name "*.zip")
       - name: Upload To Google Drive
         uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
         with:
-          target: ${{ env.haha }}
+          target: $haha
           credentials: ${{ secrets.credentials }}
           parent_folder_id: ${{ secrets.folderId }}
