@@ -23,13 +23,15 @@ jobs:
           cd tmp
           zip -r cc.zip *
           cd ${GITHUB_WORKSPACE}
-          export zip_file=$(find tmp -type f -name "*.zip")
+          zip_file=$(find tmp -type f -name "*.zip")
           name=$(basename $zip_file | cut -d '.' -f 1)
           echo $zip_file
           echo $name
+        env:
+          haha: $zip_file
       - name: Upload To Google Drive
         uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
         with:
-          target: ${zip_file}
+          target: ${{ haha }}
           credentials: ${{ secrets.credentials }}
           parent_folder_id: ${{ secrets.folderId }}
