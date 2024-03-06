@@ -23,7 +23,7 @@ jobs:
       - name: Upload a file to Google Drive
         uses: willo32/google-drive-upload-action@v1
         with:
-          target: tmp/*.zip
+          target: "tmp/*.zip"
           credentials: ${{ secrets.credentials }}
           parent_folder_id: ${{ secrets.folderId }}
 
