@@ -22,7 +22,7 @@ jobs:
           mv credentials.txt tmp
           cd tmp
           zip -r cc.zip *
-          zip_file=$(find tmp -type f -name "*.zip" -print -quit | basename)
+          zip_file=$(find ./tmp -type f -name "*.zip" -print -quit | basename)
       - name: Upload To Google Drive
         uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
         with:
