@@ -19,7 +19,12 @@ jobs:
           mkdir -p tmp
           cd tmp
           axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
-
+          abc=$(pwd)
+      - name: cc
+        run: |
+          if test tmp/*.zip; then
+          echo $abc
+        
       - name: Upload a file to Google Drive
         uses: willo32/google-drive-upload-action@v1
         with:
