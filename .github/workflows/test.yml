@@ -19,15 +19,17 @@ jobs:
           mkdir -p tmp
           cd tmp
           axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
-          abc=$(pwd)
+        env:
+          haha: cai lon
       - name: cc
         run: |
           if test tmp/*.zip; then
           echo con cac
           fi
-        
+          echo $haha
+          
       - name: Upload a file to Google Drive
-        run: name=$(find /path/to/tmp -type f -name "*.zip" -print -quit)
+        
         uses: willo32/google-drive-upload-action@v1
         with:
           target: "tmp/*.zip"
