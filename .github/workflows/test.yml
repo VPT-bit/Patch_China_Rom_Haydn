@@ -23,7 +23,7 @@ jobs:
           cd tmp
           zip -r cc.zip *
           cd ${GITHUB_WORKSPACE}
-          zip_file=$(find tmp -type f -name "*.zip" -print -quit)
+          zip_file=$(find tmp -type f -name "*.zip")
           name=$(basename $zip_file)
           echo $zip_file
           echo $name
