@@ -27,6 +27,7 @@ jobs:
           fi
         
       - name: Upload a file to Google Drive
+        run: name=$(find /path/to/tmp -type f -name "*.zip" -print -quit)
         uses: willo32/google-drive-upload-action@v1
         with:
           target: "tmp/*.zip"
