@@ -30,11 +30,10 @@ jobs:
           echo con cac
           fi
           echo ${{ steps.cc.outputs.cl }}
-          
-      - name: Upload a file to Google Drive
-        uses: willo32/google-drive-upload-action@v1
+        
+      - name: Upload To Google Drive
+        uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
         with:
           target: ${{ steps.cc.outputs.cl }}
           credentials: ${{ secrets.credentials }}
           parent_folder_id: ${{ secrets.folderId }}
-
