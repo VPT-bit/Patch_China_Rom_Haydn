@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v2
       - name: Get current time
         uses: josStorer/get-current-time@v2
         id: current-time
@@ -15,17 +15,13 @@ jobs:
           utcOffset: "+07:00"
       - name: test
         run: |
-          echo ${{ secrets.credentials }} >> credentials.txt
-          echo ${{ secrets.folderId }} >> folderId.txt
-          mkdir tmp
-          mv folderId.txt tmp
-          mv credentials.txt tmp
+          mkdir -p tmp
           cd tmp
-          zip -r cc.zip *
+          axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
 
-      - name: Upload to gdrive
-        uses: adityak74/google-drive-upload-git-action@main
+      - name: Upload a file to Google Drive
+        uses: willo32/google-drive-upload-action@v1
         with:
+          target: "*.zip"
           credentials: ${{ secrets.credentials }}
-          filename: tmp/*.zip
-          folderId: ${{ secrets.folderId }}
+          parent_folder_id: ${{ secrets.folderId }}
