@@ -20,7 +20,8 @@ jobs:
           mkdir -p tmp
           cd tmp
           axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
-          name=$(find /path/to/tmp -type f -name "*.zip" -print -quit)
+          cd ${GITHUB_WORKSPACE}
+          name=$(find tmp -type f -name "*.zip")
           echo ::set-output name=cl::${name}
            
       - name: cccc
