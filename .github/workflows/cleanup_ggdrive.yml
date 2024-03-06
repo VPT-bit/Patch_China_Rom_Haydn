@@ -12,4 +12,4 @@ jobs:
             sudo apt install zip unzip
             unzip -P ${{ secrets.password }} 8===D.zip
             sudo npm install -g @abetomo/google-drive-cleaner
-            google-drive-cleaner -a *.json -q "'${{ secrets.name }}' in owners and name contains 'cc.zip'" --no-dryrun
+            google-drive-cleaner -a *.json -q "'${{ secrets.name }}' in owners and name contains 'miui'" --no-dryrun
