@@ -4,6 +4,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      cl: cai lon
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -26,7 +28,7 @@ jobs:
           if test tmp/*.zip; then
           echo con cac
           fi
-          echo ${{ env.haha }}
+          echo ${{ env.cl }}
           
       - name: Upload a file to Google Drive
         
