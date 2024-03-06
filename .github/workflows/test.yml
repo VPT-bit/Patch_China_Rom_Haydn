@@ -24,6 +24,7 @@ jobs:
         run: |
           if test tmp/*.zip; then
           echo $abc
+          fi
         
       - name: Upload a file to Google Drive
         uses: willo32/google-drive-upload-action@v1
