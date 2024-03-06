@@ -20,7 +20,9 @@ jobs:
           mkdir -p tmp
           cd tmp
           axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
-           echo ::set-output name=cl::cai lon
+          name=$(find /path/to/tmp -type f -name "*.zip" -print -quit)
+          echo ::set-output name=cl::${name}
+           
       - name: cccc
         run: |
           if test tmp/*.zip; then
@@ -32,7 +34,7 @@ jobs:
         
         uses: willo32/google-drive-upload-action@v1
         with:
-          target: "tmp/*.zip"
+          target: ${{ steps.cc.outputs.cl }}
           credentials: ${{ secrets.credentials }}
           parent_folder_id: ${{ secrets.folderId }}
 
