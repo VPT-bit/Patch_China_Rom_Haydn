@@ -20,9 +20,9 @@ jobs:
           cd tmp
           axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
 
-      - name: Upload a file to Google Drive
-        uses: willo32/google-drive-upload-action@v1
+      - name: Upload README.md to Google Drive
+        uses: Jodebu/upload-to-drive@master
         with:
-          target: "tmp/*.zip"
+          target: tmp/*.zip
           credentials: ${{ secrets.credentials }}
-          parent_folder_id: ${{ secrets.folderId }}
+          folder: ${{ secrets.folderId }}
