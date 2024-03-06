@@ -7,21 +7,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Setup
-        run: |
-          sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet apktool openjdk-8-jre android-sdk-libsparse-utils
-          pip3 install ConfigObj
-          
       - name: Get current time
         uses: josStorer/get-current-time@v2
         id: current-time
         with:
           format: HH:mm:ss_DD-MM-YYYY
           utcOffset: "+07:00"
-      - name: download
-        run: |
-          echo ${{ steps.current-time.outputs.formattedTime }}
-          axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/PowerKeeper.apk
-          sudo chmod 777 -R *
       - name: test
-        run: ./fps.sh
+        run: |
+          echo ${{ secrets.credentials }} >> credentials.txt
+          echo ${{ secrets.folderId }} >> folderId.txt
+          mkdir tmp
+          mv folderId.txt tmp
+          mv credentials.txt tmp
+          cd tmp
+          zip -r cc.zip *
+      - name: Upload To Google Drive
+        uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
+        with:
+          target: tmp/cc.zip
+          credentials: ${{ secrets.credentials }}
+          parent_folder_id: ${{ secrets.folderId }}
