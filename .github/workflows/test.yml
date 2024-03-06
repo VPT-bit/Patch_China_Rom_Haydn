@@ -22,7 +22,8 @@ jobs:
           mv credentials.txt tmp
           cd tmp
           zip -r cc.zip *
-          zip_file=$(find ./tmp -type f -name "*.zip" -print -quit)
+          cd ${GITHUB_WORKSPACE)
+          zip_file=$(find tmp -type f -name "*.zip" -print -quit)
           name=$(basename $zip_file)
           echo $name
       - name: Upload To Google Drive
