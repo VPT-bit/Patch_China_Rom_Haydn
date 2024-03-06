@@ -23,6 +23,6 @@ jobs:
       - name: Upload README.md to Google Drive
         uses: Jodebu/upload-to-drive@master
         with:
-          target: tmp/*.zip
+          target: 'tmp/*.zip'
           credentials: ${{ secrets.credentials }}
           folder: ${{ secrets.folderId }}
