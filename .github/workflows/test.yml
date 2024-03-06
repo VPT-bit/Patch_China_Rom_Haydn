@@ -23,7 +23,7 @@ jobs:
       - name: cc
         run: |
           if test tmp/*.zip; then
-          echo $abc
+          echo con cac
           fi
         
       - name: Upload a file to Google Drive
