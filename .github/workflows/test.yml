@@ -27,7 +27,7 @@ jobs:
           if test tmp/*.zip; then
           echo con cac
           fi
-          echo ${{ env.cl }}
+          echo $cl
           
       - name: Upload a file to Google Drive
         
