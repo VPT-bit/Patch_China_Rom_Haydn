@@ -2,7 +2,7 @@ name: test
 on:
   workflow_dispatch:
 jobs:
-  greeting_job:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,7 +32,6 @@ jobs:
           echo ${{ steps.cc.outputs.cl }}
           
       - name: Upload a file to Google Drive
-        
         uses: willo32/google-drive-upload-action@v1
         with:
           target: ${{ steps.cc.outputs.cl }}
