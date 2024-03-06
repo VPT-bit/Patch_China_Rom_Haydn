@@ -14,20 +14,19 @@ jobs:
           format: HH:mm:ss_DD-MM-YYYY
           utcOffset: "+07:00"
       - name: test
+        id: cc
         run: |
           sudo apt-get install -y axel
           mkdir -p tmp
           cd tmp
           axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
-        env:
-          cl: cai lon
-          
-      - name: cc
+           echo ::set-output name=cl::cai lon
+      - name: cccc
         run: |
           if test tmp/*.zip; then
           echo con cac
           fi
-          echo $cl
+          echo ${{ steps.cc.outputs.cl }}
           
       - name: Upload a file to Google Drive
         
