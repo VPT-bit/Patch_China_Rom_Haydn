@@ -15,6 +15,7 @@ jobs:
           utcOffset: "+07:00"
       - name: test
         run: |
+          sudo apt-get install -y
           mkdir -p tmp
           cd tmp
           axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
