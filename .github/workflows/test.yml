@@ -22,18 +22,13 @@ jobs:
           axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
           cd ${GITHUB_WORKSPACE}
           name=$(find tmp -type f -name "*.zip")
-          echo ::set-output name=cl::${name}
+          echo "path_zip=${name}" >> "$GITHUB_ENV"
            
       - name: cccc
         run: |
           if test tmp/*.zip; then
           echo con cac
           fi
-          echo ${{ steps.cc.outputs.cl }}
+          echo ${path_zip}
         
-      - name: Upload To Google Drive
-        uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
-        with:
-          target: ${{ steps.cc.outputs.cl }}
-          credentials: ${{ secrets.credentials }}
-          parent_folder_id: ${{ secrets.folderId }}
+
