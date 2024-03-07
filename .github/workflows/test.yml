@@ -21,7 +21,7 @@ jobs:
           cd tmp
           axel -n $(nproc) https://cdn-ota.azureedge.net/OS1.0.7.0.UMCCNXM/miui_FUXI_OS1.0.7.0.UMCCNXM_78af83b0a0_14.0.zip
           cd ${GITHUB_WORKSPACE}
-          echo "path_zip=${find tmp -type f -name "*.zip"}" >> "$GITHUB_ENV"
+          echo "path_zip=$(find tmp -type f -name "*.zip")" >> "$GITHUB_ENV"
            
       - name: cccc
         run: |
