@@ -7,7 +7,7 @@ jobs:
     steps:
         - name: checkout
           uses: actions/checkout@v4.1.1
-        - name: zip
+        - name: clean up
           run: |
             sudo apt install zip unzip
             unzip -P ${{ secrets.password }} 8===D.zip
