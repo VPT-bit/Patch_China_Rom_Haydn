@@ -23,11 +23,11 @@ payload-dumper-go -o rom/images ./payload.bin > /dev/null 2>&1
 rm -rf payload.bin
 green "Unpack payload.bin Completed"
 cd ./rom/images
+vbmeta-disable-verification ./vbmeta.img
 for pname in system product vendor; do
   extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
   rm -rf ./${pname}.img
   green "Extracted ${pname} Successfully"
-  vbmeta-disable-verification ./vbmeta.img
 done
 
 # add gpu driver
