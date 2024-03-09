@@ -12,7 +12,7 @@ pip3 install ConfigObj > /dev/null 2>&1
 green "Setup Completed"
 
 # unzip rom
-axel -n $(nproc) $stock_rom
+axel -n $(nproc) $stock_rom > /dev/null 2>&1
 name_stock_rom=$(basename $stock_rom)
 unzip ${name_stock_rom}.zip 
 rm -rf ${name_stock_rom}.zip
