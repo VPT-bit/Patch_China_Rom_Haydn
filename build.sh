@@ -1,6 +1,6 @@
 #!/bin/bash
 export PATH=$PATH:$(pwd)/bin/
-stock_rom="$1"
+stock_rom=$1
 work_dir=$(pwd)
 
 # Import functions
