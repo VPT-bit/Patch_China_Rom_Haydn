@@ -12,9 +12,9 @@ pip3 install ConfigObj > /dev/null 2>&1
 green "Setup Completed"
 
 # unzip rom
-axel -n $(nproc) $stock_rom > /dev/null 2>&1
+axel -n $(nproc) $stock_rom
 name_stock_rom=$(basename $stock_rom)
-unzip ${name_stock_rom}.zip > /dev/null 2>&1
+unzip ${name_stock_rom}.zip 
 rm -rf ${name_stock_rom}.zip
 blue "Unzip Rom Successfully"
 
@@ -25,7 +25,7 @@ green "Unpack payload.bin Completed"
 cd ./rom/images
 vbmeta-disable-verification ./vbmeta.img
 for pname in system product vendor; do
-  extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
+  extract.erofs -i ./${pname}.img -x 
   rm -rf ./${pname}.img
   green "Extracted ${pname} Successfully"
 done
