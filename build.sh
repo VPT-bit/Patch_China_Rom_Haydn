@@ -9,7 +9,6 @@ source functions.sh
 # Setup
 sudo apt-get install -y git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1
 pip3 install ConfigObj > /dev/null 2>&1
-sudo chmod 777 -R *
 green "Setup Completed"
 
 # unzip rom
