@@ -17,7 +17,7 @@ axel -n $(nproc) $stock_rom > /dev/null 2>&1
 name_stock_rom=$(basename $stock_rom)
 unzip ${name_stock_rom} > /dev/null 2>&1
 rm -rf ${name_stock_rom}
-blue "Unzip Rom Successfully"
+[ -f ./payload.bin ] && green "Unzip Rom Successfully" || error "Fail"
 
 # unpack payload.bin & image
 payload-dumper-go -o rom/images ./payload.bin > /dev/null 2>&1
@@ -28,7 +28,7 @@ vbmeta-disable-verification ./vbmeta.img
 for pname in system product vendor; do
   extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
   rm -rf ./${pname}.img
-  green "Extracted ${pname} Successfully"
+  [ -d ${pname} ] && green "Extracted ${pname} Successfully" || error "Fail"
 done
 
 # add gpu driver
@@ -100,13 +100,13 @@ mv -v patch_rom/product/priv-app/MiuiHomeT/MiuiHomeT.apk ./rom/images/product/pr
 mv -v patch_rom/product/etc/permissions/privapp_whitelist_com.miui.home.xml ./rom/images/product/etc/permissions > /dev/null 2>&1
 mv -v patch_rom/system/system/etc/permissions/privapp_whitelist_com.miui.home.xml ./rom/images/system/system/etc/permissions > /dev/null 2>&1
 mv -v patch_rom/product/overlay/MiuiPocoLauncherResOverlay.apk ./rom/images/product/overlay > /dev/null 2>&1
-green "Add Launcher Mod Successfully"
+[ -f ./rom/images/system/system/etc/permissions/privapp_whitelist_com.miui.home.xml ] && green "Add Launcher Mod Successfully" || error "Fail"
 
 # add xiaomi.eu extension
 mkdir -p ./rom/images/product/priv-app/XiaomiEuExt > /dev/null 2>&1
 mv -v patch_rom/product/priv-app/XiaomiEuExt/XiaomiEuExt.apk ./rom/images/product/priv-app/XiaomiEuExt > /dev/null 2>&1
 mv -v patch_rom/product/etc/permissions/privapp_whitelist_eu.xiaomi.ext.xml ./rom/images/product/etc/permissions > /dev/null 2>&1
-green "Add XiaomiEuExt Successfully"
+[ -f ./rom/images/product/priv-app/XiaomiEuExt/XiaomiEuExt.apk ] && green "Add XiaomiEuExt Successfully" || error "Fail"
 
 # patch performance
 mv -v patch_rom/product/pangu/system/app/Joyose/Joyose.apk ./rom/images/product/pangu/system/app/Joyose > /dev/null 2>&1
@@ -122,7 +122,7 @@ sudo chmod +x build.sh > /dev/null 2>&1
 cd ${work_dir}
 mv -v overlay/output/* ./rom/images/product/overlay > /dev/null 2>&1
 rm -rf overlay
-green "Overlay Build Has Been Completed"
+[ -f ./rom/images/product/overlay/hypervs*apk ] && green "Overlay Build Has Been Completed" || error "Fail"
 
 # disable apk protection
 blue "Disabling Apk Protection"
@@ -248,14 +248,12 @@ sum_size=`echo "$system_size + $system_ext_size + $product_size + $vendor_size +
 blue "Packing Super..."
 command="--metadata-size 65536 --super-name super --metadata-slots 3 --device super:9126805504 --group qti_dynamic_partitions_a:$sum_size --partition product_a:readonly:$product_size:qti_dynamic_partitions_a --image product_a=./product.img --partition system_a:readonly:$system_size:qti_dynamic_partitions_a --image system_a=./system.img --partition system_ext_a:readonly:$system_ext_size:qti_dynamic_partitions_a --image system_ext_a=./system_ext.img --partition vendor_a:readonly:$vendor_size:qti_dynamic_partitions_a --image vendor_a=./vendor.img --partition odm_a:readonly:$odm_size:qti_dynamic_partitions_a --image odm_a=./odm.img --partition mi_ext_a:readonly:$mi_ext_size:qti_dynamic_partitions_a --image mi_ext_a=./mi_ext.img --group qti_dynamic_partitions_b:0 --partition product_b:readonly:0:qti_dynamic_partitions_b --partition system_b:readonly:0:qti_dynamic_partitions_b --partition system_ext_b:readonly:0:qti_dynamic_partitions_b --partition vendor_b:readonly:0:qti_dynamic_partitions_b --partition odm_b:readonly:0:qti_dynamic_partitions_b --partition mi_ext_b:readonly:0:qti_dynamic_partitions_b --virtual-ab --sparse --output ./super"
 ./lpmake $command
-if test ./super; then
-   green "Super Has Been Packaged"
-fi
+[ -f ./super ] && green "Super Has Been Packaged" || error "Fail"
+
 ###
 blue "Super Is Being Compressed"
 zstd --rm ./super -o ./super.zst > /dev/null 2>&1
-if test ./super.zst; then
-  green "Super Has Been Compressed"
+[ -f ./super.zst ] && green "Super Has Been Compressed" || error "Fail"
 for part in product system system_ext vendor odm mi_ext
 do
   rm -rf $part.img
@@ -270,5 +268,5 @@ zip -r haydn_rom.zip *
 cd ${work_dir}
 mv -v rom/haydn_rom.zip .
 rm -rf rom
-green "Done, Prepare to Upload...'
+[ -f ./haydn_rom.zip ] && green "Done, Prepare to Upload...' || error "Fail"
 
