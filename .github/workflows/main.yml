@@ -153,11 +153,21 @@ jobs:
             
         - name: Add 90hz & Patch .Prop
           run: |
+            # product .prop
+            echo "ro.miui.cust_erofs=0" >> product/etc/build.prop
             sed -i 's/<item>120<\/item>/<item>120<\/item>\n\t\t<item>90<\/item>/g' product/etc/device_features/haydn.xml
-            echo ADD 90HZ SUCCESSFUL
-            sed -i 's|ro\.hwui\.use_vulkan=|ro\.hwui\.use_vulkan=true|' vendor/build.prop
+            
+            # system .prop
             echo debug.hwui.renderer=vulkan >> system/system/build.prop
             echo bhlnk.hypervs.overlay=true >> system/system/build.prop
+            
+            # vendor .prop
+            sed -i 's|ro\.hwui\.use_vulkan=|ro\.hwui\.use_vulkan=true|' vendor/build.prop
+            echo "persist.vendor.mi_sf.optimize_for_refresh_rate.enable=1" >> vendor/build.prop
+            echo "ro.vendor.mi_sf.ultimate.perf.support=true"  >> vendor/build.prop
+            echo "ro.surface_flinger.use_content_detection_for_refresh_rate=false" >> vendor/build.prop
+            echo "ro.surface_flinger.set_touch_timer_ms=0" >> vendor/build.prop
+            echo "ro.surface_flinger.set_idle_timer_ms=0" >> vendor/build.prop
                     
         - name: Replace Font
           run: |
