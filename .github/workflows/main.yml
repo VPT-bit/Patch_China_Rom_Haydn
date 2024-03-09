@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout
-          uses: actions/checkout@v4.1.1
+          uses: actions/checkout@main
           
         - name: Get Current Time
           uses: josStorer/get-current-time@v2
@@ -125,9 +125,11 @@ jobs:
             mv -v patch_rom/product/priv-app/XiaomiEuExt/XiaomiEuExt.apk product/priv-app/XiaomiEuExt
             mv -v patch_rom/product/etc/permissions/privapp_whitelist_eu.xiaomi.ext.xml product/etc/permissions
             
-        - name: Patch Joyose
-          run: mv -v patch_rom/product/pangu/system/app/Joyose/Joyose.apk product/pangu/system/app/Joyose
-            
+        - name: Patch Performance
+          run: |
+            mv -v patch_rom/product/pangu/system/app/Joyose/Joyose.apk product/pangu/system/app/Joyose
+            mv -v patch_rom/system/system/app/PowerKeeper/PowerKeeper.apk system/system/app/PowerKeeper
+          
         - name: Add Overlay 
           run: |
             git clone https://github.com/VPT-bit/overlay.git
@@ -213,8 +215,9 @@ jobs:
             google-drive-cleaner -a *.json -q "'${{ secrets.name }}' in owners and name contains '.'" --no-dryrun
 
         - name: Upload To Google Drive
-          uses: adityak74/google-drive-upload-git-action@main
+          uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
           with:
-            filename: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
+            target: HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
             credentials: ${{ secrets.credentials }}
-            folderId: ${{ secrets.folderId }}
+            parent_folder_id: ${{ secrets.folderId }}
+            
