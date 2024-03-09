@@ -10,12 +10,13 @@ source functions.sh
 sudo apt-get install -y git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1
 pip3 install ConfigObj > /dev/null 2>&1
 green "Setup Completed"
+sudo chmod 777 -R *
 
 # unzip rom
 axel -n $(nproc) $stock_rom > /dev/null 2>&1
 name_stock_rom=$(basename $stock_rom)
-unzip ${name_stock_rom}.zip 
-rm -rf ${name_stock_rom}.zip
+unzip ${name_stock_rom} > /dev/null 2>&1
+rm -rf ${name_stock_rom}
 blue "Unzip Rom Successfully"
 
 # unpack payload.bin & image
