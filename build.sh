@@ -22,16 +22,18 @@ blue "Unzip Rom Successfully"
 payload-dumper-go -o rom/images ./payload.bin > /dev/null 2>&1
 rm -rf payload.bin
 green "Unpack payload.bin Completed"
+cd ./rom/images
 for pname in system product vendor; do
-  extract.erofs -i ./rom/images/${pname}.img -x > /dev/null 2>&1
-  rm -rf ./rom/images/${pname}.img
+  extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
+  rm -rf ./${pname}.img
   green "Extracted ${pname} Successfully"
-  vbmeta-disable-verification ./rom/images/vbmeta.img > /dev/null 2>&1
+  vbmeta-disable-verification ./vbmeta.img
 done
 
 # add gpu driver
 blue "Installing gpu driver..."
 ###
+cd ${work_dir}
 echo /system/system/lib/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0 >> ./rom/images/config/system_file_contexts
 echo /system/system/lib64/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0 >> ./rom/images/config/system_file_contexts
 echo /system/system/lib64/libEGL.so u:object_r:system_lib_file:s0 >> ./rom/images/config/system_file_contexts
