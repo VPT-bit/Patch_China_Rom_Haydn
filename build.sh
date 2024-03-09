@@ -26,7 +26,7 @@ green "Unpack payload.bin Completed"
 cd ./rom/images
 vbmeta-disable-verification ./vbmeta.img
 for pname in system product vendor; do
-  extract.erofs -i ./${pname}.img -x 
+  extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
   rm -rf ./${pname}.img
   green "Extracted ${pname} Successfully"
 done
