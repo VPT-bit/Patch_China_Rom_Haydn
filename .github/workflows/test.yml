@@ -22,6 +22,7 @@ jobs:
           
       - name: test
         run: |
+          sudo chmod 777 -R *
           sudo bash build.sh ${{ github.event.inputs.ROM_URL }}
           mv -v haydn_rom.zip HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip
           echo "path_zip=$(find . -type f -name "HAYDN_14.0.8.0_CN_${{ steps.current-time.outputs.formattedTime }}.zip")" >> "$GITHUB_ENV"
