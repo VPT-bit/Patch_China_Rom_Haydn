@@ -22,7 +22,7 @@ rm -rf ${name_stock_rom}
 # unpack payload.bin & image
 payload-dumper-go -o rom/images ./payload.bin > /dev/null 2>&1
 rm -rf payload.bin
-green "Unpack payload.bin Completed"
+[ -f ./rom/images/boot.img ] && green "Unpack payload.bin Completed" || error "Fail"
 cd ./rom/images
 vbmeta-disable-verification ./vbmeta.img
 for pname in system product vendor; do
@@ -122,7 +122,7 @@ sudo chmod +x build.sh > /dev/null 2>&1
 cd ${work_dir}
 mv -v overlay/output/* ./rom/images/product/overlay > /dev/null 2>&1
 rm -rf overlay
-[ -f ./rom/images/product/overlay/hypervs*apk ] && green "Overlay Build Has Been Completed" || error "Fail"
+[ -f ./rom/images/product/overlay/hypervs.ApplicationExtensionService.apk ] && green "Overlay Build Has Been Completed" || error "Fail"
 
 # disable apk protection
 blue "Disabling Apk Protection"
@@ -130,7 +130,7 @@ cd ${work_dir}
 mkdir -p tmp/services/
 cp -rf ./rom/images/system/system/framework/services.jar tmp/services/services.jar
 
-7z x -y tmp/services/services.jar *.dex -o tmp/services > /dev/null 2>&1
+7z x -y tmp/services/services.jar *.dex -otmp/services > /dev/null 2>&1
 target_method='getMinimumSignatureSchemeVersionForTargetSdk' 
 for dexfile in tmp/services/*.dex;do
     smali_fname=${dexfile%.*}
