@@ -9,10 +9,9 @@ source functions.sh
 # Setup
 sudo apt update -y > /dev/null 2>&1
 sudo apt upgrade -y > /dev/null 2>&1
-sudo apt-get install -y git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1
+sudo apt-get install -y git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1 && blue "Setup Successful" || error "Setup Failed"
 pip3 install ConfigObj > /dev/null 2>&1
 sudo chmod 777 -R *
-blue "Setup Successful"
 
 # unzip rom
 blue "Downloading ROM..."
@@ -32,9 +31,9 @@ fi
 cd ./rom/images
 payload-dumper-go -o . ./payload.bin > /dev/null 2>&1
 rm -rf ./payload.bin
-[ -f ./boot.img ] && green "Unpack Payload.bin Completed" || error "Fail"
+[ -f ./boot.img ] && green "Unpack Payload.bin Completed" || error "Failed To Unpack Payload.bin"
 blue "Extracting Image Partition..."
-vbmeta-disable-verification ./vbmeta.img && green "Disable Vbmeta Successfully" || error "Failed To Disable Verification"
+vbmeta-disable-verification ./vbmeta.img > /dev/null 2>&1 && green "Disable Vbmeta Successfully" || error "Failed To Disable Verification"
 for pname in system product vendor; do
   extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
   rm -rf ./${pname}.img
