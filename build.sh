@@ -30,7 +30,7 @@ fi
 
 # extract payload.bin & image
 cd ./rom/images
-payload-dumper-go ./payload.bin > /dev/null 2>&1
+payload-dumper-go -o . ./payload.bin > /dev/null 2>&1
 rm -rf ./payload.bin
 [ -f ./boot.img ] && green "Unpack Payload.bin Completed" || error "Fail"
 blue "Extracting Image Partition..."
