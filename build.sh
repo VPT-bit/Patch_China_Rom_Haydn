@@ -3,32 +3,12 @@ export PATH=$PATH:$(pwd)/bin/
 stock_rom=$1
 work_dir=$(pwd)
 
-# banner
-echo '
- __  __     ______     __  __     _____     __   __     
-/\ \_\ \   /\  __ \   /\ \_\ \   /\  __-.  /\ "-.\ \    
-\ \  __ \  \ \  __ \  \ \____ \  \ \ \/\ \ \ \ \-.  \   
- \ \_\ \_\  \ \_\ \_\  \/\_____\  \ \____-  \ \_\\"\_\  
-  \/_/\/_/   \/_/\/_/   \/_____/   \/____/   \/_/ \/_/  
-                                                        
-          __    __     __     __  __     __             
-         /\ "-./  \   /\ \   /\ \/\ \   /\ \            
-         \ \ \-./\ \  \ \ \  \ \ \_\ \  \ \ \           
-          \ \_\ \ \_\  \ \_\  \ \_____\  \ \_\          
-           \/_/  \/_/   \/_/   \/_____/   \/_/          
-                                                        
-       ______     __  __     __     __         _____    
-      /\  == \   /\ \/\ \   /\ \   /\ \       /\  __-.  
-      \ \  __<   \ \ \_\ \  \ \ \  \ \ \____  \ \ \/\ \ 
-       \ \_____\  \ \_____\  \ \_\  \ \_____\  \ \____- 
-        \/_____/   \/_____/   \/_/   \/_____/   \/____/ 
-'
-
 # Import functions
 source functions.sh
 
 # Setup
-sudo apt-get install -y git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1
+sudo apt update
+sudo apt install git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1
 pip3 install ConfigObj > /dev/null 2>&1
 check git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils
 sudo chmod 777 -R *
