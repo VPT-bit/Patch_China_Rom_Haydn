@@ -15,7 +15,7 @@ jobs:
           mkdir -p tmp
           mv -v com.miui.powerkeeper*.apk PowerKeeper.apk
           mv -v PowerKeeper.apk rom/images
-          apktool d rom/images/PowerKeeper.apk 
+          apktool d rom/images/PowerKeeper.apk -o rom/images/
       - uses: actions/upload-artifact@v3
         with:
           name: powerkeeper
