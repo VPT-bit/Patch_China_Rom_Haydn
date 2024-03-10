@@ -39,14 +39,13 @@ for pname in system product vendor; do
 done
 vbmeta-disable-verification ./vbmeta.img > /dev/null 2>&1 && green "Disable Vbmeta Successfully" || error "Failed To Disable Verification"
 
-#
-mkdir -p tmp
-#
+###
+cd ${work_dir}
+mkdir -p tmp > /dev/null 2>&1
+###
 
 # add gpu driver
 blue "Installing Gpu Driver..."
-###
-cd ${work_dir}
 echo /system/system/lib/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0 >> ./rom/images/config/system_file_contexts
 echo /system/system/lib64/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0 >> ./rom/images/config/system_file_contexts
 echo /system/system/lib64/libEGL.so u:object_r:system_lib_file:s0 >> ./rom/images/config/system_file_contexts
@@ -93,8 +92,8 @@ cp -rf ./patch_rom/vendor/* ./rom/images/vendor > /dev/null 2>&1 && green "Add G
 # add leica camera
 cd tmp
 blue "Installing Leica Camera..."
-axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/HolyBearMiuiCamera.apk
-mv HolyBearMiuiCamera.apk MiuiCamera.apk
+axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/HolyBearMiuiCamera.apk > /dev/null 2>&1
+mv HolyBearMiuiCamera.apk MiuiCamera.apk > /dev/null 2>&1
 cd ${work_dir}
 mv -v ./tmp/MiuiCamera/MiuiCamera.apk ./rom/images/product/priv-app/MiuiCamera > /dev/null 2>&1 && green "Add Leica Camera Successfully" || error "Failed To Add Leica Camera"
 rm -rf ./tmp/*
@@ -135,7 +134,7 @@ remove_apk_protection && green "Disable Apk Protection Successfully" || error "F
 cp -rf ./tmp/services.jar ./rom/images/system/system/framework/services.jar > /dev/null 2>&1
 
 # patch .prop and .xml
-cd $work_dir
+
 # product .prop
 echo "ro.miui.cust_erofs=0" >> ./rom/images/product/etc/build.prop
 sed -i 's/<item>120<\/item>/<item>120<\/item>\n\t\t<item>90<\/item>/g' ./rom/images/product/etc/device_features/haydn.xml
@@ -154,11 +153,9 @@ echo "ro.surface_flinger.set_idle_timer_ms=0" >> ./rom/images/vendor/build.prop
 green "Patching .prop and .xml completed"
 
 # font
-cd ${work_dir}
 mv -v ./patch_rom/system/system/fonts/MiSansVF.ttf ./rom/images/system/system/fonts > /dev/null 2>&1 && green "Replace Font Successfully" || error "Failed To Change Font"
 
 # debloat
-cd ${work_dir}
 cp -r ./rom/images/product/data-app/MIMediaEditor tmp > /dev/null 2>&1
 cp -r ./rom/images/product/data-app/MIUICleanMaster tmp > /dev/null 2>&1
 cp -r ./rom/images/product/data-app/MIUINotes tmp > /dev/null 2>&1
@@ -177,7 +174,6 @@ cp -r tmp/* ./rom/images/product/data-app > /dev/null 2>&1 && green "Debloat Com
 rm -rf tmp/*
 
 # patch context and fsconfig
-cd ${work_dir}
 for pname in system product vendor; do
     python3 bin/contextpatch.py ./rom/images/${pname} ./rom/images/config/${pname}_file_contexts > /dev/null 2>&1 && check_contexts=1 || check_contexts=0
     python3 bin/fspatch.py ./rom/images/${pname} ./rom/images/config/${pname}_fs_config > /dev/null 2>&1 && check_fs=1 || check_fs=0
