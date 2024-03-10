@@ -187,7 +187,7 @@ remove_apk_protection()
 {
 	
 	dir=$(pwd)
-	repS="python3 $dir/bin/signature/strRep.py"
+	repS="python3 $dir/bin/apktool/strRep.py"
 	
 	jar_util() 
 	{
