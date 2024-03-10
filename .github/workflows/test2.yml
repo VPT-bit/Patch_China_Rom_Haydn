@@ -9,5 +9,5 @@ jobs:
           uses: actions/checkout@main
         - name: test
           run: |
-            haha=$(/usr/bin/time -f "%E real" cd rom)
+            haha=$(time -p cd rom)
             echo $haha
