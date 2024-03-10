@@ -187,15 +187,15 @@ remove_apk_protection()
 {
 	
 	dir=$(pwd)
-	repS="python3 $dir/bin/strRep.py"
+	repS="python3 $dir/bin/signature/strRep.py"
 	
 	jar_util() 
 	{
 		cd $dir
 		#binary
 		if [[ $3 == "fw" ]]; then 
-			bak="java -jar $dir/bin/baksmali.jar d"
-			sma="java -jar $dir/bin/smali.jar a"
+			bak="java -jar $dir/bin/apktool/baksmali.jar d"
+			sma="java -jar $dir/bin/apktool/smali.jar a"
 		else
 			bak="java -jar $dir/bin/baksmali-2.5.2.jar d"
 			sma="java -jar $dir/bin/smali-2.5.2.jar a"

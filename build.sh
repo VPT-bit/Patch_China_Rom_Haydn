@@ -130,47 +130,10 @@ mv -v overlay/output/* ./rom/images/product/overlay > /dev/null 2>&1 && green "O
 rm -rf overlay
 
 # disable apk protection
-blue "Disabling Apk Protection..."
 cd ${work_dir}
-mkdir -p tmp/services/
-cp -rf ./rom/images/system/system/framework/services.jar tmp/services/services.jar
-
-7z x -y tmp/services/services.jar *.dex -otmp/services > /dev/null 2>&1
-target_method='getMinimumSignatureSchemeVersionForTargetSdk' 
-for dexfile in tmp/services/*.dex;do
-    smali_fname=${dexfile%.*}
-    smali_base_folder=$(echo $smali_fname | cut -d "/" -f 3)
-    java -jar bin/apktool/baksmali.jar d --api "30" ${dexfile} -o tmp/services/$smali_base_folder
-done
-
-old_smali_dir=""
-declare -a smali_dirs
-
-while read -r smali_file; do
-    smali_dir=$(echo "$smali_file" | cut -d "/" -f 3)
-
-    if [[ $smali_dir != $old_smali_dir ]]; then
-        smali_dirs+=("$smali_dir")
-    fi
-
-    method_line=$(grep -n "$target_method" "$smali_file" | cut -d ':' -f 1)
-    register_number=$(tail -n +"$method_line" "$smali_file" | grep -m 1 "move-result" | tr -dc '0-9')
-    move_result_end_line=$(awk -v ML=$method_line 'NR>=ML && /move-result /{print NR; exit}' "$smali_file")
-    orginal_line_number=$method_line
-    replace_with_command="const/4 v${register_number}, 0x0"
-    { sed -i "${orginal_line_number},${move_result_end_line}d" "$smali_file" && sed -i "${orginal_line_number}i\\${replace_with_command}" "$smali_file"; } &&    blue "${smali_file}  Successfully Modified"
-    old_smali_dir=$smali_dir
-done < <(find tmp/services -type f -name "*.smali" -exec grep -H "$target_method" {} \; | cut -d ':' -f 1)
-
-for smali_dir in "${smali_dirs[@]}"; do
-    blue "Decompilation is successful, start back compilation $smali_dir"
-    java -jar bin/apktool/smali.jar a --api "30" tmp/services/${smali_dir} -o tmp/services/${smali_dir}.dex
-    pushd tmp/services/ > /dev/null 2>&1
-    7z a -y -mx0 -tzip services.jar ${smali_dir}.dex > /dev/null 2>&1
-    popd > /dev/null 2>&1
-done
-cd ${work_dir}
-cp -rf tmp/services/services.jar ./rom/images/system/system/framework/services.jar && green "Disabling APK Protection Is Complete" || error "Failed To Disable Apk Protection"
+cp -rf ./rom/images/system/system/framework/services.jar ./services.jar
+remove_apk_protection && green "Disable Apk Protection Successfully" || error "Failed To Disable Apk Protection"
+cp -rf ./tmp/services.jar ./rom/images/system/system/framework/services.jar
 
 # patch .prop and .xml
 cd $work_dir
