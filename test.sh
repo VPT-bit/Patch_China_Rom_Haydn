@@ -8,5 +8,5 @@ mv -v com.miui.powerkeeper*.apk PowerKeeper.apk
 mv -v PowerKeeper.apk rom/images
 smali_path="DisplayFrameSetting*.smali"
 method=".method public setScreenEffect(II)V/,/.end method"
-replace_string=".method public setScreenEffect(II)V\n\t\t.registers 4\n\n\t\treturn-void\n.end method"
-patch_smali "PowerKeeper.apk" $smali_path $method $replace_string
+replace_string=".method public setScreenEffect(II)V\n\t.registers 4\n\n\treturn-void\n.end method"
+patch_smali "PowerKeeper.apk" "DisplayFrameSetting.smali" ".method public setScreenEffect(II)V/,/.end method" ".method public setScreenEffect(II)V\n\t.registers 4\n\n\treturn-void\n.end method"
