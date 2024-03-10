@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo apt install axel zip unzip apktool apksigner zipalign
+sudo apt install axel zip unzip apktool apksigner zipalign busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils
 source functions.sh
 axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/com.miui.powerkeeper_4.2.00-40200_minAPI33.nodpi._apkmirror.com.apk
 mkdir -p rom/images
