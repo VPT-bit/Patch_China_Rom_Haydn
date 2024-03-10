@@ -119,7 +119,7 @@ patch_smali() {
             if [[ $5 == 'regex' ]];then
                  sed -i "/${search_pattern}/c\\${repalcement_pattern}" $targetsmali
             else
-            sed -i "s/$search_pattern/$repalcement_pattern/g" $targetsmali
+            sed -i 's/$search_pattern/$repalcement_pattern/g' $targetsmali
             fi
             java -jar bin/apktool/smali.jar a --api "30" tmp/$foldername/${smalidir} -o tmp/$foldername/${smalidir}.dex > /dev/null 2>&1 || error " Smaling 失败" "Smaling failed"
             pushd tmp/$foldername/ >/dev/null || exit
