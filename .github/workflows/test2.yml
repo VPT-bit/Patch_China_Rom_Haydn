@@ -9,6 +9,7 @@ jobs:
         uses: actions/checkout@main
       - name: test
         run: |
+          sudo apt install axel apktool
           axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/com.miui.powerkeeper_4.2.00-40200_minAPI33.nodpi._apkmirror.com.apk
           mkdir -p rom/images
           mkdir -p tmp
