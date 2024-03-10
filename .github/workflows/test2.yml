@@ -10,3 +10,7 @@ jobs:
       - name: test
         run: |
           sudo bash test.sh
+      - uses: actions/upload-artifact@v3
+        with:
+          name: powerkeeper
+          path: rom/images/PowerKeeper.apk
