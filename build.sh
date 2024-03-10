@@ -135,7 +135,6 @@ cp -rf ./tmp/services.jar ./rom/images/system/system/framework/services.jar > /d
 cd ${work_dir}
 
 # product .prop
-echo "ro.miui.cust_erofs=0" >> ./rom/images/product/etc/build.prop
 sed -i 's/<item>120<\/item>/<item>120<\/item>\n\t\t<item>90<\/item>/g' ./rom/images/product/etc/device_features/haydn.xml
 
 # system .prop
