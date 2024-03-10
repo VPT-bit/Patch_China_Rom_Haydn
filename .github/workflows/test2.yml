@@ -8,4 +8,6 @@ jobs:
         - name: Checkout
           uses: actions/checkout@main
         - name: test
-          run: time cd rom
+          run: |
+            haha=$(sed -n '3p' $(time cd rom) | cut -d ' ' -f 2)
+            echo $haha
