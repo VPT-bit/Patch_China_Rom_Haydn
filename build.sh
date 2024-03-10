@@ -32,12 +32,12 @@ blue "Extracting Payload.bin"
 payload-dumper-go -o . ./payload.bin > /dev/null 2>&1 && green "Extracted Payload.bin" || error "Failed To Extract Payload.bin"
 rm -rf ./payload.bin
 blue "Extracting Image Partition..."
-vbmeta-disable-verification ./vbmeta.img > /dev/null 2>&1 && green "Disable Vbmeta Successfully" || error "Failed To Disable Verification"
 for pname in system product vendor; do
-  extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
-  rm -rf ./${pname}.img
-  [ -d ${pname} ] && green "Extracted ${pname} Successfully" || error "Failed to Extract ${pname} "
+    extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
+    rm -rf ./${pname}.img
+    [ -d ${pname} ] && green "Extracted ${pname} [EROFS] Successfully" || error "Failed to Extract ${pname} "
 done
+vbmeta-disable-verification ./vbmeta.img > /dev/null 2>&1 && green "Disable Vbmeta Successfully" || error "Failed To Disable Verification"
 
 # add gpu driver
 blue "Installing Gpu Driver..."
@@ -224,21 +224,21 @@ rm -rf tmp/*
 # patch context and fsconfig
 cd ${work_dir}
 for pname in system product vendor; do
-  python3 bin/contextpatch.py ./rom/images/${pname} ./rom/images/config/${pname}_file_contexts > /dev/null 2>&1 && check_contexts=1 || check_contexts=0
-  python3 bin/fspatch.py ./rom/images/${pname} ./rom/images/config/${pname}_fs_config > /dev/null 2>&1 && check_fs=1 || check_fs=0
-  if [ $check_contexts == "1" ] && [ $check_fs == "1" ]; then
-      green "Patching ${pname} Contexts and Fs_config Completed"
-  else
-      error "Patching ${pname} Contexts and Fs_config Failed"
-  fi
+    python3 bin/contextpatch.py ./rom/images/${pname} ./rom/images/config/${pname}_file_contexts > /dev/null 2>&1 && check_contexts=1 || check_contexts=0
+    python3 bin/fspatch.py ./rom/images/${pname} ./rom/images/config/${pname}_fs_config > /dev/null 2>&1 && check_fs=1 || check_fs=0
+    if [ $check_contexts == "1" ] && [ $check_fs == "1" ]; then
+        green "Patching ${pname} Contexts and Fs_config Completed"
+    else
+        error "Patching ${pname} Contexts and Fs_config Failed"
+    fi
 done
 cd ./rom/images
 for pname in system product vendor; do
-  option=`sed -n '3p' ./config/${pname}_fs_options | cut -c28-`
-  mkfs.erofs $option > /dev/null 2>&1
-  rm -rf ${pname}
-  mv ${pname}_repack.img ${pname}.img > /dev/null 2>&1
-  [ -f ${pname}.img ] && green "Packaging ${pname} Is Complete" || error "Packaging ${pname} Failed"
+    option=`sed -n '3p' ./config/${pname}_fs_options | cut -c28-`
+    mkfs.erofs $option > /dev/null 2>&1
+    rm -rf ${pname}
+    mv ${pname}_repack.img ${pname}.img > /dev/null 2>&1
+    [ -f ${pname}.img ] && green "Packaging ${pname} [EROFS] Is Complete" || error "Packaging ${pname} Failed"
 done
 
 # pack super
@@ -253,7 +253,7 @@ sum_size=`echo "$system_size + $system_ext_size + $product_size + $vendor_size +
 blue "Packing Super..."
 command="--metadata-size 65536 --super-name super --metadata-slots 3 --device super:9126805504 --group qti_dynamic_partitions_a:$sum_size --partition product_a:readonly:$product_size:qti_dynamic_partitions_a --image product_a=./product.img --partition system_a:readonly:$system_size:qti_dynamic_partitions_a --image system_a=./system.img --partition system_ext_a:readonly:$system_ext_size:qti_dynamic_partitions_a --image system_ext_a=./system_ext.img --partition vendor_a:readonly:$vendor_size:qti_dynamic_partitions_a --image vendor_a=./vendor.img --partition odm_a:readonly:$odm_size:qti_dynamic_partitions_a --image odm_a=./odm.img --partition mi_ext_a:readonly:$mi_ext_size:qti_dynamic_partitions_a --image mi_ext_a=./mi_ext.img --group qti_dynamic_partitions_b:0 --partition product_b:readonly:0:qti_dynamic_partitions_b --partition system_b:readonly:0:qti_dynamic_partitions_b --partition system_ext_b:readonly:0:qti_dynamic_partitions_b --partition vendor_b:readonly:0:qti_dynamic_partitions_b --partition odm_b:readonly:0:qti_dynamic_partitions_b --partition mi_ext_b:readonly:0:qti_dynamic_partitions_b --virtual-ab --sparse --output ./super"
 lpmake ${command} > /dev/null 2>&1
-[ -f ./super ] && green "Super Has Been Packaged" || error "Packaging Super Failed"
+[ -f ./super ] && green "Super [Virtual-A/B] Has Been Packaged" || error "Packaging Super Failed"
 
 ###
 blue "Super Is Being Compressed..."
@@ -261,7 +261,7 @@ zstd --rm ./super -o ./super.zst > /dev/null 2>&1
 [ -f ./super.zst ] && green "Super Has Been Compressed" || error "Compress Super Failed"
 for part in product system system_ext vendor odm mi_ext;
 do
-  rm -rf ${part}.img
+    rm -rf ${part}.img
 done
 
 # cleanup
