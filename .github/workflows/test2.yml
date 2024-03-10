@@ -9,5 +9,5 @@ jobs:
           uses: actions/checkout@main
         - name: test
           run: |
-            haha=$(sed -n '3p' $(time -p cd rom) | cut -d ' ' -f 2)
+            haha=$(/usr/bin/time -f "%E" cd rom)
             echo $haha
