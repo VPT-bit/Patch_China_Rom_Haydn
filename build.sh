@@ -7,7 +7,7 @@ work_dir=$(pwd)
 source functions.sh
 
 # Setup
-sudo apt update
+sudo apt update > /dev/null 2>&1
 sudo apt install git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1
 pip3 install ConfigObj > /dev/null 2>&1
 check git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils
