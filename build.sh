@@ -15,9 +15,8 @@ sudo chmod 777 -R *
 
 # unzip rom
 blue "Downloading ROM..."
-axel -n $(nproc) $stock_rom > /dev/null 2>&1
+axel -n $(nproc) $stock_rom > /dev/null 2>&1 && green "Downloaded ROM" || error "Failed to Download ROM"
 stock_rom=$(basename $stock_rom)
-[ -f $stock_rom ] && green "Downloaded ROM" || error "Failed to Download ROM"
 if unzip -l ${stock_rom} | grep -q "payload.bin"; then
     blue "Detected PAYLOAD.BIN, Unpacking ROM..."
     unzip ${stock_rom} payload.bin -d ./rom/images/ > /dev/null 2>&1 && green "Unpacked ROM" || error "Failed to Unzip Rom"
