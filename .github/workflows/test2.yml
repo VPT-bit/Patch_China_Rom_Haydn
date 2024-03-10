@@ -8,4 +8,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
       - name: test
-        run: sudo bash test.sh
+        run: |
+          axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/com.miui.powerkeeper_4.2.00-40200_minAPI33.nodpi._apkmirror.com.apk
+          mkdir -p rom/images
+          mkdir -p tmp
+          mv -v com.miui.powerkeeper*.apk PowerKeeper.apk
+          mv -v PowerKeeper.apk rom/images
+          apktool d rom/images/PowerKeeper.apk 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: powerkeeper
+          path: ./rom/images/*
