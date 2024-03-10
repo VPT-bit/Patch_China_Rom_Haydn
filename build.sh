@@ -12,10 +12,13 @@ sudo apt upgrade > /dev/null 2>&1
 sudo apt-get install git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1
 pip3 install ConfigObj > /dev/null 2>&1
 sudo chmod 777 -R *
+blue "Setup Successful"
 
 # unzip rom
+blue "Downloading ROM..."
 axel -n $(nproc) $stock_rom > /dev/null 2>&1
 stock_rom=$(basename $stock_rom)
+[ -f $stock_rom ] && green "Downloaded ROM" || error "Failed to Download ROM"
 if unzip -l ${stock_rom} | grep -q "payload.bin"; then
     blue "Detected PAYLOAD.BIN, Extracting..."
     unzip ${stock_rom} payload.bin -d ./rom/images/ > /dev/null 2>&1 || error "Failed to Unzip Rom"
