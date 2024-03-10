@@ -130,7 +130,7 @@ mv -v overlay/output/* ./rom/images/product/overlay > /dev/null 2>&1 && green "O
 rm -rf overlay
 
 # disable apk protection
-blue "Disabling Apk Protection"
+blue "Disabling Apk Protection..."
 cd ${work_dir}
 mkdir -p tmp/services/
 cp -rf ./rom/images/system/system/framework/services.jar tmp/services/services.jar
@@ -227,9 +227,9 @@ for pname in system product vendor; do
   python3 bin/contextpatch.py ./rom/images/${pname} ./rom/images/config/${pname}_file_contexts > /dev/null 2>&1 && check_contexts=1 || check_contexts=0
   python3 bin/fspatch.py ./rom/images/${pname} ./rom/images/config/${pname}_fs_config > /dev/null 2>&1 && check_fs=1 || check_fs=0
   if [ $check_contexts == "1" ] && [ $check_fs == "1" ]; then
-      green "Patching ${pname} Contexts And Fs_config Completed"
+      green "Patching ${pname} Contexts and Fs_config Completed"
   else
-      error "Patching ${pname} Contexts And Fs_config Failed"
+      error "Patching ${pname} Contexts and Fs_config Failed"
   fi
 done
 cd ./rom/images
@@ -238,7 +238,7 @@ for pname in system product vendor; do
   mkfs.erofs $option > /dev/null 2>&1
   rm -rf ${pname}
   mv ${pname}_repack.img ${pname}.img > /dev/null 2>&1
-  [ -f ${pname}.img ] && green "Packaging ${pname} is complete" || error "Packaging ${pname} Failed"
+  [ -f ${pname}.img ] && green "Packaging ${pname} Is Complete" || error "Packaging ${pname} Failed"
 done
 
 # pack super
@@ -256,7 +256,7 @@ lpmake ${command} > /dev/null 2>&1
 [ -f ./super ] && green "Super Has Been Packaged" || error "Packaging Super Failed"
 
 ###
-blue "Super Is Being Compressed"
+blue "Super Is Being Compressed..."
 zstd --rm ./super -o ./super.zst > /dev/null 2>&1
 [ -f ./super.zst ] && green "Super Has Been Compressed" || error "Compress Super Failed"
 for part in product system system_ext vendor odm mi_ext;
