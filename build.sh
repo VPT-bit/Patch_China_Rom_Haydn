@@ -131,9 +131,9 @@ rm -rf overlay
 
 # disable apk protection
 cd ${work_dir}
-cp -rf ./rom/images/system/system/framework/services.jar ./services.jar
+cp -rf ./rom/images/system/system/framework/services.jar ./services.jar > /dev/null 2>&1
 remove_apk_protection && green "Disable Apk Protection Successfully" || error "Failed To Disable Apk Protection"
-cp -rf ./tmp/services.jar ./rom/images/system/system/framework/services.jar
+cp -rf ./tmp/services.jar ./rom/images/system/system/framework/services.jar > /dev/null 2>&1
 
 # patch .prop and .xml
 cd $work_dir
