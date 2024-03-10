@@ -17,7 +17,7 @@ axel -n $(nproc) $stock_rom > /dev/null 2>&1
 stock_rom=$(basename $stock_rom)
 if unzip -l ${stock_rom} | grep -q "payload.bin"; then
     blue "Detected PAYLOAD.BIN, Extracting..."
-    unzip ${stock_rom} payload.bin -d ./rom/images/ > /dev/null 2>&1 || error "Fail"
+    unzip ${stock_rom} payload.bin -d ./rom/images/ > /dev/null 2>&1 || error "Failed to Unzip Rom"
     rm -rf ${stock_rom}
 else
     error "Unsupported"
@@ -30,11 +30,11 @@ payload-dumper-go ./payload.bin > /dev/null 2>&1
 rm -rf ./payload.bin
 [ -f ./boot.img ] && green "Unpack Payload.bin Completed" || error "Fail"
 blue "Extracting Image Partition..."
-vbmeta-disable-verification ./vbmeta.img && green "Disable vbmeta successfully" || error "Fail"
+vbmeta-disable-verification ./vbmeta.img && green "Disable Vbmeta Successfully" || error "Failed To Disable Verification"
 for pname in system product vendor; do
   extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
   rm -rf ./${pname}.img
-  [ -d ${pname} ] && green "Extracted ${pname} Successfully" || error "Fail"
+  [ -d ${pname} ] && green "Extracted ${pname} Successfully" || error "Failed to Extract ${pname} "
 done
 
 # add gpu driver
@@ -87,9 +87,8 @@ cd tmp
 axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/free_744.12_A660__Magisk.zip > /dev/null 2>&1
 unzip free_744.12_A660__Magisk.zip > /dev/null 2>&1
 cd $work_dir
-cp -rf tmp/system/vendor/* ./rom/images/vendor > /dev/null 2>&1
+cp -rf tmp/system/vendor/* ./rom/images/vendor > /dev/null 2>&1 && green "Add GPU Driver Successfully" || error "Failed To Add Gpu Driver"
 rm -rf tmp/*
-green "Add GPU Driver Successfully"
 
 # add leica camera
 blue "Installing Leica Camera..."
@@ -97,10 +96,9 @@ cd tmp
 axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/HolyBearMiuiCamera.apk > /dev/null 2>&1
 mv HolyBearMiuiCamera.apk MiuiCamera.apk > /dev/null 2>&1
 cd ${work_dir}
-mv -v tmp/MiuiCamera.apk ./rom/images/product/priv-app/MiuiCamera > /dev/null 2>&1
+mv -v tmp/MiuiCamera.apk ./rom/images/product/priv-app/MiuiCamera > /dev/null 2>&1 && green "Add Leica Camera Successfully" || error "Failed To Add Leica Camera"
 rm -rf tmp/*
-green "Add Leica Camera Successfully"
-
+    
 # add launcher mod
 mv -v patch_rom/product/priv-app/MiuiHomeT/MiuiHomeT.apk ./rom/images/product/priv-app/MiuiHomeT > /dev/null 2>&1
 mv -v patch_rom/product/etc/permissions/privapp_whitelist_com.miui.home.xml ./rom/images/product/etc/permissions > /dev/null 2>&1
@@ -126,9 +124,8 @@ cd overlay
 sudo chmod +x build.sh > /dev/null 2>&1
 ./build.sh > /dev/null 2>&1
 cd ${work_dir}
-mv -v overlay/output/* ./rom/images/product/overlay > /dev/null 2>&1
+mv -v overlay/output/* ./rom/images/product/overlay > /dev/null 2>&1 && green "Overlay Build Has Been Completed" || error "Failed To Add Overlay"
 rm -rf overlay
-[ -f ./rom/images/product/overlay/hypervs.ApplicationExtensionService.apk ] && green "Overlay Build Has Been Completed" || error "Fail"
 
 # disable apk protection
 blue "Disabling Apk Protection"
@@ -171,9 +168,7 @@ for smali_dir in "${smali_dirs[@]}"; do
     popd > /dev/null 2>&1
 done
 cd ${work_dir}
-cp -rf tmp/services/services.jar ./rom/images/system/system/framework/services.jar
-green "Disabling APK Protection Is Complete"
-
+cp -rf tmp/services/services.jar ./rom/images/system/system/framework/services.jar && green "Disabling APK Protection Is Complete" || error "Failed To Disable Apk Protection"
 
 # patch .prop and .xml
 cd $work_dir
@@ -202,9 +197,8 @@ unzip Roboto_v3.009.zip > /dev/null 2>&1
 rm -rf Roboto_v3.009.zip 
 mv -v android/Roboto[ital,wdth,wght].ttf android/MiSansVF.ttf > /dev/null 2>&1
 cd ${work_dir}
-mv -v tmp/android/MiSansVF.ttf system/system/fonts > /dev/null 2>&1
+mv -v tmp/android/MiSansVF.ttf ./rom/images/system/system/fonts > /dev/null 2>&1 && green "Replace Font Successfully" || error "Failed To Change Font"
 rm -rf tmp/*
-green "Replace Font Successfully"
 
 # debloat
 cd ${work_dir}
@@ -222,16 +216,19 @@ rm -rf ./rom/images/product/app/AnalyticsCore > /dev/null 2>&1
 rm -rf ./rom/images/product/app/MSA > /dev/null 2>&1
 rm -rf ./rom/images/product/priv-app/MIUIBrowser > /dev/null 2>&1
 rm -rf ./rom/images/product/priv-app/MIUIQuickSearchBox > /dev/null 2>&1
-cp -r tmp/* ./rom/images/product/data-app > /dev/null 2>&1
+cp -r tmp/* ./rom/images/product/data-app > /dev/null 2>&1 && green "Debloat Completed" || error "Failed To Debloat"
 rm -rf tmp/*
-[ ! -d ./rom/images/product/priv-app/MIUIBrowser ] && green "Debloat Completed" || error "Fail"
 
 # patch context and fsconfig
 cd ${work_dir}
 for pname in system product vendor; do
-  python3 bin/contextpatch.py ./rom/images/${pname} ./rom/images/config/${pname}_file_contexts > /dev/null 2>&1
-  python3 bin/fspatch.py ./rom/images/${pname} ./rom/images/config/${pname}_fs_config > /dev/null 2>&1
-  green "Patching ${pname} contexts and fsconfig completed"
+  python3 bin/contextpatch.py ./rom/images/${pname} ./rom/images/config/${pname}_file_contexts > /dev/null 2>&1 && check_contexts=1 || check_contexts=0
+  python3 bin/fspatch.py ./rom/images/${pname} ./rom/images/config/${pname}_fs_config > /dev/null 2>&1 && check_fs=1 || check_fs=0
+  if [ $check_contexts == "1" ] && [ $check_fs == "1" ]; then
+      green "Patching ${pname} Contexts And Fs_config Completed"
+  else
+      error "Patching ${pname} Contexts And Fs_config Failed"
+  fi
 done
 cd ./rom/images
 for pname in system product vendor; do
@@ -254,12 +251,12 @@ sum_size=`echo "$system_size + $system_ext_size + $product_size + $vendor_size +
 blue "Packing Super..."
 command="--metadata-size 65536 --super-name super --metadata-slots 3 --device super:9126805504 --group qti_dynamic_partitions_a:$sum_size --partition product_a:readonly:$product_size:qti_dynamic_partitions_a --image product_a=./product.img --partition system_a:readonly:$system_size:qti_dynamic_partitions_a --image system_a=./system.img --partition system_ext_a:readonly:$system_ext_size:qti_dynamic_partitions_a --image system_ext_a=./system_ext.img --partition vendor_a:readonly:$vendor_size:qti_dynamic_partitions_a --image vendor_a=./vendor.img --partition odm_a:readonly:$odm_size:qti_dynamic_partitions_a --image odm_a=./odm.img --partition mi_ext_a:readonly:$mi_ext_size:qti_dynamic_partitions_a --image mi_ext_a=./mi_ext.img --group qti_dynamic_partitions_b:0 --partition product_b:readonly:0:qti_dynamic_partitions_b --partition system_b:readonly:0:qti_dynamic_partitions_b --partition system_ext_b:readonly:0:qti_dynamic_partitions_b --partition vendor_b:readonly:0:qti_dynamic_partitions_b --partition odm_b:readonly:0:qti_dynamic_partitions_b --partition mi_ext_b:readonly:0:qti_dynamic_partitions_b --virtual-ab --sparse --output ./super"
 lpmake ${command} > /dev/null 2>&1
-[ -f ./super ] && green "Super Has Been Packaged" || error "Failed"
+[ -f ./super ] && green "Super Has Been Packaged" || error "Packaging Super Failed"
 
 ###
 blue "Super Is Being Compressed"
 zstd --rm ./super -o ./super.zst > /dev/null 2>&1
-[ -f ./super.zst ] && green "Super Has Been Compressed" || error "Fail"
+[ -f ./super.zst ] && green "Super Has Been Compressed" || error "Compress Super Failed"
 for part in product system system_ext vendor odm mi_ext;
 do
   rm -rf ${part}.img
@@ -273,6 +270,6 @@ cd rom
 zip -r haydn_rom.zip * > /dev/null 2>&1
 cd ${work_dir}
 mv -v rom/haydn_rom.zip . > /dev/null 2>&1
-rm -rf rom
-[ -f ./haydn_rom.zip ] && green "Done, Prepare to Upload..." || error "Fail"
+rm -rf ./rom
+[ -f ./haydn_rom.zip ] && green "Done, Prepare to Upload..." || error "Failed"
 
