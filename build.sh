@@ -2,8 +2,9 @@
 export PATH=$PATH:$(pwd)/bin/
 stock_rom="$1"
 work_dir=$(pwd)
-mkdir -p ${work_dir}/tmp > /dev/null 2>&1
-mkdir -p ${work_dir}/rom/images > /dev/null 2>&1
+echo $work_dir
+mkdir -p tmp > /dev/null 2>&1
+mkdir -p rom/images > /dev/null 2>&1
 
 # Import functions
 source functions.sh
