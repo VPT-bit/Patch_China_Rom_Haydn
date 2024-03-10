@@ -130,6 +130,7 @@ mv -v overlay/output/* ./rom/images/product/overlay > /dev/null 2>&1 && green "O
 rm -rf overlay
 
 # disable apk protection
+blue "Disabling Apk Protection..."
 cd ${work_dir}
 cp -rf ./rom/images/system/system/framework/services.jar ./services.jar > /dev/null 2>&1
 remove_apk_protection && green "Disable Apk Protection Successfully" || error "Failed To Disable Apk Protection"
