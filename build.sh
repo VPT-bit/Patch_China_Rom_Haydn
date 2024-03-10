@@ -39,6 +39,10 @@ for pname in system product vendor; do
 done
 vbmeta-disable-verification ./vbmeta.img > /dev/null 2>&1 && green "Disable Vbmeta Successfully" || error "Failed To Disable Verification"
 
+#
+mkdir -p tmp
+#
+
 # add gpu driver
 blue "Installing Gpu Driver..."
 ###
@@ -84,22 +88,12 @@ echo /vendor/lib64/libCB.so u:object_r:same_process_hal_file:s0 >> ./rom/images/
 echo /vendor/lib64/notgsl.so u:object_r:same_process_hal_file:s0 >> ./rom/images/config/vendor_file_contexts
 echo /vendor/lib64/libadreno_utils.so u:object_r:same_process_hal_file:s0 >> ./rom/images/config/vendor_file_contexts
 ###
-mkdir -p tmp
-cd tmp
-axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/free_744.12_A660__Magisk.zip > /dev/null 2>&1
-unzip free_744.12_A660__Magisk.zip > /dev/null 2>&1
-cd $work_dir
-cp -rf tmp/system/vendor/* ./rom/images/vendor > /dev/null 2>&1 && green "Add GPU Driver Successfully" || error "Failed To Add Gpu Driver"
-rm -rf tmp/*
+cp -rf ./patch_rom/vendor/* ./rom/images/vendor > /dev/null 2>&1 && green "Add GPU Driver Successfully" || error "Failed To Add Gpu Driver"
 
 # add leica camera
-blue "Installing Leica Camera..."
-cd tmp
-axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/HolyBearMiuiCamera.apk > /dev/null 2>&1
-mv HolyBearMiuiCamera.apk MiuiCamera.apk > /dev/null 2>&1
 cd ${work_dir}
-mv -v tmp/MiuiCamera.apk ./rom/images/product/priv-app/MiuiCamera > /dev/null 2>&1 && green "Add Leica Camera Successfully" || error "Failed To Add Leica Camera"
-rm -rf tmp/*
+blue "Installing Leica Camera..."
+mv -v ./patch_rom/product/priv-app/MiuiCamera/MiuiCamera.apk ./rom/images/product/priv-app/MiuiCamera > /dev/null 2>&1 && green "Add Leica Camera Successfully" || error "Failed To Add Leica Camera"
     
 # add launcher mod
 mv -v patch_rom/product/priv-app/MiuiHomeT/MiuiHomeT.apk ./rom/images/product/priv-app/MiuiHomeT > /dev/null 2>&1
@@ -157,14 +151,7 @@ green "Patching .prop and .xml completed"
 
 # font
 cd ${work_dir}
-cd tmp
-axel -n $(nproc) https://github.com/googlefonts/roboto-classic/releases/download/v3.009/Roboto_v3.009.zip > /dev/null 2>&1
-unzip Roboto_v3.009.zip > /dev/null 2>&1
-rm -rf Roboto_v3.009.zip 
-mv -v android/Roboto[ital,wdth,wght].ttf android/MiSansVF.ttf > /dev/null 2>&1
-cd ${work_dir}
-mv -v tmp/android/MiSansVF.ttf ./rom/images/system/system/fonts > /dev/null 2>&1 && green "Replace Font Successfully" || error "Failed To Change Font"
-rm -rf tmp/*
+mv -v ./patch_rom/system/system/fonts/MiSansVF.ttf ./rom/images/system/system/fonts > /dev/null 2>&1 && green "Replace Font Successfully" || error "Failed To Change Font"
 
 # debloat
 cd ${work_dir}
