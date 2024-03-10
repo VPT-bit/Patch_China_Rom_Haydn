@@ -19,8 +19,8 @@ axel -n $(nproc) $stock_rom > /dev/null 2>&1
 stock_rom=$(basename $stock_rom)
 [ -f $stock_rom ] && green "Downloaded ROM" || error "Failed to Download ROM"
 if unzip -l ${stock_rom} | grep -q "payload.bin"; then
-    blue "Detected PAYLOAD.BIN, Extracting..."
-    unzip ${stock_rom} payload.bin -d ./rom/images/ > /dev/null 2>&1 || error "Failed to Unzip Rom"
+    blue "Detected PAYLOAD.BIN, Unpacking ROM..."
+    unzip ${stock_rom} payload.bin -d ./rom/images/ > /dev/null 2>&1 && green "Unpacked ROM" || error "Failed to Unzip Rom"
     rm -rf ${stock_rom}
 else
     error "Unsupported"
@@ -29,9 +29,9 @@ fi
 
 # extract payload.bin & image
 cd ./rom/images
-payload-dumper-go -o . ./payload.bin > /dev/null 2>&1
+blue "Extracting Payload.bin"
+payload-dumper-go -o . ./payload.bin > /dev/null 2>&1 && green "Extracted Payload.bin" || error "Failed To Extract Payload.bin"
 rm -rf ./payload.bin
-[ -f ./boot.img ] && green "Unpack Payload.bin Completed" || error "Failed To Unpack Payload.bin"
 blue "Extracting Image Partition..."
 vbmeta-disable-verification ./vbmeta.img > /dev/null 2>&1 && green "Disable Vbmeta Successfully" || error "Failed To Disable Verification"
 for pname in system product vendor; do
