@@ -1,5 +1,4 @@
 #!/bin/bash
-#
 export PATH=$PATH:$(pwd)/bin/
 stock_rom="$1"
 work_dir=$(pwd)
@@ -94,7 +93,7 @@ blue "Installing Leica Camera..."
 axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/HolyBearMiuiCamera.apk > /dev/null 2>&1
 mv HolyBearMiuiCamera.apk MiuiCamera.apk > /dev/null 2>&1
 cd ${work_dir}
-mv -v ./tmp/MiuiCamera/MiuiCamera.apk ./rom/images/product/priv-app/MiuiCamera > /dev/null 2>&1 && green "Add Leica Camera Successfully" || error "Failed To Add Leica Camera"
+mv -v ./tmp/MiuiCamera.apk ./rom/images/product/priv-app/MiuiCamera > /dev/null 2>&1 && green "Add Leica Camera Successfully" || error "Failed To Add Leica Camera"
 rm -rf ./tmp/*
     
 # add launcher mod
