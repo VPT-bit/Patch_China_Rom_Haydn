@@ -9,22 +9,28 @@ source functions.sh
 # Setup
 sudo apt-get install -y git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1
 pip3 install ConfigObj > /dev/null 2>&1
-green "Setup Completed"
+check git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils
 sudo chmod 777 -R *
 
 # unzip rom
 axel -n $(nproc) $stock_rom > /dev/null 2>&1
-name_stock_rom=$(basename $stock_rom)
-unzip ${name_stock_rom} > /dev/null 2>&1
-rm -rf ${name_stock_rom}
-[ -f ./payload.bin ] && green "Unzip Rom Successfully" || error "Fail"
+stock_rom=$(basename $stock_rom)
+if unzip -l ${stock_rom} | grep -q "payload.bin"; then
+    blue "Detected PAYLOAD.BIN, Extracting..."
+    unzip ${stock_rom} payload.bin -d ./rom/images/ > /dev/null 2>&1 || error "Fail"
+    rm -rf ${stock_rom}
+else
+    error "Unsupported"
+    exit
+fi
 
-# unpack payload.bin & image
-payload-dumper-go -o rom/images ./payload.bin > /dev/null 2>&1
-rm -rf payload.bin
-[ -f ./rom/images/boot.img ] && green "Unpack payload.bin Completed" || error "Fail"
+# extract payload.bin & image
 cd ./rom/images
-vbmeta-disable-verification ./vbmeta.img
+payload-dumper-go ./payload.bin > /dev/null 2>&1
+rm -rf ./payload.bin
+[ -f ./boot.img ] && green "Unpack Payload.bin Completed" || error "Fail"
+blue "Extracting Image Partition..."
+vbmeta-disable-verification ./vbmeta.img && green "Disable vbmeta successfully" || error "Fail"
 for pname in system product vendor; do
   extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
   rm -rf ./${pname}.img
@@ -32,7 +38,7 @@ for pname in system product vendor; do
 done
 
 # add gpu driver
-blue "Installing gpu driver..."
+blue "Installing Gpu Driver..."
 ###
 cd ${work_dir}
 echo /system/system/lib/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0 >> ./rom/images/config/system_file_contexts
@@ -218,7 +224,7 @@ rm -rf ./rom/images/product/priv-app/MIUIBrowser > /dev/null 2>&1
 rm -rf ./rom/images/product/priv-app/MIUIQuickSearchBox > /dev/null 2>&1
 cp -r tmp/* ./rom/images/product/data-app > /dev/null 2>&1
 rm -rf tmp/*
-green "Debloat Completed"
+[ ! -d ./rom/images/product/priv-app/MIUIBrowser ] && green "Debloat Completed" || error "Fail"
 
 # patch context and fsconfig
 cd ${work_dir}
@@ -233,7 +239,7 @@ for pname in system product vendor; do
   mkfs.erofs $option > /dev/null 2>&1
   rm -rf ${pname}
   mv ${pname}_repack.img ${pname}.img > /dev/null 2>&1
-  green "Packaging ${pname} is complete"
+  [ -f ${pname}.img ] && green "Packaging ${pname} is complete" || error "Packaging ${pname} Failed"
 done
 
 # pack super
@@ -247,16 +253,16 @@ sum_size=`echo "$system_size + $system_ext_size + $product_size + $vendor_size +
 ###
 blue "Packing Super..."
 command="--metadata-size 65536 --super-name super --metadata-slots 3 --device super:9126805504 --group qti_dynamic_partitions_a:$sum_size --partition product_a:readonly:$product_size:qti_dynamic_partitions_a --image product_a=./product.img --partition system_a:readonly:$system_size:qti_dynamic_partitions_a --image system_a=./system.img --partition system_ext_a:readonly:$system_ext_size:qti_dynamic_partitions_a --image system_ext_a=./system_ext.img --partition vendor_a:readonly:$vendor_size:qti_dynamic_partitions_a --image vendor_a=./vendor.img --partition odm_a:readonly:$odm_size:qti_dynamic_partitions_a --image odm_a=./odm.img --partition mi_ext_a:readonly:$mi_ext_size:qti_dynamic_partitions_a --image mi_ext_a=./mi_ext.img --group qti_dynamic_partitions_b:0 --partition product_b:readonly:0:qti_dynamic_partitions_b --partition system_b:readonly:0:qti_dynamic_partitions_b --partition system_ext_b:readonly:0:qti_dynamic_partitions_b --partition vendor_b:readonly:0:qti_dynamic_partitions_b --partition odm_b:readonly:0:qti_dynamic_partitions_b --partition mi_ext_b:readonly:0:qti_dynamic_partitions_b --virtual-ab --sparse --output ./super"
-./lpmake $command
-[ -f ./super ] && green "Super Has Been Packaged" || error "Fail"
+lpmake ${command} > /dev/null 2>&1
+[ -f ./super ] && green "Super Has Been Packaged" || error "Failed"
 
 ###
 blue "Super Is Being Compressed"
 zstd --rm ./super -o ./super.zst > /dev/null 2>&1
 [ -f ./super.zst ] && green "Super Has Been Compressed" || error "Fail"
-for part in product system system_ext vendor odm mi_ext
+for part in product system system_ext vendor odm mi_ext;
 do
-  rm -rf $part.img
+  rm -rf ${part}.img
 done
 
 # cleanup
@@ -264,9 +270,9 @@ cd ${work_dir}
 blue "Packing and Cleaning Up..."
 rm rom/images/cc
 cd rom
-zip -r haydn_rom.zip *
+zip -r haydn_rom.zip * > /dev/null 2>&1
 cd ${work_dir}
-mv -v rom/haydn_rom.zip .
+mv -v rom/haydn_rom.zip . > /dev/null 2>&1
 rm -rf rom
-[ -f ./haydn_rom.zip ] && green "Done, Prepare to Upload...' || error "Fail"
+[ -f ./haydn_rom.zip ] && green "Done, Prepare to Upload..." || error "Fail"
 
