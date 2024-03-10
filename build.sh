@@ -2,9 +2,8 @@
 export PATH=$PATH:$(pwd)/bin/
 stock_rom="$1"
 work_dir=$(pwd)
-echo $work_dir
-mkdir -p tmp > /dev/null 2>&1
-mkdir -p rom/images > /dev/null 2>&1
+mkdir -p ${work_dir}/tmp > /dev/null 2>&1
+mkdir -p ${work_dir}/rom/images > /dev/null 2>&1
 
 # Import functions
 source functions.sh
@@ -135,6 +134,7 @@ cp -rf ./tmp/services.jar ./rom/images/system/system/framework/services.jar > /d
 # patch .prop and .xml
 
 # product .prop
+cd ${work_dir}
 echo "ro.miui.cust_erofs=0" >> ./rom/images/product/etc/build.prop
 sed -i 's/<item>120<\/item>/<item>120<\/item>\n\t\t<item>90<\/item>/g' ./rom/images/product/etc/device_features/haydn.xml
 
