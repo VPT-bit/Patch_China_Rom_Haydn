@@ -132,15 +132,15 @@ remove_apk_protection && green "Disable Apk Protection Successfully" || error "F
 cp -rf ./tmp/services.jar ./rom/images/system/system/framework/services.jar > /dev/null 2>&1
 
 # patch .prop and .xml
+cd ${work_dir}
 
 # product .prop
-cd ${work_dir}
 echo "ro.miui.cust_erofs=0" >> ./rom/images/product/etc/build.prop
 sed -i 's/<item>120<\/item>/<item>120<\/item>\n\t\t<item>90<\/item>/g' ./rom/images/product/etc/device_features/haydn.xml
 
 # system .prop
-echo debug.hwui.renderer=vulkan >> ./rom/images/system/system/build.prop
-echo bhlnk.hypervs.overlay=true >> ./rom/images/system/system/build.prop
+echo "debug.hwui.renderer=vulkan" >> ./rom/images/system/system/build.prop
+echo "bhlnk.hypervs.overlay=true" >> ./rom/images/system/system/build.prop
 
 # vendor .prop
 sed -i 's|ro\.hwui\.use_vulkan=|ro\.hwui\.use_vulkan=true|' ./rom/images/vendor/build.prop
