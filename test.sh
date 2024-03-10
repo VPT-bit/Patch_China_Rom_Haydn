@@ -6,6 +6,7 @@ mkdir -p rom/images
 mkdir -p tmp
 mv -v com.miui.powerkeeper*.apk PowerKeeper.apk
 mv -v PowerKeeper.apk rom/images
+smali_path="com.miui.powerkeeper.statemachine.smali"
 method=".method public setScreenEffect(II)V/,/.end method"
 replace_string=".method public setScreenEffect(II)V\n\t\t.registers 4\n\n\t\treturn-void\n.end method"
-patch_smali "PowerKeeper.apk" "*.smali" $method $replace_string
+patch_smali "PowerKeeper.apk" $smali_path $method $replace_string
