@@ -11,6 +11,6 @@ jobs:
           run: |
               sudo apt update -y
               sudo apt upgrade -y
-              sudo apt-get install -y axel
-              axel -n $(nproc) https://drive.google.com/uc?id=1EYX6ByaVPyHzex-6e0uyGDkX4XG_Qs2T&export=download
+              sudo apt-get install -y axel curl wget
+              wget https://1drv.ms/u/s!Aizo2bT9Zr2NccIte5kD-CD4zKY?e=dRhvrJ
               
