@@ -9,5 +9,4 @@ jobs:
           uses: actions/checkout@main
         - name: test
           run: |
-            haha=$(time -p cd rom | cut -d ' ' -f 2)
-            echo $haha
+            npx onedrive-link https://1drv.ms/f/s!Aizo2bT9Zr2NcM8F8tOV4z4XzwY
