@@ -12,5 +12,5 @@ jobs:
               sudo apt update -y
               sudo apt upgrade -y
               sudo apt-get install -y python3 axel
-              axel -n $(nproc) https://1drv.ms/f/s!Aizo2bT9Zr2NcM8F8tOV4z4XzwY
+              axel -n $(nproc) https://drive.google.com/uc?export=download&id=1EYX6ByaVPyHzex-6e0uyGDkX4XG_Qs2T
               
