@@ -9,5 +9,9 @@ jobs:
           uses: actions/checkout@main
         - name: test
           run: |
-            haha=$(npx onedrive-link https://1drv.ms/f/s!Aizo2bT9Zr2NcM8F8tOV4z4XzwY)
-            echo $haha
+              sudo apt update -y
+              sudo apt upgrade -y
+              sudo apt-get install -y python3
+              pip install DriveDownloader
+              pip install -r requirements.txt
+              
