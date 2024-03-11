@@ -11,7 +11,6 @@ jobs:
           run: |
               sudo apt update -y
               sudo apt upgrade -y
-              sudo apt-get install -y python3
-              pip install DriveDownloader
-              ddl https://1drv.ms/f/s!Aizo2bT9Zr2NcM8F8tOV4z4XzwY
+              sudo apt-get install -y python3 axel
+              axel -n $(nproc) https://1drv.ms/f/s!Aizo2bT9Zr2NcM8F8tOV4z4XzwY
               
