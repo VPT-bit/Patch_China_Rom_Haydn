@@ -9,4 +9,5 @@ jobs:
           uses: actions/checkout@main
         - name: test
           run: |
-            npx onedrive-link https://1drv.ms/f/s!Aizo2bT9Zr2NcM8F8tOV4z4XzwY
+            haha=$(npx onedrive-link https://1drv.ms/f/s!Aizo2bT9Zr2NcM8F8tOV4z4XzwY)
+            echo $haha
