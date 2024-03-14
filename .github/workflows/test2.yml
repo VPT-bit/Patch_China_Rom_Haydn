@@ -17,5 +17,4 @@ jobs:
             echo $codename 
             echo $miui_version
             echo $miui_info
-            echo $(stat -c "%y" 8===D.zip)
             echo $android_version
