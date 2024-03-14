@@ -14,7 +14,7 @@ jobs:
             miui_version=$(echo $stock_rom | cut -d '_' -f 3 | sed 's/........$//')
             miui_info=$(echo $stock_rom | cut -d '_' -f 3 | cut -d '.' -f 5)
             android_version=$(echo $stock_rom | cut -d '_' -f 5 | cut -d '.' -f 1)
-            psize=$(stat -c '%c' 8===D.zip)
+            psize=$(stat -c "%c" 8===D.zip)
             echo $codename 
             echo $miui_version
             echo $miui_info
