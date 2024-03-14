@@ -9,8 +9,8 @@ jobs:
           uses: actions/checkout@main
         - name: test
           run: |
-              sudo apt update -y
-              sudo apt upgrade -y
-              sudo apt-get install -y axel curl wget
-              curl https://drive.google.com/uc?id=1EYX6ByaVPyHzex-6e0uyGDkX4XG_Qs2T&export=download
-              
+            stock_rom="miui_HAYDN_V14.0.8.0.TKKCNXM_e3deaf183b_13.0.zip"
+            codename=$(cut -d '_' -f 2 ${stock_rom})
+            miui_version=$(cut -d '_' -f 3 ${stock_rom})
+            android_version=$(echo $stock_rom | cut -d '_' -f 5 | cut -d '.' -f 1)
+            echo $codename $miui_version $android_versiob
