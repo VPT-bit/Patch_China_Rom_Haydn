@@ -15,4 +15,4 @@ jobs:
             android_version=$(echo $(echo $stock_rom | cut -d '_' -f 5) | cut -d '.' -f 1)
             echo $codename 
             echo $miui_version
-            echo $android_versiob
+            echo $android_version
