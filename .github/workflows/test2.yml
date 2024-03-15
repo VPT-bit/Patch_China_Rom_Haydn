@@ -10,4 +10,4 @@ jobs:
         - name: test
           run: |
             sudo timedatectl set-timezone Asia/Ho_Chi_Minh
-            echo $(date +%d/%m-%T)
+            echo $(date +%d-%m_%T)
