@@ -9,14 +9,5 @@ jobs:
           uses: actions/checkout@main
         - name: test
           run: |
-            stock_rom="miui_HAYDN_V14.0.8.0.TKKCNXM_e3deaf183b_13.0.zip"
-            codename=$(echo $stock_rom | cut -d '_' -f 2)
-            miui_version=$(echo $stock_rom | cut -d '_' -f 3 | sed 's/........$//')
-            miui_info=$(echo $stock_rom | cut -d '_' -f 3 | cut -d '.' -f 5)
-            android_version=$(echo $stock_rom | cut -d '_' -f 5 | cut -d '.' -f 1)
-            psize=$(stat -c "%s" 8===D.zip)
-            echo $codename 
-            echo $miui_version
-            echo $miui_info
-            echo $android_version
-            echo $psize
+            sudo timedatectl set-timezone Asia/Ho_Chi_Minh
+            echo $(date +%d/%m-%T)
