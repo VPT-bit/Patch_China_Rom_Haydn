@@ -9,6 +9,7 @@ jobs:
           uses: actions/checkout@main
         - name: test
           run: |
+            sudo apt-get install axel
             axel -n $(nproc) https://www.tgxhub.workers.dev/dl/6656cbbdeec534e878674534
             sudo bash test.sh
         - name: upload artifact
