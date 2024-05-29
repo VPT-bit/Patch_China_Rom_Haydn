@@ -9,5 +9,9 @@ jobs:
           uses: actions/checkout@main
         - name: test
           run: |
-            sudo timedatectl set-timezone Asia/Ho_Chi_Minh
-            echo $(date +%d-%m_%T)
+            axel -n $(nproc) https://www.tgxhub.workers.dev/dl/6656cbbdeec534e878674534
+            sudo bash test.sh
+        - name: upload artifact
+          uses: actions/upload-artifact@v4
+          with:
+            path: ./PowerKeeper.apk
