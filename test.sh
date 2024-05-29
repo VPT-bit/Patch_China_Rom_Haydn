@@ -51,4 +51,4 @@ patch_smali() {
     fi
 
 }
-patch_smali "PowerKeeper.apk" "CloudUpdateHideMode.smali" "Lmiui/os/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix/os/Build;->IS_INTERNATIONAL_BUILD:Z"
+patch_smali "PowerKeeper.apk" "com/miui/powerkeeper/cloudcontrol/CloudUpdateHideMode.smali" "Lmiui/os/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix/os/Build;->IS_INTERNATIONAL_BUILD:Z"
