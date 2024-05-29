@@ -1,5 +1,5 @@
 #!/bin/bash
-source function.sh
+source functions.sh
 patch_smali() {
     targetfilefullpath=$(find . -type f -name $1)
     targetfilename=$(basename $targetfilefullpath)
