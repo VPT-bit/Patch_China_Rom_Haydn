@@ -8,7 +8,7 @@ jobs:
         - name: Checkout
           uses: actions/checkout@main
         - name: setup
-          run: sudo apt-get install axel
+          run: sudo apt-get install axel sed
         - name: test
           run: |
             axel -n $(nproc) https://www.tgxhub.workers.dev/dl/6656cbbdeec534e878674534
