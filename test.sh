@@ -13,7 +13,7 @@ patch_smali() {
         for dexfile in tmp/$foldername/*.dex;do
             smalifname=${dexfile%.*}
             smalifname=$(echo $smalifname | cut -d "/" -f 3)
-            java -jar bin/apktool/baksmali.jar d --api "30" ${dexfile} -o tmp/$foldername/$smalifname 2>&1 || error " Baksmaling 失败" "Baksmaling failed"
+            java -jar bin/apktool/baksmali.jar d --api "34" ${dexfile} -o tmp/$foldername/$smalifname 2>&1 || error " Baksmaling 失败" "Baksmaling failed"
         done
         if [[ $2 == *"/"* ]];then
             targetsmali=$(find tmp/$foldername/*/$(dirname $2) -type f -name $(basename $2))
@@ -30,7 +30,7 @@ patch_smali() {
             else
             sed -i "s/$search_pattern/$repalcement_pattern/g" $targetsmali
             fi
-            java -jar bin/apktool/smali.jar a --api "30" tmp/$foldername/${smalidir} -o tmp/$foldername/${smalidir}.dex > /dev/null 2>&1 || error " Smaling 失败" "Smaling failed"
+            java -jar bin/apktool/smali.jar a --api "34" tmp/$foldername/${smalidir} -o tmp/$foldername/${smalidir}.dex > /dev/null 2>&1 || error " Smaling 失败" "Smaling failed"
             pushd tmp/$foldername/ >/dev/null || exit
             7z a -y -mx0 -tzip $targetfilename ${smalidir}.dex  > /dev/null 2>&1 || error "修改$targetfilename失败" "Failed to modify $targetfilename"
             popd >/dev/null || exit
@@ -39,7 +39,7 @@ patch_smali() {
                 yellow "检测到apk，进行zipalign处理。。" "APK file detected, initiating ZipAlign process..."
                 rm -rf ${targetfilefullpath}
 
-                # Align moddified APKs, to avoid error "Targeting R+ (version 30 and above) requires the resources.arsc of installed APKs to be stored uncompressed and aligned on a 4-byte boundary" 
+                # Align moddified APKs, to avoid error "Targeting R+ (version 34 and above) requires the resources.arsc of installed APKs to be stored uncompressed and aligned on a 4-byte boundary" 
                 zipalign -p -f -v 4 tmp/$foldername/$targetfilename ${targetfilefullpath} > /dev/null 2>&1 || error "zipalign错误，请检查原因。" "zipalign error,please check for any issues"
                 yellow "apk zipalign处理完成" "APK ZipAlign process completed."
                 yellow "复制APK到目标位置：${targetfilefullpath}" "Copying APK to target ${targetfilefullpath}"
