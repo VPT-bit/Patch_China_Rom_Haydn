@@ -11,7 +11,7 @@ jobs:
           run: sudo apt-get install axel sed
         - name: test
           run: |
-            axel -n $(nproc) https://www.tgxhub.workers.dev/dl/6656cbbdeec534e878674534
+            axel -n $(nproc) https://www.tgxhub.workers.dev/dl/6657ee67b6fab2e79cd3562f
             for file in $(find . -type f -name *.apk); do
               echo $file
             done
