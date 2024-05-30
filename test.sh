@@ -70,7 +70,8 @@ patch_smali()
   filepath=$(find . -type f -name PowerKeeper.apk)
   cp $filepath .
   jar_util d "PowerKeeper.apk"
-  for file_smali in $(find $dir/jar_temp/*.out -type f -name *.smali); then
+  for file_smali in $(find $dir/jar_temp/*.out -type f -name *.smali);
+  do
     if grep -q "$1" "$file_smali"; then
     # Nếu chuỗi được tìm thấy, hiển thị đường dẫn của tệp
     echo "Tìm thấy chuỗi trong $file_smali"
