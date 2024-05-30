@@ -1,5 +1,6 @@
 #!/bin/bash
 dir=$(pwd)
+sudo chmod 777 -R *
 get_file_dir()
 {
 	if [[ $1 ]]; then
@@ -25,7 +26,7 @@ jar_util()
 		echo -ne "====> Patching $2 : "
 
 		if [[ $(get_file_dir $2 ) ]]; then
-			sudo mv $(get_file_dir $2 ) $dir/jar_temp
+			sudo cp $(get_file_dir $2 ) $dir/jar_temp
 			sudo chown $(whoami) $dir/jar_temp/$2
 			unzip $dir/jar_temp/$2 -d $dir/jar_temp/$2.out  >/dev/null 2>&1
 			if [[ -d $dir/jar_temp/"$2.out" ]]; then
