@@ -1,5 +1,15 @@
 #!/bin/bash
 dir=$(pwd)
+get_file_dir()
+{
+	if [[ $1 ]]; then
+		sudo find $dir/ -name $1 
+	else 
+		return 0
+	fi
+}
+
+
 jar_util() 
 {
 
@@ -68,7 +78,7 @@ jar_util()
 patch_smali()
 {
   filepath=$(find . -type f -name PowerKeeper.apk)
-  cp $filepath .
+  cp $filepath $dir
   jar_util d "PowerKeeper.apk"
   for file_smali in $(find $dir/jar_temp/*.out -type f -name *.smali);
   do
