@@ -80,6 +80,7 @@ patch_smali()
     sed -i "s/$1/$2/g" "$file_smali"
 
     echo "Đã thay thế '$1' bằng '$2' trong $file_smali"
+    fi
   done
 }
 
