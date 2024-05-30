@@ -1,54 +1,88 @@
 #!/bin/bash
-source functions.sh
-patch_smali() {
-    targetfilefullpath=$(find . -type f -name $1)
-    targetfilename=$(basename $targetfilefullpath)
-    if [ -f $targetfilefullpath ];then
-        yellow "正在修改 $targetfilename" "Modifying $targetfilename"
-        foldername=${targetfilename%.*}
-        rm -rf tmp/$foldername/
-        mkdir -p tmp/$foldername/
-        cp -rf $targetfilefullpath tmp/$foldername/
-        7z x -y tmp/$foldername/$targetfilename *.dex -otmp/$foldername >/dev/null
-        for dexfile in tmp/$foldername/*.dex;do
-            smalifname=${dexfile%.*}
-            smalifname=$(echo $smalifname | cut -d "/" -f 3)
-            java -jar bin/apktool/baksmali.jar d --api "34" ${dexfile} -o tmp/$foldername/$smalifname 2>&1 || error " Baksmaling 失败" "Baksmaling failed"
-        done
-        if [[ $2 == *"/"* ]];then
-            targetsmali=$(find tmp/$foldername/*/$(dirname $2) -type f -name $(basename $2))
-        else
-            targetsmali=$(find tmp/$foldername -type f -name $2)
-        fi
-        if [ -f $targetsmali ];then
-            smalidir=$(echo $targetsmali |cut -d "/" -f 3)
-            yellow "I: 开始patch目标 ${smalidir}" "Target ${smalidir} Found"
-            search_pattern=$3
-            repalcement_pattern=$4
-            if [[ $5 == 'regex' ]];then
-                 sed -i "/${search_pattern}/c\\${repalcement_pattern}" $targetsmali
-            else
-            sed -i "s/$search_pattern/$repalcement_pattern/g" $targetsmali
-            fi
-            java -jar bin/apktool/smali.jar a --api "34" tmp/$foldername/${smalidir} -o tmp/$foldername/${smalidir}.dex > /dev/null 2>&1 || error " Smaling 失败" "Smaling failed"
-            pushd tmp/$foldername/ >/dev/null || exit
-            7z a -y -mx0 -tzip $targetfilename ${smalidir}.dex  > /dev/null 2>&1 || error "修改$targetfilename失败" "Failed to modify $targetfilename"
-            popd >/dev/null || exit
-            yellow "修补$targetfilename 完成" "Fix $targetfilename completed"
-            if [[ $targetfilename == *.apk ]]; then
-                yellow "检测到apk，进行zipalign处理。。" "APK file detected, initiating ZipAlign process..."
-                rm -rf ${targetfilefullpath}
+dir=$(pwd)
+jar_util() 
+{
 
-                # Align moddified APKs, to avoid error "Targeting R+ (version 34 and above) requires the resources.arsc of installed APKs to be stored uncompressed and aligned on a 4-byte boundary" 
-                zipalign -p -f -v 4 tmp/$foldername/$targetfilename ${targetfilefullpath} > /dev/null 2>&1 || error "zipalign错误，请检查原因。" "zipalign error,please check for any issues"
-                yellow "apk zipalign处理完成" "APK ZipAlign process completed."
-                yellow "复制APK到目标位置：${targetfilefullpath}" "Copying APK to target ${targetfilefullpath}"
-            else
-                yellow "复制修改文件到目标位置：${targetfilefullpath}" "Copying file to target ${targetfilefullpath}"
-                cp -rf tmp/$foldername/$targetfilename ${targetfilefullpath}
-            fi
-        fi
-    fi
+	if [[ ! -d $dir/jar_temp ]]; then
+		mkdir $dir/jar_temp
+	fi
 
+	#binary
+	bak="java -jar $dir/bin/baksmali.jar d"
+	sma="java -jar $dir/bin/smali.jar a"
+
+	if [[ $1 == "d" ]]; then
+		echo -ne "====> Patching $2 : "
+
+		if [[ $(get_file_dir $2 ) ]]; then
+			sudo mv $(get_file_dir $2 ) $dir/jar_temp
+			sudo chown $(whoami) $dir/jar_temp/$2
+			unzip $dir/jar_temp/$2 -d $dir/jar_temp/$2.out  >/dev/null 2>&1
+			if [[ -d $dir/jar_temp/"$2.out" ]]; then
+				rm -rf $dir/jar_temp/$2
+				for dex in $(sudo find $dir/jar_temp/"$2.out" -maxdepth 1 -name "*dex" ); do
+						if [[ $4 ]]; then
+							if [[ "$dex" != *"$4"* && "$dex" != *"$5"* ]]; then
+								$bak $dex -o "$dex.out"
+								[[ -d "$dex.out" ]] && rm -rf $dex
+							fi
+						else
+							$bak $dex -o "$dex.out"
+							[[ -d "$dex.out" ]] && rm -rf $dex		
+						fi
+
+				done
+			fi
+		fi
+	else 
+		if [[ $1 == "a" ]]; then 
+			if [[ -d $dir/jar_temp/$2.out ]]; then
+				cd $dir/jar_temp/$2.out
+				for fld in $(sudo find -maxdepth 1 -name "*.out" ); do
+					if [[ $4 ]]; then
+						if [[ "$fld" != *"$4"* && "$fld" != *"$5"* ]]; then
+							echo $fld
+							$sma $fld -o $(echo ${fld//.out})
+							[[ -f $(echo ${fld//.out}) ]] && rm -rf $fld
+						fi
+					else 
+						$sma $fld -o $(echo ${fld//.out})
+						[[ -f $(echo ${fld//.out}) ]] && rm -rf $fld	
+					fi
+				done
+				7za a -tzip -mx=0 $dir/jar_temp/$2_notal $dir/jar_temp/$2.out/. >/dev/null 2>&1
+				#zip -r -j -0 $dir/jar_temp/$2_notal $dir/jar_temp/$2.out/.
+				zipalign -p -v 4 $dir/jar_temp/$2_notal $dir/jar_temp/$2 >/dev/null 2>&1
+				if [[ -f $dir/jar_temp/$2 ]]; then
+					rm -rf $dir/jar_temp/$2.out $dir/jar_temp/$2_notal 
+					#sudo cp -rf $dir/jar_temp/$2 $(get_file_dir $2) 
+					echo "Succes"
+				else
+					echo "Fail"
+				fi
+			fi
+		fi
+	fi
 }
-patch_smali "PowerKeeper.apk" "com/miui/powerkeeper/cloudcontrol/CloudUpdateHideMode.smali" "Lmiui/os/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix/os/Build;->IS_INTERNATIONAL_BUILD:Z"
+
+patch_smali()
+{
+  filepath=$(find . -type f -name PowerKeeper.apk)
+  cp $filepath .
+  jar_util d "PowerKeeper.apk"
+  for file_smali in $(find $dir/jar_temp/*.out -type f -name *.smali); then
+    if grep -q "$1" "$file_smali"; then
+    # Nếu chuỗi được tìm thấy, hiển thị đường dẫn của tệp
+    echo "Tìm thấy chuỗi trong $file_smali"
+    
+    # Thực hiện thay thế chuỗi chỉ định bằng chuỗi khác
+    sed -i "s/$1/$2/g" "$file_smali"
+
+    echo "Đã thay thế '$1' bằng '$2' trong $file_smali"
+  done
+}
+
+patch_smali "Lmiui/os/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix/os/Build;->IS_INTERNATIONAL_BUILD:Z"
+
+
+  
