@@ -8,4 +8,4 @@ jobs:
         - name: Checkout
           uses: actions/checkout@main
         - name: test
-          run: sudo bash tesh.sh
+          run: sudo bash test.sh
