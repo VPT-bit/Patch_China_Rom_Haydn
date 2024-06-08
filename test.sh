@@ -2,4 +2,5 @@
 dir=$(pwd)
 sudo chmod 777 -R *
 apkpath=$(find . -type f -name *.apk)
-bin/apktool/apktool d $apkpath
+mkdir -p tmp
+apktool d $apkpath -o tmp
