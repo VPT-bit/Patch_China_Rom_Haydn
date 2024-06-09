@@ -3,16 +3,17 @@ dir=$(pwd)
 sudo chmod 777 -R *
 patch_method()
 {
+  stock_file=$(find . -type f -name "$1")
+  [ -f $stock_file ] && echo Found $1 in $stock_file || echo Not found $1
+  java -jar bin/apktool/apktool_2.9.3.jar d $stock_file -o tmp && echo Decompile $1 successfully || echo Failed to decompile $1 > /dev/null 2>&1
   for filesmali in $(find tmp/smali -type f -name *.smali);
   do
-    if grep -q "$1" "$filesmali"; then
-      echo Patching $filesmali...
-      sed -i "s/$1/$2/g" "$filesmali" && echo Patched $filesmali || echo Error
+    if grep -q "$2" "$filesmali"; then
+      sed -i "s/$2/$3/g" "$filesmali" && echo Patched $filesmali || echo Error
     fi
   done
+  java -jar bin/apktool/apktool_2.9.3.jar b tmp -o $1.recompile && echo Compile $1 successfully || echo Failed to compile $1 > /dev/null 2>&1
+  zipalign -p -v 4 $1.recompile $1 && echo Zipalign successfully || echo Failed to zipalign > /dev/null 2>&1
+  rm -rf tmp/*
 }
-apkpath=$(find . -type f -name *.apk)
-apktool d $apkpath -o tmp
-patch_method "Lmiui\/os\/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix\/os\/Build;->IS_INTERNATIONAL_BUILD:Z"
-java -jar bin/apktool/apktool_2.9.3.jar b tmp -o PowerKeeper_compiled.tmp
-zipalign -p -v 4 PowerKeeper_compiled.tmp PowerKeeper_note.apk
+patch_method "PowerKeeper.apk" "Lmiui\/os\/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix\/os\/Build;->IS_INTERNATIONAL_BUILD:Z"
