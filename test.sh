@@ -14,4 +14,4 @@ patch_method()
 apkpath=$(find . -type f -name *.apk)
 apktool d $apkpath -o tmp
 patch_method "Lmiui\/os\/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix\/os\/Build;->IS_INTERNATIONAL_BUILD:Z"
-apktool b tmp -o tmp
+apktool b tmp -o PowerKeeper_patched.apk
