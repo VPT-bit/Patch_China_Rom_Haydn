@@ -10,6 +10,7 @@ patch_method()
       sed -i "s/$1/$2/g" "$filesmali" && echo Patched $filesmali || echo Error
     fi
   done
+}
 apkpath=$(find . -type f -name *.apk)
 apktool d $apkpath -o tmp
-patch_method "Lmiui\/os\/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix/os/Build;->IS_INTERNATIONAL_BUILD:Z"
+patch_method "Lmiui\/os\/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix\/os\/Build;->IS_INTERNATIONAL_BUILD:Z"
