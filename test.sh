@@ -5,7 +5,7 @@ patch_method()
 {
   for filesmali in $(find tmp/smali -type f -name *.smali);
   do
-    if grep -q "$1" "filesmali"; then
+    if grep -q "$1" "$filesmali"; then
       echo Patching $filesmali...
       sed -i "s/$1/$2/g" "$filesmali" && echo Patched $filesmali || echo Error
     fi
