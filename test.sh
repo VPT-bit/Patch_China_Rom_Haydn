@@ -15,4 +15,4 @@ apkpath=$(find . -type f -name *.apk)
 apktool d $apkpath -o tmp
 patch_method "Lmiui\/os\/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix\/os\/Build;->IS_INTERNATIONAL_BUILD:Z"
 java -jar bin/apktool/apktool_2.9.3.jar b tmp -o PowerKeeper.apk
-zipalign -p -f -v 4 PowerKeep.apk
+zipalign -p -f -v 4 PowerKeeper.apk
