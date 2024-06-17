@@ -25,4 +25,4 @@ jobs:
             sudo pip3 install telebot
             
         - name: Test
-          run: sudo bash test.sh
+          run: sudo bash test.sh "all"
