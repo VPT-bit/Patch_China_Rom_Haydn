@@ -7,11 +7,12 @@ jobs:
     steps:
         - name: Checkout
           uses: actions/checkout@main
-        - name: Set Up JDK
-          uses: actions/setup-java@v3
+        - uses: actions/setup-java@v4
           with:
             distribution: 'zulu'
-            java-version: '17'
-            cache: 'gradle'
+            java-version: 17
+        - uses: gradle/actions/setup-gradle@v3.4.1
+          with:
+            dependency-graph: generate-and-submit
         - name: test
           run: sudo bash test.sh
