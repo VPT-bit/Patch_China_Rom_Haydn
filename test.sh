@@ -18,4 +18,8 @@ patch_method()
   zipalign -p -v 4 output/$1.recompile output/$1 > /dev/null 2>&1 && green "Zipalign successfully" || error "Failed to zipalign"
   rm -rf tmp/*
 }
-patch_method "PowerKeeper.apk" "Lmiui\/os\/Build;->IS_INTERNATIONAL_BUILD:Z" "Lmiuix\/os\/Build;->IS_INTERNATIONAL_BUILD:Z"
+gitclone https://github.com/iBotPeaches/Apktool.git
+cd Apktool
+sudo chmod 777 -R *
+./gradlew build shadowJar proguard
+[ -f brut.apktool/apktool-cli/build/libs/apktool-v*.jar ] && echo "done" || echo "fail"
