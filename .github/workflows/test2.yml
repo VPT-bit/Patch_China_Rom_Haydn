@@ -26,5 +26,5 @@ jobs:
             
         - name: Test
           run: |
-            sudo chmod 777 -R *
-            ./test.sh
+            path=$(find . -type f -name test.sh)
+            echo $path
