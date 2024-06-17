@@ -18,7 +18,7 @@ patch_method()
   zipalign -p -v 4 output/$1.recompile output/$1 > /dev/null 2>&1 && green "Zipalign successfully" || error "Failed to zipalign"
   rm -rf tmp/*
 }
-gitclone https://github.com/iBotPeaches/Apktool.git
+git clone https://github.com/iBotPeaches/Apktool.git
 cd Apktool
 sudo chmod 777 -R *
 ./gradlew build shadowJar proguard
