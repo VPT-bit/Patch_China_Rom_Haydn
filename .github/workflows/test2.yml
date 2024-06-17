@@ -25,6 +25,4 @@ jobs:
             sudo pip3 install telebot
             
         - name: Test
-          run: |
-            echo $(pwd)
-            [ -f test.sh ] && echo "done" || echo "fail"
+          run: sudo bash test.sh
