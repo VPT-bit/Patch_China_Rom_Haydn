@@ -1,7 +1,6 @@
 #!/bin/bash
 source functions.sh
 dir=$(pwd)
-sudo chmod 777 -R *
 patch_method()
 {
   stock_file=$(find . -type f -name "$1")
@@ -18,8 +17,7 @@ patch_method()
   zipalign -p -v 4 output/$1.recompile output/$1 > /dev/null 2>&1 && green "Zipalign successfully" || error "Failed to zipalign"
   rm -rf tmp/*
 }
-git clone https://github.com/iBotPeaches/Apktool.git
-cd Apktool
+git clone https://github.com/buihien224/overlay.git
+cd overlay
 sudo chmod 777 -R *
-./gradlew build shadowJar proguard
-[ -f brut.apktool/apktool-cli/build/libs/apktool-v*.jar ] && echo "done" || echo "fail"
+./build.sh "all"
