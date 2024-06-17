@@ -5,9 +5,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout
-          uses: actions/checkout@main
-          
         - name: Maximize Build Space
           uses: easimon/maximize-build-space@master
           with:
@@ -16,6 +13,9 @@ jobs:
             remove-dotnet: "true"
             remove-android: "true"
             remove-haskell: "true"
+            
+        - name: Checkout
+          uses: actions/checkout@main
             
         - name: Setting Up
           run: |
