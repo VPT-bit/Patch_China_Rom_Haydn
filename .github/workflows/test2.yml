@@ -7,14 +7,11 @@ jobs:
     steps:
         - name: Checkout
           uses: actions/checkout@main
-        - name: Setting up
-          run: |
-            sudo apt-get install -y git wget zip unzip axel python3-pip zipalign apksigner xmlstarlet apktool aapt
-            pip3 install ConfigObj
-        - name: test
-          run: |
-            java -jar bin/apktool/apktool_2.9.3.jar d System*.apk -o output
-        - name: artifact
-          uses: actions/upload-artifact@v4
+        - name: Set Up JDK
+          uses: actions/setup-java@v3
           with:
-            path: output/*
+            distribution: 'zulu'
+            java-version: '17'
+            cache: 'gradle'
+        - name: test
+          run: sudo bash test.sh
