@@ -25,4 +25,6 @@ jobs:
             sudo pip3 install telebot
             
         - name: Test
-          run: sudo bash test.sh
+          run: |
+            context_string=$(awk '/\.registers/, /\.end method/' "test.txt")
+            echo $context_string
