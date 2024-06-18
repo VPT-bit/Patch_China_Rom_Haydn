@@ -27,7 +27,7 @@ def replace_method_content(file_path, method_name, replacement_text):
                 output_lines.append(line)
 
         # Ghi kết quả vào file mới
-        with open(file_path + '.new', 'w', encoding='utf-8') as file:
+        with open(file_path, 'w', encoding='utf-8') as file:
             file.writelines(output_lines)
 
         print(f'Đã thay thế nội dung của method {method_name} thành công.')
@@ -39,8 +39,8 @@ def replace_method_content(file_path, method_name, replacement_text):
 file_path = 'test.txt'  # Đường dẫn đến file .smali
 method_name = 'parseTopSmartAppFromDb'  # Tên của method cần thay thế
 replacement_text = (
-    '.register ?\n' +
-    '    \n' +
+    '\t.register 4\n' +
+    '\n\treturn-void\n' +
     '.end method\n'
 )
 
