@@ -6,7 +6,7 @@ def thay_doi_method(file_path, ten_method, noi_dung_moi):
     with open(file_path, 'r', encoding='utf-8') as file:
         smali_content = file.read()
 
-    pattern = r'\.method .* ' + re.escape(ten_method) + r'\(.*?\)\n(.*?)\.end method'
+    pattern = r'\.method .* ' + re.escape(ten_method) + r'(.*?)\n(.*?)\.end method'
     match = re.search(pattern, smali_content, re.DOTALL)
 
     if match:
