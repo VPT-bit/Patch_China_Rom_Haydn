@@ -1,26 +1,31 @@
 #!/bin/bash
 source functions.sh
 dir=$(pwd)
-patch_method()
-{
-  stock_file=$(find . -type f -name "$1")
-  [ -f $stock_file ] && green "Found $1 in $stock_file" || error "Not found $1"
-  java -jar bin/apktool/apktool_2.9.3.jar d $stock_file -o tmp > /dev/null 2>&1 && green "Decompile $1 successfully" || error "Failed to decompile $1"
-  for filesmali in $(find tmp/smali -type f -name *.smali);
-  do
-    if grep -q "$2" "$filesmali"; then
-      sed -i "s/$2/$3/g" "$filesmali" && yellow "Patched $filesmali" || error "Error"
-    fi
-  done
-  mkdir -p output
-  java -jar bin/apktool/apktool_2.9.3.jar b tmp -o output/$1.recompile > /dev/null 2>&1 && green "Compile $1 successfully" || error "Failed to compile $1"
-  zipalign -p -v 4 output/$1.recompile output/$1 > /dev/null 2>&1 && green "Zipalign successfully" || error "Failed to zipalign"
-  rm -rf tmp/*
-}
 disable="
     .registers 4
 
     return-void
 "
-sudo python3 test.py "test.smali" "parseTopSmartAppFromDb" "$disable"
-sudo python3 test.py "test.smali" "displayControl" "$disable"
+patch_method()
+{
+  path="$1"
+  name=$(basename "$path")
+  method="$2"
+  new_context="$3"
+  [ -f $path ] && green "Found $name" || error "Not found $name"
+  java -jar bin/apktool/apktool_2.9.3.jar d $path -o tmp > /dev/null 2>&1 && green "Decompile $name successfully" || error "Failed to decompile $name"
+  for file_smali in $(find tmp -type f -name *.smali);
+  do
+    if grep -q "$method" "$file_smali"; then
+      sudo python3 remake_method.py "$file_smali" "$method" "$new_context" && green "Patched method $method in $file_smali" || error "Failed to patch method $method"
+    fi
+  done
+  mkdir -p output
+  java -jar bin/apktool/apktool_2.9.3.jar b tmp -o output/$name.recompile > /dev/null 2>&1 && green "Compile $name successfully" || error "Failed to compile $name"
+  zipalign -p -v 4 output/$name.recompile output/$name > /dev/null 2>&1 && green "Zipalign successfully" || error "Failed to zipalign"
+  apksigner sign output/$name && green "signed" || error "fail to sign"
+  rm -rf tmp/*
+}
+
+patch_method "PowerKeeper.apk" "setScreenEffect" "$disable"
+patch_method "PowerKeeper.apk" "setScreenEffectInternal" "$disable"
