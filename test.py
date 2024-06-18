@@ -34,7 +34,7 @@ def replace_method_content(file_path, method_name, new_content):
 
 # Sử dụng hàm replace_method_content để thay thế nội dung của method trong file test.smali
 file_path = 'test.smali'
-method_name_to_replace = 'parseTopSmartAppFromDb'
+method_name_to_replace = 'displayControl'
 new_method_content = '''
     .registers 4
 
