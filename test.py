@@ -1,36 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
-from smali import Assembly
-from smali import MethodDescriptor
 
-def patch_method(smali_file, method_name, new_code):
-    with open(smali_file, 'r', encoding='utf-8') as file:
-        asm = Assembly(file)
+def patch_method(file_name, method_name, new_code):
+    with open(file_name, 'r') as file:
+        data = file.readlines()
 
-    method = asm.get_method(method_name)
-    if not method:
-        print(f"Method '{method_name}' not found in '{smali_file}'")
-        return False
+    with open(file_name, 'w') as file:
+        in_method = False
+        for line in data:
+            if line.strip().startswith('.method ' + method_name):
+                in_method = True
+                file.write(line)
+            elif in_method and line.strip().startswith('.end method'):
+                in_method = False
+                file.write(new_code)
+                file.write('\n')
+                file.write(line)
+            elif in_method:
+                continue
+            else:
+                file.write(line)
 
-    method.instructions.clear()
-    method.instructions.append(new_code.strip())
-
-    with open(smali_file, 'w', encoding='utf-8') as file:
-        asm.write(file)
-
-    return True
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Usage: python patch_method.py <smali_file> <method_name> <new_code>")
-        sys.exit(1)
-
-    smali_file = sys.argv[1]
-    method_name = sys.argv[2]
-    new_code = sys.argv[3]
-
-    if patch_method(smali_file, method_name, new_code):
-        print(f"Method '{method_name}' in '{smali_file}' patched successfully.")
+        print("Usage: python patch_method.py <file_name> <method_name> <new_code>")
     else:
-        print(f"Failed to patch method '{method_name}' in '{smali_file}'.")
+        file_name = sys.argv[1]
+        method_name = sys.argv[2]
+        new_code = sys.argv[3]
+        patch_method(file_name, method_name, new_code)
