@@ -18,3 +18,4 @@ patch_method()
   rm -rf tmp/*
 }
 sudo python3 test.py 'test.smali' 'parseTopSmartAppFromDb' '\n\t.registers 4\n\n\treturn-void\n'
+sudo python3 test.py 'test.smali' 'displayControl' '\n\t.registers 4\n\n\treturn-void\n'
