@@ -1,42 +1,40 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import re
-def change_method_content(file_path, method_name, new_content):
-    # Read the content of the file
-    with open(file_path, 'r', encoding='utf-8') as f:
-        file_content = f.read()
 
-    # Locate the beginning and ending positions of the method
-    method_start_pattern = f'.method .* {method_name}(\(.*\))?\n'
-    method_end_pattern = '.end method\n'
+def thay_doi_method(file_path, ten_method, noi_dung_moi):
+    # Đọc nội dung từ file smali
+    with open(file_path, 'r', encoding='utf-8') as file:
+        content = file.read()
 
-    start_match = re.search(method_start_pattern, file_content)
-    end_match = re.search(method_end_pattern, file_content)
+    # Tạo biểu thức chính quy để tìm method
+    pattern = re.compile(r'(\.method .* ' + re.escape(ten_method) + r'\(.*?\)\s*.*?)\.end method', re.DOTALL)
 
-    if start_match and end_match:
-        start_pos = start_match.start()
-        end_pos = end_match.end()
+    # Tìm kiếm method trong nội dung
+    match = re.search(pattern, content)
+    if match:
+        # Lấy nội dung của method cần thay đổi
+        old_method_content = match.group(1)
 
-        # Construct the updated content with new method body
-        updated_content = file_content[:start_pos] + start_match.group(0)
-        updated_content += new_content.strip() + '\n'
-        updated_content += file_content[end_pos:]
+        # Thay đổi nội dung của method
+        new_method_content = old_method_content + noi_dung_moi
+        new_content = content.replace(old_method_content, new_method_content)
 
-        # Write the updated content back to the file
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(updated_content)
-
-        print(f'Successfully updated method {method_name} in {file_path}')
+        # Ghi lại nội dung đã thay đổi vào file
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write(new_content)
+        
+        print(f"Đã thay đổi nội dung của method '{ten_method}' thành công.")
     else:
-        print(f'Method {method_name} not found in {file_path}')
+        print(f"Không tìm thấy method '{ten_method}' trong file '{file_path}'.")
 
-# Example usage:
+# Ví dụ sử dụng hàm thay_doi_method:
 file_path = 'test.smali'
-method_name = 'parseTopSmartAppFromDb'
-new_method_content = '''
+ten_method_can_thay_doi = 'parseTopSmartAppFromDb'
+noi_dung_moi = '''
     .registers 4
-    const v0, 123
-    return v0
+
+    return-void
 '''
 
-change_method_content(file_path, method_name, new_method_content)
+thay_doi_method(file_path, ten_method_can_thay_doi, noi_dung_moi)
