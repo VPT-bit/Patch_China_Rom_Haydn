@@ -17,4 +17,4 @@ jobs:
       - name: Test
         run: |
           sudo bash test.sh
-          cat test.txt.new
+          cat test.txt
