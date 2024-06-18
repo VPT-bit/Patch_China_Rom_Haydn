@@ -920,6 +920,7 @@
 
     .line 444
     invoke-virtual {p0, v3, v2, v1}, Lmiui/hardware/display/DisplayFeatur
+.end method
 
 .method public displayControl(I)V
     .registers 4
