@@ -10,5 +10,7 @@ jobs:
         uses: actions/checkout@main
       - name: Test
         run: |
-          output=$(awk '/\.registers/,/\.end method/' "test.txt")
-          echo $output
+          method_name="setScreenEffect"
+          new_method_content=".registers 4\n\treturn-void"
+          sed -i "/\.method*$method_name/,/\.end method/s/\.registers[^\n]*$/$new_method_content/" test.txt
+          cat test.txt
