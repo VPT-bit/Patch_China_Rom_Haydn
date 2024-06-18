@@ -3,36 +3,35 @@
 import re
 
 def change_method_content(file_path, method_name, new_content):
-    # Đọc nội dung từ file
-    with open(file_path, 'r') as file:
-        content = file.read()
+    # Pattern to match method definition
+    method_pattern = r'\.method [\w<>\/\[\];]+ {}\([\w<>\/\[\];]*\).*\n(.*\n)*?\.end method\n'.format(re.escape(method_name))
 
-    # Tạo pattern để tìm method cần thay đổi
-    method_pattern = r'\.method .* {}\(.*\)\s*([\s\S]*?)\.end method'.format(re.escape(method_name))
+    # Read the content of the file
+    with open(file_path, 'r', encoding='utf-8') as f:
+        file_content = f.read()
 
-    # Tìm tất cả các method trong file
-    matches = re.finditer(method_pattern, content)
+    # Find the method based on the pattern
+    match = re.search(method_pattern, file_content, re.DOTALL)
 
-    # Duyệt qua từng method để thay đổi nội dung
-    for match in matches:
-        # Lấy vị trí bắt đầu và kết thúc của method
-        start_index = match.start()
-        end_index = match.end()
+    if match:
+        # Replace the old method content with new content
+        updated_content = re.sub(method_pattern, match.group(0).split('\n')[0] + '\n' + new_content.strip() + '\n.end method\n', file_content)
+        
+        # Write the updated content back to the file
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(updated_content)
+        
+        print(f'Successfully updated method {method_name} in {file_path}')
+    else:
+        print(f'Method {method_name} not found in {file_path}')
 
-        # Thay đổi nội dung của method
-        new_method_content = ".method * {}(*)\n{}\n.end method".format(method_name, new_content)
-        content = content[:start_index] + new_method_content + content[end_index:]
-
-    # Ghi lại nội dung mới vào file
-    with open(file_path, 'w') as file:
-        file.write(content)
-
-# Sử dụng hàm change_method_content để thay đổi nội dung của method trong file test.smali
+# Example usage:
 file_path = 'test.smali'
 method_name = 'parseTopSmartAppFromDb'
-new_content = (
-    "    .registers 4\n"
-    "    return-void\n"
-)
+new_method_content = '''
+    .registers 4
+    
+    return-void
+'''
 
-change_method_content(file_path, method_name, new_content)
+change_method_content(file_path, method_name, new_method_content)
