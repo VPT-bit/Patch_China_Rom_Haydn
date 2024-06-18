@@ -17,4 +17,4 @@ patch_method()
   zipalign -p -v 4 output/$1.recompile output/$1 > /dev/null 2>&1 && green "Zipalign successfully" || error "Failed to zipalign"
   rm -rf tmp/*
 }
-sudo python3 test.py
+sudo python3 test.py 'parseTopSmartAppFromDb' 'test.txt'
