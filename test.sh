@@ -29,5 +29,4 @@ patch_fps_limit()
   rm -rf tmp/*
 }
 
-patch_method "PowerKeeper.apk" "setScreenEffect" "$disable"
-patch_method "PowerKeeper.apk" "setScreenEffectInternal" "$disable"
+patch_fps_limit "PowerKeeper.apk"
