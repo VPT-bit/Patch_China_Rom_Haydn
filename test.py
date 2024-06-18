@@ -37,7 +37,7 @@ def replace_method_content(file_path, method_name, replacement_text):
 
 # Sử dụng ví dụ:
 file_path = 'test.txt'  # Đường dẫn đến file .smali
-method_name = '<tên method>'  # Tên của method cần thay thế
+method_name = 'parseTopSmartAppFromDb'  # Tên của method cần thay thế
 replacement_text = (
     '.register ?\n' +
     '    \n' +
