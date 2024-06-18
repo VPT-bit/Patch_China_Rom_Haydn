@@ -18,5 +18,5 @@ jobs:
         run: cat test.smali
       - name: sau khi va method
         run: |
-          sudo python3 test.py 'test.smali' 'parseTopSmartAppFromDb' '\n\t.registers 4\n\n\treturn-void\n'
+          sudo python3 test.py
           cat test.smali
