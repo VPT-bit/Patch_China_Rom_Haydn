@@ -17,10 +17,10 @@ patch_method()
   zipalign -p -v 4 output/$1.recompile output/$1 > /dev/null 2>&1 && green "Zipalign successfully" || error "Failed to zipalign"
   rm -rf tmp/*
 }
-disable='
+disable="
     .registers 4
-    
+
     return-void
-'
-sudo python3 test.py 'test.smali' 'parseTopSmartAppFromDb' "$disable"
-sudo python3 test.py 'test.smali' 'displayControl' "$disable"
+"
+sudo python3 test.py "test.smali" "parseTopSmartAppFromDb" "$disable"
+sudo python3 test.py "test.smali" "displayControl" "$disable"
