@@ -11,10 +11,12 @@ jobs:
       - name: Setting Up
         run: |
           sudo apt-get install -y git lz4 wget zip unzip android-sdk-libsparse-utils brotli axel python3-pip zipalign apksigner xmlstarlet vim aapt p7zip-full
-          sudo pip3 install pysmali
           sudo pip3 install ConfigObj
           sudo pip3 install firebase_admin
           sudo pip3 install telebot
+          git clone https://github.com/MatrixEditor/pysmali.git
+          cd ./pysmali && pip install .
+          pip install pysmali
       - name: ban dau
         run: cat test.txt
       - name: sau khi va method
