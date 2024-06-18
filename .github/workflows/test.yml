@@ -14,9 +14,6 @@ jobs:
           sudo pip3 install ConfigObj
           sudo pip3 install firebase_admin
           sudo pip3 install telebot
-          git clone https://github.com/MatrixEditor/pysmali.git
-          cd ./pysmali && pip install .
-          pip install pysmali
       - name: ban dau
         run: cat test.txt
       - name: sau khi va method
