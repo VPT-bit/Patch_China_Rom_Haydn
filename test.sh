@@ -14,7 +14,7 @@ patch_fps_limit()
   7z x -y "$path" *.dex -o tmp/dex
   for dex_file in tmp/dex/*.dex; do
             dex_name=$(basename $dex_file | cut -d '.' -f 2)
-            baksmali d --api 34 ${dex_file} -o tmp/dex/$dex_name > /dev/null 2>&1 && green "baksmaling $dex_name done" || error "baksmaling failed"
+            baksmali d --api 34 ${dex_file} -otmp/dex/$dex_name > /dev/null 2>&1 && green "baksmaling $dex_name done" || error "baksmaling failed"
   done
   for file_smali in $(find tmp/dex -type f -name *.smali);
   do
