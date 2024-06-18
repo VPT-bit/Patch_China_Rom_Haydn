@@ -3,38 +3,32 @@
 import re
 
 def thay_doi_method(file_path, ten_method, noi_dung_moi):
-    # Đọc nội dung từ file smali
     with open(file_path, 'r', encoding='utf-8') as file:
-        content = file.read()
+        smali_content = file.read()
 
-    # Tạo biểu thức chính quy để tìm method
-    pattern = re.compile(r'(\.method .* ' + re.escape(ten_method) + r'\(.*?\)\s*.*?)\.end method', re.DOTALL)
+    pattern = r'\.method .* ' + re.escape(ten_method) + r'\(.*?\)\n(.*?)\.end method'
+    match = re.search(pattern, smali_content, re.DOTALL)
 
-    # Tìm kiếm method trong nội dung
-    match = re.search(pattern, content)
     if match:
-        # Lấy nội dung của method cần thay đổi
-        old_method_content = match.group(1)
+        method_content = match.group(1)
 
-        # Thay đổi nội dung của method
-        new_method_content = old_method_content + noi_dung_moi
-        new_content = content.replace(old_method_content, new_method_content)
-
-        # Ghi lại nội dung đã thay đổi vào file
-        with open(file_path, 'w', encoding='utf-8') as file:
-            file.write(new_content)
+        new_method_content = f".method {match.group(0)}\n{noi_dung_moi}\n.end method"
         
+        smali_content = re.sub(pattern, new_method_content, smali_content, flags=re.DOTALL)
+
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write(smali_content)
+
         print(f"Đã thay đổi nội dung của method '{ten_method}' thành công.")
     else:
-        print(f"Không tìm thấy method '{ten_method}' trong file '{file_path}'.")
+        print(f"Không tìm thấy method '{ten_method}' trong file.")
 
-# Ví dụ sử dụng hàm thay_doi_method:
-file_path = 'test.smali'
-ten_method_can_thay_doi = 'parseTopSmartAppFromDb'
-noi_dung_moi = '''
+ten_method = "parseTopSmartAppFromDb"
+noi_dung_moi = """
     .registers 4
-
+    
     return-void
-'''
+"""
+file_path = "test.smali"
 
-thay_doi_method(file_path, ten_method_can_thay_doi, noi_dung_moi)
+thay_doi_method(file_path, ten_method, noi_dung_moi)
