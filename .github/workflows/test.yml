@@ -15,8 +15,8 @@ jobs:
           sudo pip3 install firebase_admin
           sudo pip3 install telebot
       - name: ban dau
-        run: cat test.txt
+        run: cat test.smali
       - name: sau khi va method
         run: |
           sudo bash test.sh
-          cat test.txt
+          cat test.smali
