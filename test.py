@@ -10,12 +10,11 @@ def replace_method_content(file_path, method_name, replacement_text):
         output_lines = []
         method_found = False
         for line in lines:
-            # Kiểm tra xem dòng hiện tại có phải là đầu của method cần thay thế không
+            
             if not method_found and re.match(r'\.method[^\n]*{}\(.*\)'.format(re.escape(method_name)), line):
                 method_found = True
                 output_lines.append(line)
             elif method_found:
-                # Nếu đã tìm thấy method, xử lý thay thế dòng .register và *** bằng replacement_text
                 if line.strip().startswith('.register'):
                     output_lines.append(replacement_text)
                 elif line.strip().startswith('.end method'):
@@ -26,7 +25,6 @@ def replace_method_content(file_path, method_name, replacement_text):
             else:
                 output_lines.append(line)
 
-        # Ghi kết quả vào file mới
         with open(file_path, 'w', encoding='utf-8') as file:
             file.writelines(output_lines)
 
@@ -35,13 +33,18 @@ def replace_method_content(file_path, method_name, replacement_text):
     except IOError:
         print(f'Không thể mở hoặc xử lý file {file_path}.')
 
-# Sử dụng ví dụ:
-file_path = 'test.txt'  # Đường dẫn đến file .smali
-method_name = 'parseTopSmartAppFromDb'  # Tên của method cần thay thế
-replacement_text = (
-    '\t.register 4\n' +
-    '\n\treturn-void\n' +
-    '.end method\n'
-)
+if __name__ == "__main__":
+    import sys
 
-replace_method_content(file_path, method_name, replacement_text)
+    if len(sys.argv) < 3:
+        print("Usage: python script.py <file_path> <method_name>")
+        sys.exit(1)
+
+    file_path = sys.argv[2]
+    method_name = sys.argv[1]
+    replacement_text = (
+        '\t.register 4\n' +
+        '\n\treturn-void\n' +
+        '.end method\n'
+    )
+    replace_method_content(file_path, method_name, replacement_text)
