@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import re
 def change_method_content(file_path, method_name, new_content):
     # Read the content of the file
     with open(file_path, 'r', encoding='utf-8') as f:
