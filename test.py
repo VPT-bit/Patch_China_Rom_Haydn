@@ -24,7 +24,7 @@ def replace_method_content(file_path, method_name, replacement_text):
             else:
                 output_lines.append(line)
 
-        with open(file_path, 'w', encoding='utf-8') as file:
+        with open(file_path + '.new', 'w', encoding='utf-8') as file:
             file.writelines(output_lines)
 
         print(f'Đã thay thế nội dung của method {method_name} thành công.')
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 3:
-        print("Usage: python script.py <method_name> <file_path>")
+        print("Usage: python script.py <file_path> <method_name>")
         sys.exit(1)
 
     file_path = sys.argv[2]
