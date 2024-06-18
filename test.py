@@ -1,32 +1,34 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import sys
-
-def patch_method(file_name, method_name, new_code):
+def modify_smali_method(file_name, method_name, new_code):
+    # Đọc dữ liệu từ file smali
     with open(file_name, 'r') as file:
-        data = file.readlines()
+        data = file.read()
 
+    # Tìm kiếm method cần sửa đổi
+    method_start = data.find(".method " + method_name)
+    if method_start == -1:
+        print("Không tìm thấy method " + method_name)
+        return
+
+    # Tìm kiếm kết thúc của method
+    method_end = data.find(".end method", method_start)
+    if method_end == -1:
+        print("Không tìm thấy kết thúc của method " + method_name)
+        return
+
+    # Sửa đổi code của method
+    modified_data = data[:method_start] + new_code + data[method_end:]
+
+    # Ghi dữ liệu đã sửa đổi ra file
     with open(file_name, 'w') as file:
-        in_method = False
-        for line in data:
-            if line.strip().startswith('.method ' + method_name):
-                in_method = True
-                file.write(line)
-            elif in_method and line.strip().startswith('.end method'):
-                in_method = False
-                file.write(new_code)
-                file.write('\n')
-                file.write(line)
-            elif in_method:
-                continue
-            else:
-                file.write(line)
+        file.write(modified_data)
 
-if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Usage: python patch_method.py <file_name> <method_name> <new_code>")
-    else:
-        file_name = sys.argv[1]
-        method_name = sys.argv[2]
-        new_code = sys.argv[3]
-        patch_method(file_name, method_name, new_code)
+    print("Đã sửa đổi method " + method_name)
+
+# Sử dụng hàm để sửa đổi method có tên là "testMethod"
+modify_smali_method("test.smali", "testMethod", """
+    .registers 4
+    const/4 v0, 0x0
+    return v0
+""")
