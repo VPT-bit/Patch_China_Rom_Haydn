@@ -2,34 +2,37 @@
 # -*- coding: utf-8 -*-
 import re
 
-# Hàm thay đổi nội dung của method
-def change_method(file_path, method_name, new_content):
+def change_method_content(file_path, method_name, new_content):
+    # Đọc nội dung từ file
     with open(file_path, 'r') as file:
         content = file.read()
-        pattern = r'\.method\s+(.*?)' + re.escape(method_name) + '\((.*?)\)\s*\n((?:.|\n)*?)\.end method'
-        match = re.search(pattern, content, re.DOTALL)
-        
-        if match:
-            old_method = match.group(0)
-            new_method = '.method ' + match.group(1) + method_name + '(' + match.group(2) + ')\n' + new_content + '\n.end method'
-            new_content = content.replace(old_method, new_method)
-            
-            with open(file_path, 'w') as file:
-                file.write(new_content)
-            return True
-        else:
-            return False
 
-# Sử dụng hàm
+    # Tạo pattern để tìm method cần thay đổi
+    method_pattern = r'\.method .* {}\(.*\)\s*([\s\S]*?)\.end method'.format(re.escape(method_name))
+
+    # Tìm tất cả các method trong file
+    matches = re.finditer(method_pattern, content)
+
+    # Duyệt qua từng method để thay đổi nội dung
+    for match in matches:
+        # Lấy vị trí bắt đầu và kết thúc của method
+        start_index = match.start()
+        end_index = match.end()
+
+        # Thay đổi nội dung của method
+        new_method_content = ".method * {}(*)\n{}\n.end method".format(method_name, new_content)
+        content = content[:start_index] + new_method_content + content[end_index:]
+
+    # Ghi lại nội dung mới vào file
+    with open(file_path, 'w') as file:
+        file.write(content)
+
+# Sử dụng hàm change_method_content để thay đổi nội dung của method trong file test.smali
 file_path = 'test.smali'
 method_name = 'parseTopSmartAppFromDb'
-new_content = '''
-    .registers 4
-    
-    return-void
-'''
+new_content = (
+    "    .registers 4\n"
+    "    return-void\n"
+)
 
-if change_method(file_path, method_name, new_content):
-    print('Thay đổi nội dung của method thành công!')
-else:
-    print('Không tìm thấy method cần thay đổi')
+change_method_content(file_path, method_name, new_content)
