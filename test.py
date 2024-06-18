@@ -27,7 +27,7 @@ def modify_smali_method(file_name, method_name, new_code):
     print("Đã sửa đổi method " + method_name)
 
 # Sử dụng hàm để sửa đổi method có tên là "testMethod"
-modify_smali_method("test.smali", "testMethod", """
+modify_smali_method("test.smali", "parseTopSmartAppFromDb", """
     .registers 4
     const/4 v0, 0x0
     return v0
