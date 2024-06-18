@@ -21,8 +21,8 @@ def change_method(file_path, method_name, new_content):
             return False
 
 # Sử dụng hàm
-file_path = 'test.smalu'
-method_name = 'tên_method'
+file_path = 'test.smali'
+method_name = 'parseTopSmartAppFromDb'
 new_content = '''
     .registers 4
     
