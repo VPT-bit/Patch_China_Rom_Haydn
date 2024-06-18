@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
-from pysmali.assembly import Assembly
-from pysmali.typing import MethodDescriptor
+from smali import Assembly
+from smali import MethodDescriptor
 
 def patch_method(smali_file, method_name, new_code):
     with open(smali_file, 'r', encoding='utf-8') as file:
