@@ -19,4 +19,4 @@ jobs:
       - name: sau khi va method
         run: |
           sudo bash test.sh
-          cat test.txt.new
+          cat test.txt
