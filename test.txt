@@ -920,3 +920,52 @@
 
     .line 444
     invoke-virtual {p0, v3, v2, v1}, Lmiui/hardware/display/DisplayFeatur
+
+.method public displayControl(I)V
+    .registers 4
+
+    .line 1
+    iget v0, p0, Lcom/miui/powerkeeper/feedbackcontrol/ThermalManager;->fpsLast:I
+
+    .line 2
+    .line 3
+    if-eq p1, v0, :cond_15
+
+    .line 4
+    .line 5
+    iget-object v0, p0, Lcom/miui/powerkeeper/feedbackcontrol/ThermalManager;->mDisplayFeatureManager:Lmiui/hardware/display/DisplayFeatureManager;
+
+    .line 6
+    .line 7
+    if-eqz v0, :cond_15
+
+    .line 8
+    .line 9
+    invoke-static {}, Lcom/miui/powerkeeper/statemachine/DisplayFrameSetting;->getDFSInstance()Lcom/miui/powerkeeper/statemachine/DisplayFrameSetting;
+
+    .line 10
+    .line 11
+    .line 12
+    move-result-object v0
+
+    .line 13
+    if-eqz v0, :cond_15
+
+    .line 14
+    .line 15
+    const/16 v1, 0xfd
+
+    .line 16
+    .line 17
+    invoke-virtual {v0, p1, v1}, Lcom/miui/powerkeeper/statemachine/DisplayFrameSetting;->setScreenEffect(II)V
+
+    .line 18
+    .line 19
+    .line 20
+    iput p1, p0, Lcom/miui/powerkeeper/feedbackcontrol/ThermalManager;->fpsLast:I
+
+    .line 21
+    .line 22
+    :cond_15
+    return-void
+.end method
