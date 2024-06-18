@@ -1,51 +1,36 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import re
+import sys
+from pysmali.assembly import Assembly
+from pysmali.typing import MethodDescriptor
 
-def replace_method_content(file_path, method_name, replacement_text):
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
+def patch_method(smali_file, method_name, new_code):
+    with open(smali_file, 'r', encoding='utf-8') as file:
+        asm = Assembly(file)
 
-        output_lines = []
-        method_found = False
-        for line in lines:
-            if not method_found and re.match(r'\.method[^\n]*{}\(.*\)'.format(re.escape(method_name)), line):
-                method_found = True
-                output_lines.append(line)
-            elif method_found:
-                if line.strip().startswith('.register'):
-                    output_lines.append(replacement_text)
-                elif line.strip().startswith('.end method'):
-                    output_lines.append(line)
-                    method_found = False
-                else:
-                    continue
-            else:
-                output_lines.append(line)
+    method = asm.get_method(method_name)
+    if not method:
+        print(f"Method '{method_name}' not found in '{smali_file}'")
+        return False
 
-        with open(file_path + '.new', 'w', encoding='utf-8') as file:
-            file.writelines(output_lines)
+    method.instructions.clear()
+    method.instructions.append(new_code.strip())
 
-        print(f'Đã thay thế nội dung của method {method_name} thành công.')
-    
-    except IOError:
-        print(f'Không thể mở hoặc xử lý file {file_path}.')
+    with open(smali_file, 'w', encoding='utf-8') as file:
+        asm.write(file)
 
-if __name__ == "__main__":
-    import sys
+    return True
 
-    if len(sys.argv) < 3:
-        print("Usage: python script.py <file_path> <method_name>")
+if __name__ == '__main__':
+    if len(sys.argv) != 4:
+        print("Usage: python patch_method.py <smali_file> <method_name> <new_code>")
         sys.exit(1)
 
-    file_path = sys.argv[2]
-    method_name = sys.argv[1]
+    smali_file = sys.argv[1]
+    method_name = sys.argv[2]
+    new_code = sys.argv[3]
 
-    replacement_text = (
-        '\t.registers 4\n' +
-        '\n\treturn-void\n' +
-        '.end method\n'
-    )
-
-    replace_method_content(file_path, method_name, replacement_text)
+    if patch_method(smali_file, method_name, new_code):
+        print(f"Method '{method_name}' in '{smali_file}' patched successfully.")
+    else:
+        print(f"Failed to patch method '{method_name}' in '{smali_file}'.")
