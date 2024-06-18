@@ -19,15 +19,15 @@ def replace_method_content(file_path, method_name, new_content):
             method_name_start = method_header.find(method_name)
             if method_name_start != -1:
                 # Tìm thấy method cần thay thế
-                # Lấy nội dung của dòng chứa tên method
+                # Tìm dòng chứa tên method và kí tự bất kỳ cuối cùng
                 method_line_start = method.rfind('\n', 0, method_name_start) + 1
                 method_line_end = method.find('\n', method_name_start) + 1
                 method_line = method[method_line_start:method_line_end]
 
                 # Thay thế nội dung trong method này
                 new_method = method[:method_name_start + len(method_name)] + new_content + method[end_index:]
-                # Giữ nguyên dòng chứa tên method
-                new_method = new_method.replace(new_content, method_line + new_content)
+                # Giữ nguyên dòng chứa tên method và kí tự bất kỳ cuối cùng
+                new_method = new_method.replace(new_content, method_line.strip() + new_content)
                 methods[i] = new_method
                 break
 
@@ -40,7 +40,7 @@ def replace_method_content(file_path, method_name, new_content):
 
 # Sử dụng hàm replace_method_content để thay thế nội dung của method trong file test.smali
 file_path = 'test.smali'
-method_name_to_replace = 'displayControl'
+method_name_to_replace = 'parseTopSmartAppFromDb'
 new_method_content = '''
     .registers 4
 
