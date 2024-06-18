@@ -8,9 +8,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@main
+      - name: Setting Up
+        run: |
+          sudo apt-get install -y git lz4 wget zip unzip android-sdk-libsparse-utils brotli axel python3-pip zipalign apksigner xmlstarlet vim aapt p7zip-full
+          sudo pip3 install ConfigObj
+          sudo pip3 install firebase_admin
+          sudo pip3 install telebot
       - name: Test
         run: |
-          method_name="parseTopSmartAppFromDb"
-          new_method_content=".registers 4\n\treturn-void"
-          sed -i "/\.method*$method_name/,/\.end method/s/\.registers[^\n]*$/$new_method_content/" test.txt
+          sudo bash test.sh
           cat test.txt
