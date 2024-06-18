@@ -14,9 +14,6 @@ jobs:
           sudo pip3 install ConfigObj
           sudo pip3 install firebase_admin
           sudo pip3 install telebot
-      - name: ban dau
-        run: cat test.smali
-      - name: sau khi va method
+      - name: patch powerkeeper
         run: |
           sudo bash test.sh
-          cat test.smali
