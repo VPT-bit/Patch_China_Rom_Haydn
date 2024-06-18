@@ -2,23 +2,34 @@
 # -*- coding: utf-8 -*-
 import re
 
-def modify_smali_method(file_name, method_name, new_code):
-    # Đọc dữ liệu từ file smali
-    with open(file_name, 'r') as file:
-        data = file.read()
+# Hàm thay đổi nội dung của method
+def change_method(file_path, method_name, new_content):
+    with open(file_path, 'r') as file:
+        content = file.read()
+        pattern = r'\.method\s+(.*?)' + re.escape(method_name) + '\((.*?)\)\s*\n((?:.|\n)*?)\.end method'
+        match = re.search(pattern, content, re.DOTALL)
+        
+        if match:
+            old_method = match.group(0)
+            new_method = '.method ' + match.group(1) + method_name + '(' + match.group(2) + ')\n' + new_content + '\n.end method'
+            new_content = content.replace(old_method, new_method)
+            
+            with open(file_path, 'w') as file:
+                file.write(new_content)
+            return True
+        else:
+            return False
 
-    # Sử dụng biểu thức chính quy để tìm kiếm và sửa đổi code của method
-    pattern = re.compile(r'\.method .* ' + method_name + r'\(.*?\)(.*?)\.end method', re.DOTALL)
-    match = pattern.search(data)
-    if match:
-        start_index = match.start(1)
-        end_index = match.end(1)
-        modified_data = data[:start_index] + new_code + data[end_index:]
-        with open(file_name, 'w') as file:
-            file.write(modified_data)
-        print("Đã sửa đổi method " + method_name)
-    else:
-        print("Không tìm thấy method " + method_name)
+# Sử dụng hàm
+file_path = 'test.smalu'
+method_name = 'tên_method'
+new_content = '''
+    .registers 4
+    
+    return-void
+'''
 
-# Sử dụng hàm để sửa đổi method có tên là "testMethod"
-modify_smali_method("test.smali", "parseTopSmartAppFromDb", "\t.registers 4\n\n\treturn-void\n")
+if change_method(file_path, method_name, new_content):
+    print('Thay đổi nội dung của method thành công!')
+else:
+    print('Không tìm thấy method cần thay đổi')
