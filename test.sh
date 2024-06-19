@@ -11,6 +11,7 @@ patch_fps_limit()
     path="$1"
     name=$(basename "$path")
     [ -f $path ] && green "Found $name" || error "Not found $name"
+    java -jar bin/apktool/apktool_2.9.3.jar if "$path" 
     java -jar bin/apktool/apktool_2.9.3.jar d "$path" -o tmp > /dev/null 2>&1 && green "decompling done" || error "failed to decompile"
     for file_smali in $(find tmp -type f -name *.smali);
     do
