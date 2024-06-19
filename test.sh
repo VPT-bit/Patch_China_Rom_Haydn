@@ -1,11 +1,14 @@
 #!/bin/bash
 source functions.sh
 dir=$(pwd)
+sudo chmod 777 -R *
+
 disable="
     .registers 4
 
     return-void
 "
+
 patch_fps_limit()
 {
     path="$1"
