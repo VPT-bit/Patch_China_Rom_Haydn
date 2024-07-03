@@ -30,7 +30,7 @@ jobs:
           cd ${GITHUB_WORKSPACE}
           cp -rf tmp/repack/AndroidManifest.xml temp/AndroidManifest.xml
           cd temp
-          zip -r MiuiHome.apk AndroidManifest.xml
+          zip -u MiuiHome.apk AndroidManifest.xml
           cd ${GITHUB_WORKSPACE} 
           zipalign -p -f -v 4 temp/MiuiHome.apk temp/MiuiHome_mod.apk || echo "Zipalign failed"
           
