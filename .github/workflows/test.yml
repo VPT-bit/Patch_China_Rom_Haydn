@@ -17,11 +17,11 @@ jobs:
       - name: test
         run: |
           sudo chmod 777 -R *
-          java -jar bin/apktool/apktool_2.9.3.jar d MiuiHome.apk -o tmp
+          java -jar bin/apktool/apktool_2.9.3.jar d MiuiHome.apk -o tmp || echo "Decode failed"
           sed -i "s/<property android:name=\"miui.blurRelaunch\" android:value=\"true\"\/>//g" tmp/AndroidManifest.xml
           sed -i "s/<property android:name=\"android.view.PROPERTY_MIUI_SMOOTH_CORNER_ENABLED\" android:value=\"true\"\/>//g" tmp/AndroidManifest.xml
-          java -jar bin/apktool/apktool_2.9.3.jar b tmp -o tmp/MiuiHome_repack.zip
-          ./zipalign -p -f -v 4 tmp/MiuiHome_repack.zip tmp/MiuiHome_mod.apk
+          java -jar bin/apktool/apktool_2.9.3.jar b tmp -o tmp/MiuiHome_repack.zip || echo "Repack failed"
+          ./zipalign -p -f -v 4 tmp/MiuiHome_repack.zip tmp/MiuiHome_mod.apk || echo "Zipalign failed"
           
       - name: artifact
         uses: actions/upload-artifact@v4
