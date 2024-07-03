@@ -1,7 +1,6 @@
 name: test
 on:
   workflow_dispatch:
-    
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,6 +13,12 @@ jobs:
           sudo pip3 install ConfigObj
           sudo pip3 install firebase_admin
           sudo pip3 install telebot
-      - name: patch powerkeeper
+      - name: test
         run: |
-          sudo bash test.sh
+          sudo chmod 777 -R *
+          ./bin/apktool/apktool*.jar d MiuiHome.apk -o tmp
+      - name: artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk_decode
+          path: tmp/*
