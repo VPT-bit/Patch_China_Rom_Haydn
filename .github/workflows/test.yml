@@ -17,14 +17,25 @@ jobs:
       - name: test
         run: |
           sudo chmod 777 -R *
-          ./bin/apktool/apktool d MiuiHome.apk -o tmp || echo "Decode failed"
+          mkdir -p temp
+          cp -rf MiuiHome.apk temp/MiuiHome.zip
+          cd ${GITHUB_WORKSPACE}
+          java -jar bin/apktool/apktool_2.9.3.jar d MiuiHome.apk -o tmp || echo "Decode failed"
           sed -i "s/<property android:name=\"miui.blurRelaunch\" android:value=\"true\"\/>//g" tmp/AndroidManifest.xml
           sed -i "s/<property android:name=\"android.view.PROPERTY_MIUI_SMOOTH_CORNER_ENABLED\" android:value=\"true\"\/>//g" tmp/AndroidManifest.xml
-          ./bin/apktool/apktool b tmp -o tmp/MiuiHome_repack.zip || echo "Repack failed"
-          ./zipalign -p -f -v 4 tmp/MiuiHome_repack.zip tmp/MiuiHome_mod.apk || echo "Zipalign failed"
+          rm -rf tmp/res
+          java -jar bin/apktool/apktool_2.9.3.jar b tmp -o tmp/repack/MiuiHome_repack.zip || echo "Repack failed"
+          cd tmp/repack
+          unzip MiuiHome_repack.zip
+          cd ${GITHUB_WORKSPACE}
+          cp -rf tmp/repack/AndroidManifest.xml temp/AndroidManifest.xml
+          cd temp
+          zip -r MiuiHome.apk AndroidManifest.xml
+          cd ${GITHUB_WORKSPACE} 
+          ./zipalign -p -f -v 4 temp/MiuiHome.apk temp/MiuiHome_mod.apk || echo "Zipalign failed"
           
       - name: artifact
         uses: actions/upload-artifact@v4
         with:
           name: apk_decode
-          path: tmp/*
+          path: temp/MiuiHome_mod.apk
