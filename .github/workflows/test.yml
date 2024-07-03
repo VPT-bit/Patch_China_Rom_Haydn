@@ -32,7 +32,7 @@ jobs:
           cd temp
           zip -r MiuiHome.apk AndroidManifest.xml
           cd ${GITHUB_WORKSPACE} 
-          ./zipalign -p -f -v 4 temp/MiuiHome.apk temp/MiuiHome_mod.apk || echo "Zipalign failed"
+          ./bin/apktool/zipalign -p -f -v 4 temp/MiuiHome.apk temp/MiuiHome_mod.apk || echo "Zipalign failed"
           
       - name: artifact
         uses: actions/upload-artifact@v4
