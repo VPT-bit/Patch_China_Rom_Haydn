@@ -17,7 +17,7 @@ jobs:
       - name: test
         run: |
           sudo chmod 777 -R *
-          java -jar bin/apktool/apktool_2.9.3.jar d MiuiHomeT.apk -o tmp
+          java -jar bin/apktool/apktool_2.9.3.jar d rom/MiuiHome.apk -o tmp
           
       - name: artifact
         uses: actions/upload-artifact@v4
