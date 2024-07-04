@@ -31,13 +31,12 @@ jobs:
             axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/boot.img
             axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/ksud
             axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/ksud.d
-            [ -f tmp/boot.img ] && echo "Download successfully" || echo "Failed to download"
             
         - name: patch boot
           run: |
+            [ -f tmp/boot.img ] && echo "Download successfully" || echo "Failed to download"
             [ ! -f bin/ksud ] && echo "Binary not found" || echo "Fine"
-            sudo chmod 777 -R *
-            ./tmp/ksud boot-patch --boot boot.img --magiskboot magiskboot --kmi android12-5.10
+            ./bin/ksud boot-patch --boot boot.img --magiskboot magiskboot --kmi android12-5.10
             
         - name: upload artifact
           uses: actions/upload-artifact@v4
