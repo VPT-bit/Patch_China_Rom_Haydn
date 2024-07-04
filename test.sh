@@ -31,4 +31,4 @@ patch_fps_limit()
     rm -rf tmp/*
 }
 
-patch_fps_limit "PowerKeeper.apk"
+./bin/ksud --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
