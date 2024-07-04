@@ -5,27 +5,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@main
-        
-      - name: Setting Up
-        run: |
-          sudo apt-get install -y git lz4 wget zip unzip android-sdk-libsparse-utils brotli axel python3-pip zipalign apksigner xmlstarlet vim aapt p7zip-full
-          sudo pip3 install ConfigObj
-          sudo pip3 install firebase_admin
-          sudo pip3 install telebot
-
-      - name: download
-        run: |
-          mkdir -p tmp
-          cd tmp && axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/boot.img
-      
-      - name: patch boot
-        run: |
-          sudo bash test.sh
+        - name: Maximize Build Space
+          uses: easimon/maximize-build-space@master
+          with:
+            root-reserve-mb: 512
+            swap-size-mb: 1024
+            remove-dotnet: "true"
+            remove-android: "true"
+            remove-haskell: "true"
+            
+        - name: Checkout
+          uses: actions/checkout@main
+            
+        - name: Setting Up
+          run: |
+            sudo apt-get install -y git lz4 wget zip unzip android-sdk-libsparse-utils brotli axel python3-pip zipalign apksigner xmlstarlet vim aapt p7zip-full
+            sudo pip3 install ConfigObj
+            sudo pip3 install firebase_admin
+            sudo pip3 install telebot
+        - name: download
+          run: |
+            mkdir -p tmp
+            cd tmp && axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/boot.img
+            [ -f tmp/boot.img ] && echo "Download successfully" || echo "Failed to download"
+        - name: patch boot
+          run: |
+            sudo bash test.sh
           
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: boot_ksu_patch
-          path: output/*
+        - name: upload artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: boot_ksu_patch
+            path: output/*
