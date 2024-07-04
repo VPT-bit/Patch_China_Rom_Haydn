@@ -31,4 +31,4 @@ patch_fps_limit()
     rm -rf tmp/*
 }
 
-./bin/ksud boot-patch --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
+./ksud boot-patch --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
