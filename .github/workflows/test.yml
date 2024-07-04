@@ -36,7 +36,7 @@ jobs:
           run: |
             [ -f tmp/boot.img ] && echo "Download successfully" || echo "Failed to download"
             [ ! -f bin/ksud ] && echo "Binary not found" || echo "Fine"
-            sudo chmod a+x bin/ksud
+            chmod a+x bin/ksud
             ./bin/ksud boot-patch --boot boot.img --magiskboot magiskboot --kmi android12-5.10
             
         - name: upload artifact
