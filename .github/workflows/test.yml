@@ -23,18 +23,24 @@ jobs:
             sudo pip3 install ConfigObj
             sudo pip3 install firebase_admin
             sudo pip3 install telebot
+            
         - name: download
           run: |
             mkdir -p tmp
-            cd tmp && axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/boot.img
+            cd tmp
+            axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/boot.img
+            axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/ksud
+            axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/ksud.d
             [ -f tmp/boot.img ] && echo "Download successfully" || echo "Failed to download"
+            
         - name: patch boot
           run: |
-            [ ! -f bin/ksud ] && echo "Binary not found"
-            sudo bash test.sh
-          
+            [ ! -f bin/ksud ] && echo "Binary not found" || echo "Fine"
+            sudo chmod 777 -R *
+            ./tmp/ksud boot-patch --boot boot.img --magiskboot magiskboot --kmi android12-5.10
+            
         - name: upload artifact
           uses: actions/upload-artifact@v4
           with:
             name: boot_ksu_patch
-            path: output/*
+            path: tmp/*.img
