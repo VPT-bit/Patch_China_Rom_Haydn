@@ -16,15 +16,14 @@ jobs:
           
       - name: test
         run: |
-          mkdir -p folder_rom && cd folder_rom
-          axel -n $(nproc) https://bn.d.miui.com/OS1.0.7.0.ULTCNXM/miui_MAYFLY_OS1.0.7.0.ULTCNXM_cfaa502739_14.0.zip
-          unzip *.zip && rm -rf *.zip
+          mkdir -p tmp
+          cd tmp && axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/boot.img
           cd ${GITHUB_WORKSPACE}
-          bin/payload-dumper-go -o folder_rom folder_rom/payload.bin
-          bin/ksud boot-patch --boot folder_rom/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
+          sudo chmod 777 -R *
+          ./bin/ksud boot-patch --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
           
       - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: boot_ksu_patch
-          path: output
+          path: output/*
