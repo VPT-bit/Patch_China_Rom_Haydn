@@ -16,26 +16,15 @@ jobs:
           
       - name: test
         run: |
-          sudo chmod 777 -R *
-          mkdir -p temp
-          cp -rf MiuiHome.apk temp/MiuiHome.zip
+          mkdir -p folder_rom && cd folder_rom
+          axel -n $(nproc) https://bn.d.miui.com/OS1.0.7.0.ULTCNXM/miui_MAYFLY_OS1.0.7.0.ULTCNXM_cfaa502739_14.0.zip
+          unzip *.zip && rm -rf *.zip
           cd ${GITHUB_WORKSPACE}
-          java -jar bin/apktool/apktool_2.9.3.jar d MiuiHome.apk -o tmp || echo "Decode failed"
-          sed -i "s/<property android:name=\"miui.blurRelaunch\" android:value=\"true\"\/>//g" tmp/AndroidManifest.xml
-          sed -i "s/<property android:name=\"android.view.PROPERTY_MIUI_SMOOTH_CORNER_ENABLED\" android:value=\"true\"\/>//g" tmp/AndroidManifest.xml
-          rm -rf tmp/res
-          java -jar bin/apktool/apktool_2.9.3.jar b tmp -o tmp/repack/MiuiHome_repack.zip || echo "Repack failed"
-          cd tmp/repack
-          unzip MiuiHome_repack.zip
-          cd ${GITHUB_WORKSPACE}
-          cp -rf tmp/repack/AndroidManifest.xml temp/AndroidManifest.xml
-          cd temp
-          zip -u MiuiHome.apk AndroidManifest.xml
-          cd ${GITHUB_WORKSPACE} 
-          zipalign -p -f -v 4 temp/MiuiHome.apk temp/MiuiHome_mod.apk || echo "Zipalign failed"
+          bin/payload-dumper-go -o folder_rom folder_rom/payload.bin
+          bin/ksud boot-patch --boot folder_rom/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
           
-      - name: artifact
+      - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: apk_decode
-          path: temp/MiuiHome_mod.apk
+          name: boot_ksu_patch
+          path: output
