@@ -6,7 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@main
+        
       - name: Setting Up
         run: |
           sudo apt-get install -y git lz4 wget zip unzip android-sdk-libsparse-utils brotli axel python3-pip zipalign apksigner xmlstarlet vim aapt p7zip-full
@@ -21,9 +22,7 @@ jobs:
       
       - name: patch boot
         run: |
-          echo $(pwd)
-          sudo chmod 777 -R *
-          ${GITHUB_WORKSPACE}/bin/ksud boot-patch --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
+          sudo bash test.sh
           
       - name: upload artifact
         uses: actions/upload-artifact@v4
