@@ -21,8 +21,9 @@ jobs:
       
       - name: patch boot
         run: |
+          echo $(pwd)
           sudo chmod 777 -R *
-          ./bin/ksud boot-patch --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
+          ${GITHUB_WORKSPACE}/bin/ksud boot-patch --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
           
       - name: upload artifact
         uses: actions/upload-artifact@v4
