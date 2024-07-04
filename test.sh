@@ -1,8 +1,7 @@
 #!/bin/bash
 source functions.sh
 dir=$(pwd)
-sudo chmod 777 -R *
-
+ksud="$GITHUB_WORKSPACE"/bin/ksud
 disable="
     .registers 4
 
@@ -31,4 +30,4 @@ patch_fps_limit()
     rm -rf tmp/*
 }
 
-ksud boot-patch --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
+$ksud boot-patch --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10
