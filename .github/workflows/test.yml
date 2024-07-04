@@ -30,6 +30,7 @@ jobs:
             [ -f tmp/boot.img ] && echo "Download successfully" || echo "Failed to download"
         - name: patch boot
           run: |
+            [ ! -f bin/ksud ] && echo "Binary not found"
             sudo bash test.sh
           
         - name: upload artifact
