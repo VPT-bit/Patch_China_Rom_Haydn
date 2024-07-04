@@ -13,12 +13,14 @@ jobs:
           sudo pip3 install ConfigObj
           sudo pip3 install firebase_admin
           sudo pip3 install telebot
-          
-      - name: test
+
+      - name: download
         run: |
           mkdir -p tmp
           cd tmp && axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/boot.img
-          cd ${GITHUB_WORKSPACE}
+      
+      - name: patch boot
+        run: |
           sudo chmod 777 -R *
           ./bin/ksud boot-patch --boot tmp/boot.img --magiskboot bin/magiskboot --kmi android12-5.10 --out output
           
