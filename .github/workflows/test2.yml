@@ -17,4 +17,5 @@ jobs:
             
         - name: download
           run: |
+            sudo chmod 777 -R *
             ./test.sh -n https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/framework.jar
