@@ -4,7 +4,7 @@ dex2oat() {
     mkdir -p ./oat/arm64
     rm -rf $file_dir.art $file_dir.odex $file_dir.vdex
     print "\nStarting compilation of file $file_n"
-    dex2oat64 --dex-file=./$file_n --compiler-filter=everything --instruction-set=arm64 --dex-location=./$file_n --app-image-file=$file_dir.art --cpu-set=0,1,2,3,4,5,6,7 --oat-file=$file_dir.odex
+    dex2oat --dex-file=./$file_n --compiler-filter=everything --instruction-set=arm64 --dex-location=./$file_n --app-image-file=$file_dir.art --cpu-set=0,1,2,3,4,5,6,7 --oat-file=$file_dir.odex
     print "Compilation of file $file_n completed"
 }
 
@@ -28,7 +28,7 @@ Now enter the full file name
 }
 
 start() {
-    read input
+    input=PowerKeeper.apk
     if [ -z "$input" ]; then
         for file_n in $file; do
             dex2oat
