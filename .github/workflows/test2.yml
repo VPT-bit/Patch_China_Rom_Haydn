@@ -5,15 +5,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        - name: Maximize Build Space
-          uses: easimon/maximize-build-space@master
-          with:
-            root-reserve-mb: 512
-            swap-size-mb: 1024
-            remove-dotnet: "true"
-            remove-android: "true"
-            remove-haskell: "true"
-            
         - name: Checkout
           uses: actions/checkout@main
             
@@ -26,22 +17,4 @@ jobs:
             
         - name: download
           run: |
-            mkdir -p tmp
-            cd tmp
-            axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/boot.img
-            axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/ksud
-            axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/ksud.d
-            
-        - name: patch boot
-          run: |
-            [ -f tmp/boot.img ] && echo "Download successfully" || echo "Failed to download"
-            [ ! -f tmp/ksud ] && echo "Binary not found" || echo "Fine"
-            chmod a+x tmp/ksud
-            ./tmp/ksud boot-patch --boot tmp/boot.img --magiskboot tmp/magiskboot --kmi android12-5.10
-            
-        - name: upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: boot_ksu_patch
-            path: tmp/*.img
-            
+            ./test.sh -n https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/framework.jar
