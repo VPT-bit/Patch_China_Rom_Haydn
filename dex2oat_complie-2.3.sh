@@ -35,7 +35,7 @@ Now enter the full file name
 }
 
 start() {
-    input=$1
+    input="PowerKeeper.apk"
     if [ -z "$input" ]; then
         for file_n in $file; do
             dex2oat
