@@ -1,5 +1,7 @@
 #!/bin/bash
-
+git clone https://github.com/android/platform_art.git
+cd platform_art/art/compiler/
+g++ -o dex2oat dex2oat.cc
 while getopts ":n:" opt; do
   case ${opt} in
     n )
