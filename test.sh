@@ -66,7 +66,11 @@ case "$option" in
     axel -n $(nproc) $3
     ;;
   "optimize" )
-    
+    mkdir -p temp
+    mv PowerKeeper.apk temp
+    cd temp
+    hello
+    start
     ;;
   * )
     echo "Nhãn không hợp lệ: $option"
