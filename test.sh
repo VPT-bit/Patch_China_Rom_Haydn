@@ -1,5 +1,5 @@
 #!/bin/bash
-git clone https://github.com/android/platform_art.git
+git clone https://android.googlesource.com/platform/art/+/refs/heads/main/dex2oat/
 cd platform_art/art/compiler/
 g++ -o dex2oat64 dex2oat.cc
 dex_path=$(find . -type f -name dex2oat64)
