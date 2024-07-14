@@ -18,7 +18,7 @@ done
 
 case "$option" in
   "download" )
-    axel -n $(nproc) $2
+    axel -n $(nproc) $3
     ;;
   "nhant2" )
     echo "Bạn đã chọn nhãn 2"
