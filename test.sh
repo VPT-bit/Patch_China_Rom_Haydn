@@ -1,7 +1,9 @@
 #!/bin/bash
 git clone https://github.com/android/platform_art.git
 cd platform_art/art/compiler/
-g++ -o dex2oat dex2oat.cc
+g++ -o dex2oat64 dex2oat.cc
+dex_path=$(find . -type f -name dex2oat64)
+cp -f dex_path .
 while getopts ":n:" opt; do
   case ${opt} in
     n )
