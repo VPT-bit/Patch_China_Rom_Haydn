@@ -21,7 +21,7 @@ case "$option" in
     axel -n $(nproc) $3
     ;;
   "optimize" )
-    ./dex2oat_complie-2.3.sh "PowerKeeper.apk"
+    sudo bash dex2oat_complie-2.3.sh
     ;;
   * )
     echo "Nhãn không hợp lệ: $option"
