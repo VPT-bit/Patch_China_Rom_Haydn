@@ -19,6 +19,9 @@ jobs:
           run: |
             sudo chmod 777 -R *
             ./test.sh -n download https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/framework.jar
+        - name: optimize
+          run: |
+            ./test.sh -n optimize
             
         - name: upload artifact
           uses: actions/upload-artifact@v4
