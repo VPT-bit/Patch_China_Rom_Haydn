@@ -1,4 +1,5 @@
 #!/bin/bash
+print() { echo -e "$@"; }
 dex2oat() {
     file_dir="./oat/arm64/${file_n%.*}"
     mkdir -p ./oat/arm64
