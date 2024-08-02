@@ -7,17 +7,13 @@ jobs:
     steps:
         - name: Checkout
           uses: actions/checkout@main
+  
+        - name: test
+          run: |
+            sudo bash test.sh
             
-        - name: Setting Up
-          run: |
-            sudo apt-get install -y git 
-        - name: download
-          run: |
-            mkdir -p dex2oat
-            cd dex2oat
-            git clone https://android.googlesource.com/platform/art
         - name: upload artifact
           uses: actions/upload-artifact@v4
           with:
-            name: test
-            path: dex2oat/*
+            name: oat
+            path: oat/*
