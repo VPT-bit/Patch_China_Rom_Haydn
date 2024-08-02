@@ -1,5 +1,6 @@
 
 import re
+import sys
 
 def replace_method_content(file_path, method_name, new_content):
     with open(file_path, 'r') as f:
@@ -15,5 +16,8 @@ def replace_method_content(file_path, method_name, new_content):
     with open(file_path, 'w') as f:
         f.write(modified_content)
 
-if name == "main":
+if __name__ == "__main__":
+    file.smali=sys.argv[1]
+    ten_method_can_tim=sys.argv[2]
+    noi_dung_moi=sys.argv[3]
     replace_method_content("file.smali", "ten_method_can_tim", "noi_dung_moi")
