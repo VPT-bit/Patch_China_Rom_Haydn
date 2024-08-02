@@ -20,4 +20,4 @@ if __name__ == "__main__":
     file_smali = sys.argv[1]
     ten_method_can_tim = sys.argv[2]
     noi_dung_moi = sys.argv[3]
-    replace_method_content("file_smali", "ten_method_can_tim", "noi_dung_moi")
+    replace_method_content(file_smali, ten_method_can_tim, noi_dung_moi)
