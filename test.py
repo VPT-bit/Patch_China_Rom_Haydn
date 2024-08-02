@@ -17,7 +17,7 @@ def replace_method_content(file_path, method_name, new_content):
         f.write(modified_content)
 
 if __name__ == "__main__":
-    file.smali=sys.argv[1]
-    ten_method_can_tim=sys.argv[2]
-    noi_dung_moi=sys.argv[3]
-    replace_method_content("file.smali", "ten_method_can_tim", "noi_dung_moi")
+    file_smali = sys.argv[1]
+    ten_method_can_tim = sys.argv[2]
+    noi_dung_moi = sys.argv[3]
+    replace_method_content("file_smali", "ten_method_can_tim", "noi_dung_moi")
