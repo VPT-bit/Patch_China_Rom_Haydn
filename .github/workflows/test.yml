@@ -26,9 +26,9 @@ jobs:
             
         - name: download
           run: |
-            echo test.smali
+            cat test.smali
             sudo bash test.sh
-            echo test.smali
+            cat test.smali
         - name: upload artifact
           uses: actions/upload-artifact@v4
           with:
