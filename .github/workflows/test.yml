@@ -26,6 +26,7 @@ jobs:
             
         - name: download
           run: |
+            cat >> test.smali
             sudo bash test.sh
             cat >> test.smali
         - name: upload artifact
