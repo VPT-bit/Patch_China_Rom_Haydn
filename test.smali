@@ -970,3 +970,14 @@
     :cond_15
     return-void
 .end method
+
+.method public displayControl(I)V
+    .register 4
+     jsksbs
+     jsjsbs 
+     .jsksksj
+     jsjsks
+     sksk
+     .jsjsjs
+     return-void
+.end method
