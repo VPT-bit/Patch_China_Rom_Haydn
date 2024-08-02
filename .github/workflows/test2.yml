@@ -10,21 +10,14 @@ jobs:
             
         - name: Setting Up
           run: |
-            sudo apt-get install -y git lz4 wget zip unzip android-sdk-libsparse-utils brotli axel python3-pip zipalign apksigner xmlstarlet vim aapt p7zip-full
-            sudo pip3 install ConfigObj
-            sudo pip3 install firebase_admin
-            sudo pip3 install telebot
-            
+            sudo apt-get install -y git 
         - name: download
           run: |
-            sudo chmod 777 -R *
-            ./test.sh -n download https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/framework.jar
-        - name: optimize
-          run: |
-            ./test.sh -n optimize
-            
+            mkdir -p dex2oat
+            cd dex2oat
+            git clone https://android.googlesource.com/platform/art
         - name: upload artifact
           uses: actions/upload-artifact@v4
           with:
             name: test
-            path: temp/*
+            path: dex2oat/*
