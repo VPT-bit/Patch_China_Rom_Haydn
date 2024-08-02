@@ -10,10 +10,10 @@ jobs:
   
         - name: test
           run: |
-            sudo bash test.sh
+            java -jar bin/apktool/apktool_2.9.3.jar d tory.AICallAssistant.apk -o output
             
         - name: upload artifact
           uses: actions/upload-artifact@v4
           with:
-            name: oat
-            path: oat/*
+            name: apk
+            path: output/*
