@@ -981,3 +981,14 @@
      .jsjsjs
      return-void
 .end method
+
+.method private parseTopSmartAppFromDb(Ljava/lang/String;Landroid/util/ArraySet;)V
+    .register 4
+     jsksbs
+     jsjsbs 
+     .jsksksj
+     jsjsks
+     sksk
+     .jsjsjs
+     return-void
+.end method
