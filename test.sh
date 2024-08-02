@@ -1,5 +1,5 @@
 #!/bin/bash
-
+sudo chmod 777 -R *
 print() { echo -e "$@"; }
 
 dex2oat() {
