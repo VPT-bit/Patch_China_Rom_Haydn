@@ -10,9 +10,13 @@ jobs:
   
         - name: test
           run: |
-            /system/bin/dex2oat --help
+              cd /
+              for file in $(find . -type f -name *dex2oat*); do
+                  echo "found in path: $file"
+              done
+              
         - name: upload artifact
           uses: actions/upload-artifact@v4
           with:
-            name: apk
+            name: output
             path: output/*
