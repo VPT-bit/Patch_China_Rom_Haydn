@@ -10,8 +10,7 @@ jobs:
   
         - name: test
           run: |
-            java -jar bin/apktool/apktool_2.9.3.jar d tory.AICallAssistant.apk -o output
-            
+            /system/bin/dex2oat --help
         - name: upload artifact
           uses: actions/upload-artifact@v4
           with:
