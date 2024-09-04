@@ -11,6 +11,8 @@ def modify_smali_file(filename, method_name, new_content):
         method_signature = match.group(1)
         method_content = match.group(2)
         method_end = match.group(3)
+
+        print(f"Edited method {method_name} in {filename}")
         
         new_method = f"{method_signature}\n{new_content}\n{method_end}"
         return new_method
