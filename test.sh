@@ -16,5 +16,4 @@ for file in $(find PowerKeeper/smali/com/miui/powerkeeper -type f -name *.smali)
     python3 test.py "$file" "getDisplayCtrlCode" "$FALSE"
 done
 java -jar bin/apktool/apktool_2.9.3.jar b PowerKeeper -o PowerKeeper_patched_raw.apk
-sudo chmod +x bin/apktool/zipalign
-./bin/apktool/zipalign -p -v 4 PowerKeeper_patched_raw.apk PowerKeeper_patched.apk
+zipalign -p -v 4 PowerKeeper_patched_raw.apk PowerKeeper_patched.apk
