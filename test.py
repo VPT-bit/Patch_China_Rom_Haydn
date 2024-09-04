@@ -5,8 +5,8 @@ def find_and_modify_method(file_path, method_name, new_content):
     with open(file_path, 'r') as file:
         content = file.read()
 
-    method_pattern = re.compile(r'(.*?)(\.method\s+' + re.escape(method_name) + r'(.*?))(\.end\s+method)', re.DOTALL)
-
+    method_pattern = re.compile(r'\.method\s+.*?' + re.escape(method_name) + r'.*?\.end\s+method', re.DOTALL)
+    
     match = method_pattern.search(content)
     if match:
         before_method = match.group(1)
