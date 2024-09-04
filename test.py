@@ -5,7 +5,7 @@ def modify_smali_file(filename, method_name, new_content):
     with open(filename, 'r') as file:
         content = file.read()
 
-    method_pattern = re.compile(r'(method\s+{}\s*\([^\)]*\)[^\s]*)\n((?:.|\n)*?)(\.end\s+method)'.format(re.escape(method_name)))
+    method_pattern = re.compile(r'(\.method\s+.*?\s+{}\s*\([^\)]*\)[^\s]*)\n((?:.|\n)*?)(\.end\s+method)'.format(re.escape(method_name)))
     
     def replace_method(match):
         method_signature = match.group(1)
