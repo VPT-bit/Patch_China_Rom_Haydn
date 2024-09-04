@@ -236,3 +236,22 @@
     .line 95
     return-void
 .end method
+
+.method public getDisplayCtrlCode()I
+    .registers 2
+
+    .line 1
+    iget p0, p0, Lcom/miui/powerkeeper/feedbackcontrol/ThermalManager;->mTempStateNow:I
+
+    .line 3
+    const v0, 0x989680
+
+    .line 6
+    div-int/2addr p0, v0
+
+    .line 7
+    rem-int/lit8 p0, p0, 0xa
+
+    .line 9
+    return p0
+.end method
