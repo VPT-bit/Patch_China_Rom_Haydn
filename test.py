@@ -1,32 +1,34 @@
 import re
 import argparse
 
-def replace_methods_content(file_path, method_name, new_content):
-    with open(file_path, 'r') as file:
-        data = file.read()
+def modify_smali_file(filename, method_name, new_content):
+    with open(filename, 'r') as file:
+        content = file.read()
 
-    # Biểu thức chính quy để tìm tất cả các phương thức có tên cụ thể
-    method_pattern = re.compile(
-        rf'(\.method.* {method_name}\(.*\).*?\n)(.*?)(?=\n\.end method)',
-        re.DOTALL | re.MULTILINE
-    )
+    method_pattern = re.compile(r'(method\s+{}\s*\([^\)]*\)[^\s]*)\n((?:.|\n)*?)(\.end\s+method)'.format(re.escape(method_name)))
+    
+    def replace_method(match):
+        method_signature = match.group(1)
+        method_content = match.group(2)
+        method_end = match.group(3)
+        
+        new_method = f"{method_signature}\n{new_content}\n{method_end}"
+        return new_method
 
-    # Hàm thay thế để thay thế nội dung của phương thức
-    def replacement(match):
-        return match.group(1) + new_content + '\n.end method'
+    modified_content = re.sub(method_pattern, replace_method, content)
 
-    # Thay thế tất cả các phương thức có tên cụ thể
-    new_data = method_pattern.sub(replacement, data)
+    with open(filename, 'w') as file:
+        file.write(modified_content)
 
-    with open(file_path, 'w') as file:
-        file.write(new_data)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Replace content of methods in a file.')
-    parser.add_argument('file_path', type=str, help='Path to the file to be modified')
-    parser.add_argument('method_name', type=str, help='Name of the method to replace content')
-    parser.add_argument('new_content', type=str, help='New content to replace in the method')
+def main():
+    parser = argparse.ArgumentParser(description="Modify method content in a .smali file.")
+    parser.add_argument('filename', type=str, help='Path to the .smali file')
+    parser.add_argument('method_name', type=str, help='Name of the method to modify')
+    parser.add_argument('new_content', type=str, help='New content to insert into the methods')
 
     args = parser.parse_args()
+    
+    modify_smali_file(args.filename, args.method_name, args.new_content)
 
-    replace_methods_content(args.file_path, args.method_name, args.new_content)
+if __name__ == "__main__":
+    main()
