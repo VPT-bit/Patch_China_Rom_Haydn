@@ -7,4 +7,4 @@ FALSE='.locals 1
     
 python3 test.py test.smali "setScreenEffect" "$void"
 python3 test.py test.smali "setScreenEffectInternal" "$void"
-python3 test.py test.smali "getDisplayCtrlCode" "$FALSE"
+python3 test.py test.smali "cc" "$FALSE"
