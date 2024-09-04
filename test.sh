@@ -1,3 +1,2 @@
-disable='.registers 4
-    return-void'
-python3 test.py "test.smali" "parseTopSmartAppFromDb" "$disable"
+disable=".registers 4\nreturn-void"
+python3 test.py test.smali parseTopSmartAppFromDb $disable
