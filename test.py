@@ -1,23 +1,36 @@
-
 import re
 import sys
 
-def replace_method_content(file_path, method_name, new_content):
-    with open(file_path, 'r') as f:
-        file_content = f.read()
+def find_and_modify_method(file_path, method_name, new_content):
+    with open(file_path, 'r') as file:
+        content = file.read()
 
-    method_pattern = re.compile(r'\.method <.*> ' + re.escape(method_name) + r'\(.*\)(.|\n)*?\.end method')
-    method_matches = method_pattern.findall(file_content)
+    method_pattern = re.compile(r'(.*?)(\.method\s+' + re.escape(method_name) + r'(.*?))(\.end\s+method)', re.DOTALL)
 
-    modified_content = file_content
-    for method_match in method_matches:
-        modified_content = modified_content.replace(method_match, new_content)
+    match = method_pattern.search(content)
+    if match:
+        before_method = match.group(1)
+        method_start = match.group(2)
+        method_body = match.group(3)
+        method_end = match.group(4)
 
-    with open(file_path, 'w') as f:
-        f.write(modified_content)
+        modified_method = method_start + new_content + method_end
+
+        new_content = before_method + modified_method
+
+        with open(file_path, 'w') as file:
+            file.write(new_content)
+        print("Method has been successfully modified.")
+    else:
+        print("Method not found.")
 
 if __name__ == "__main__":
-    file_smali = sys.argv[1]
-    ten_method_can_tim = sys.argv[2]
-    noi_dung_moi = sys.argv[3]
-    replace_method_content(file_smali, ten_method_can_tim, noi_dung_moi)
+    if len(sys.argv) != 4:
+        print("Usage: python script.py <file_path> <method_name> <new_content>")
+        sys.exit(1)
+
+    file_path = sys.argv[1]
+    method_name = sys.argv[2]
+    new_content = sys.argv[3]
+
+    find_and_modify_method(file_path, method_name, new_content)
