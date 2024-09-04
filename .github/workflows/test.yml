@@ -17,6 +17,5 @@ jobs:
             
         - name: test
           run: |
-            cat test.smali
             sudo bash test.sh
             cat test.smali
