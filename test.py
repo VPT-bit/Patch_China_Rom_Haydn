@@ -1,36 +1,29 @@
 import re
-import sys
+import argparse
 
-def find_and_modify_method(file_path, method_name, new_content):
+def replace_method_content(file_path, method_name, new_content):
     with open(file_path, 'r') as file:
-        content = file.read()
-
-    method_pattern = re.compile(r'\.method\s+.*?' + re.escape(method_name) + r'.*?\.end\s+method', re.DOTALL)
+        data = file.read()
     
-    match = method_pattern.search(content)
-    if match:
-        before_method = match.group(1)
-        method_start = match.group(2)
-        method_body = match.group(3)
-        method_end = match.group(4)
+    method_pattern = re.compile(
+        rf'\.method.* {method_name}\(.*\).*?\n(.*?)\n\.end method',
+        re.DOTALL | re.MULTILINE
+    )
+    
+    def replacement(match):
+        return match.group(0).replace(match.group(1), new_content)
 
-        modified_method = method_start + new_content + method_end
+    new_data = method_pattern.sub(replacement, data)
 
-        new_content = before_method + modified_method
+    with open(file_path, 'w') as file:
+        file.write(new_data)
 
-        with open(file_path, 'w') as file:
-            file.write(new_content)
-        print("Method has been successfully modified.")
-    else:
-        print("Method not found.")
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Replace method content in a file.')
+    parser.add_argument('file_path', type=str, help='Path to the file to be modified')
+    parser.add_argument('method_name', type=str, help='Name of the method to replace content')
+    parser.add_argument('new_content', type=str, help='New content to replace in the method')
 
-if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Usage: python script.py <file_path> <method_name> <new_content>")
-        sys.exit(1)
+    args = parser.parse_args()
 
-    file_path = sys.argv[1]
-    method_name = sys.argv[2]
-    new_content = sys.argv[3]
-
-    find_and_modify_method(file_path, method_name, new_content)
+    replace_method_content(args.file_path, args.method_name, args.new_content)
