@@ -10,11 +10,7 @@ jobs:
   
         - name: test
           run: |
-              cd /
-              sudo chmod 777 -R * > /dev/null 2>&1
-              for file in $(find . -type f -name *dex2oat* > /dev/null 2>&1); do
-                  echo "found in path: $file"
-              done
+              sudo bash test.sh
               
         - name: upload artifact
           uses: actions/upload-artifact@v4
