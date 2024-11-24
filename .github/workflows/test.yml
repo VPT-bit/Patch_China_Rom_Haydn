@@ -24,7 +24,11 @@ jobs:
                 
         - name: Build
           run: |
-                [-f build.sh] && cp -rf build.sh hyperos_port || echo "loi"
+                if [[ -f build.sh ]]; then
+                    cp -rf build.sh hyperos_port
+                else
+                    echo "loi"
+                fi
                 cd hyperos_port
                 sudo ./build.sh ${{ github.event.inputs.ROM_URL }}
                 echo "name_rom=$(find out -type f -name *.zip)" >> $GITHUB_ENV
