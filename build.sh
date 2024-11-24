@@ -65,7 +65,7 @@ if [[ ${baserom_type} == 'payload' ]];then
     blue "Extracting files from BASEROM [payload.bin]"
     payload-dumper --out build/baserom/images/ $baserom
     green "[payload.bin] extracted."
-
+fi
 pack_type=$($tools_dir/gettype -i build/baserom/images/system.img)
 
 for part in system product vendor; do
