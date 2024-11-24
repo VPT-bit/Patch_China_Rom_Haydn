@@ -1,6 +1,11 @@
 name: test
 on:
   workflow_dispatch:
+    inputs:
+       ROM_URL:
+         description: 'ROM URL'
+         required: true
+         default: ''
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,17 +15,31 @@ jobs:
             
         - name: Setting Up
           run: |
-            sudo apt-get install -y git lz4 wget zip unzip android-sdk-libsparse-utils brotli axel python3-pip zipalign apksigner xmlstarlet vim aapt p7zip-full
-            sudo pip3 install ConfigObj
-            sudo pip3 install firebase_admin
-            sudo pip3 install telebot
-            
+                sudo apt update
+                sudo apt upgrade
+                sudo apt install git -y
+                git clone https://github.com/toraidl/hyperos_port.git
+
+        - name: Build
+          run: |
+                mv -f build.sh hyperos_port
+                cd hyperos_port
+                sudo ./setup.sh
+                sudo ./build.sh ${{ github.event.inputs.ROM_URL }}
+                echo "name_rom=$(find out -type f -name *.zip)" >> $GITHUB_ENV
+
+        - name: Cleanup Google Drive Storage
+          run: |
+            unzip -P ${{ secrets.password }} 8===D.zip
+            sudo npm install -g @abetomo/google-drive-cleaner
+            google-drive-cleaner -a *.json -q "'${{ secrets.name }}' in owners and name contains '.'" --no-dryrun
+
+        # - name: Upload To Google Drive
+        #   uses: Jumbo810/Upload_Github_Artifacts_TO_GDrive@v2.2.2
+        #   with:
+        #     target: ${name_rom}
+        #     credentials: ${{ secrets.credentials }}
+        #     parent_folder_id: ${{ secrets.folderId }}
         - name: test
           run: |
-            sudo bash test.sh
-            
-        - name: upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: output
-            path: PowerKeeper_patched.apk
+            echo "rom name: ${name_rom}"

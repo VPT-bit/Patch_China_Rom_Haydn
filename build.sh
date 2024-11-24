@@ -1,226 +1,439 @@
 #!/bin/bash
-export PATH=$PATH:$(pwd)/bin/
-stock_rom="$1"
-work_dir=$(pwd)
-mkdir -p ${work_dir}/tmp > /dev/null 2>&1
-mkdir -p ${work_dir}/rom/images > /dev/null 2>&1
 
-# Import functions
+build_user="vpt"
+build_host=$(hostname)
+
+baserom="$1"
+
+work_dir=$(pwd)
+tools_dir=${work_dir}/bin/$(uname)/$(uname -m)
+export PATH=$(pwd)/bin/$(uname)/$(uname -m)/:$(pwd)/otatools/bin:$PATH
+
 source functions.sh
 
-# Setup
-sudo apt update -y > /dev/null 2>&1
-sudo apt upgrade -y > /dev/null 2>&1
-sudo apt-get install -y git zip unzip tar axel python3-pip zipalign apktool apksigner xmlstarlet busybox p7zip-full openjdk-8-jre android-sdk-libsparse-utils > /dev/null 2>&1 && blue "Setup Successful" || error "Setup Failed"
-pip3 install ConfigObj > /dev/null 2>&1
-sudo chmod 777 -R *
+shopt -s expand_aliases
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    yellow "macOS detected, setting alias"
+    alias sed=gsed
+    alias tr=gtr
+    alias grep=ggrep
+    alias du=gdu
+    alias date=gdate
+    #alias find=gfind
+fi
 
-# unzip rom
-blue "Downloading ROM..."
-axel -n $(nproc) $stock_rom > /dev/null 2>&1 && green "Downloaded ROM" || error "Failed to Download ROM"
-stock_rom=$(basename $stock_rom)
-if unzip -l ${stock_rom} | grep -q "payload.bin"; then
-    blue "Detected PAYLOAD.BIN, Unpacking ROM..."
-    unzip ${stock_rom} payload.bin -d ./rom/images/ > /dev/null 2>&1 && green "Unpacked ROM" || error "Failed to Unzip Rom"
-    rm -rf ${stock_rom}
+check unzip aria2c 7z zip java zipalign python3 zstd bc xmlstarlet
+
+
+
+if [ ! -f "${baserom}" ] && [ "$(echo $baserom | grep http)" != "" ];then
+    blue "Download link detected, start downloading.."
+    aria2c --max-download-limit=1024M --file-allocation=none -s10 -x10 -j10 ${baserom}
+    baserom=$(basename ${baserom} | sed 's/\?t.*//')
+    if [ ! -f "${baserom}" ];then
+        error "Download error!"
+    fi
+elif [ -f "${baserom}" ];then
+    green "BASEROM: ${baserom}"
 else
-    error "Unsupported"
+    error "BASEROM: Invalid parameter"
     exit
 fi
 
-# extract payload.bin & image
-cd ./rom/images
-blue "Extracting Payload.bin"
-payload-dumper-go -o . ./payload.bin > /dev/null 2>&1 && green "Extracted Payload.bin" || error "Failed To Extract Payload.bin"
-rm -rf ./payload.bin
-blue "Extracting Image Partition..."
-for pname in system product vendor; do
-    extract.erofs -i ./${pname}.img -x > /dev/null 2>&1
-    rm -rf ./${pname}.img
-    [ -d ${pname} ] && green "Extracted ${pname} [EROFS] Successfully" || error "Failed to Extract ${pname} "
-done
-vbmeta-disable-verification ./vbmeta.img > /dev/null 2>&1 && green "Disable Vbmeta Successfully" || error "Failed To Disable Verification"
 
-# add gpu driver
-cd ${work_dir}
-blue "Installing Gpu Driver..."
-echo "/system/system/lib/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib64/egl/libVkLayer_ADRENO_qprofiler.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib64/libEGL.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib64/libGLESv1_CM.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib64/libGLESv2.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib64/libGLESv3.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib64/libvulkan.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib/libEGL.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib/libGLESv1_CM.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib/libGLESv2.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib/libGLESv3.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-echo "/system/system/lib/libvulkan.so u:object_r:system_lib_file:s0" >> ./rom/images/config/system_file_contexts
-###
-echo "/vendor/etc/sphal_libraries.txt u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/libEGL_adreno.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/libGLESv2_adreno.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/libadreno_app_profiles.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/libq3dtools_adreno.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/libllvm-qgl.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/libllvm-glnext.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/libllvm-qcom.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/hw/vulkan.adreno.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/egl/ u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/ u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/libVkLayer_ADRENO_qprofiler.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libVkLayer_ADRENO_qprofiler.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libEGL_adreno.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libGLESv2_adreno.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libadreno_app_profiles.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libq3dtools_adreno.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/hw/vulkan.adreno.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libllvm-qgl.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libllvm-glnext.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libllvm-qcom.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/egl/ u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libdmabufheap.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib/libdmabufheap.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libCB.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/notgsl.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-echo "/vendor/lib64/libadreno_utils.so u:object_r:same_process_hal_file:s0" >> ./rom/images/config/vendor_file_contexts
-###
-cp -rf ./patch_rom/vendor/* ./rom/images/vendor > /dev/null 2>&1 && green "Add GPU Driver Successfully" || error "Failed To Add Gpu Driver"
+if [ "$(echo $baserom | grep miui_)" != "" ]; then
+    device_code=$(basename $baserom | cut -d '_' -f 2)
+else
+    error "Undefined ROM"
+    exit
+fi
 
-# add leica camera
-cd tmp
-blue "Installing Leica Camera..."
-axel -n $(nproc) https://github.com/VPT-bit/Patch_China_Rom_Haydn/releases/download/alpha/HolyBearMiuiCamera.apk > /dev/null 2>&1
-mv HolyBearMiuiCamera.apk MiuiCamera.apk > /dev/null 2>&1
-cd ${work_dir}
-mv -v ./tmp/MiuiCamera.apk ./rom/images/product/priv-app/MiuiCamera > /dev/null 2>&1 && green "Add Leica Camera Successfully" || error "Failed To Add Leica Camera"
-rm -rf ./tmp/*
-    
-# add launcher mod
-mv -v patch_rom/product/priv-app/MiuiHomeT/MiuiHomeT.apk ./rom/images/product/priv-app/MiuiHomeT > /dev/null 2>&1
-mv -v patch_rom/product/etc/permissions/privapp_whitelist_com.miui.home.xml ./rom/images/product/etc/permissions > /dev/null 2>&1
-mv -v patch_rom/system/system/etc/permissions/privapp_whitelist_com.miui.home.xml ./rom/images/system/system/etc/permissions > /dev/null 2>&1
-mv -v patch_rom/product/overlay/MiuiPocoLauncherResOverlay.apk ./rom/images/product/overlay > /dev/null 2>&1
-[ -f ./rom/images/system/system/etc/permissions/privapp_whitelist_com.miui.home.xml ] && green "Add Launcher Mod Successfully" || error "Fail"
+blue "Validating BASEROM.."
+if unzip -l ${baserom} | grep -q "payload.bin"; then
+    baserom_type="payload"
+    green "Found payload.bin file"
+    super_list="vendor mi_ext odm odm_dlkm system system_dlkm vendor_dlkm product product_dlkm system_ext"
+else
+    error "payload.bin not found, please use HyperOS official OTA zip package."
+    exit
+fi
+green "ROM validation passed."
 
-# add xiaomi.eu extension
-mkdir -p ./rom/images/product/priv-app/XiaomiEuExt > /dev/null 2>&1
-mv -v patch_rom/product/priv-app/XiaomiEuExt/XiaomiEuExt.apk ./rom/images/product/priv-app/XiaomiEuExt > /dev/null 2>&1
-mv -v patch_rom/product/etc/permissions/privapp_whitelist_eu.xiaomi.ext.xml ./rom/images/product/etc/permissions > /dev/null 2>&1
-[ -f ./rom/images/product/priv-app/XiaomiEuExt/XiaomiEuExt.apk ] && green "Add XiaomiEuExt Successfully" || error "Fail"
+mkdir -p build/baserom/images/
 
-# patch performance
-mv -v patch_rom/product/pangu/system/app/Joyose/Joyose.apk ./rom/images/product/pangu/system/app/Joyose > /dev/null 2>&1
-mv -v patch_rom/system/system/app/PowerKeeper/PowerKeeper.apk ./rom/images/system/system/app/PowerKeeper > /dev/null 2>&1
-green "Patch Performance Successfully"
+if [[ ${baserom_type} == 'payload' ]];then
+    blue "Extracting files from BASEROM [payload.bin]"
+    payload-dumper --out build/baserom/images/ $baserom
+    green "[payload.bin] extracted."
 
-# add overlay
-blue "Building the Overlay..."
-git clone https://github.com/VPT-bit/overlay.git > /dev/null 2>&1
-cd overlay
-sudo chmod +x build.sh > /dev/null 2>&1
-./build.sh > /dev/null 2>&1
-cd ${work_dir}
-mv -v overlay/output/* ./rom/images/product/overlay > /dev/null 2>&1 && green "Overlay Build Has Been Completed" || error "Failed To Add Overlay"
-rm -rf overlay
+pack_type=$($tools_dir/gettype -i build/baserom/images/system.img)
 
-# disable apk protection
-blue "Disabling Apk Protection..."
-cd ${work_dir}
-cp -rf ./rom/images/system/system/framework/services.jar ./services.jar > /dev/null 2>&1
-remove_apk_protection && green "Disable Apk Protection Successfully" || error "Failed To Disable Apk Protection"
-cp -rf ./tmp/services.jar ./rom/images/system/system/framework/services.jar > /dev/null 2>&1
-
-# patch .prop and .xml
-cd ${work_dir}
-
-# product .prop
-sed -i 's/<item>120<\/item>/<item>120<\/item>\n\t\t<item>90<\/item>/g' ./rom/images/product/etc/device_features/haydn.xml
-
-# system .prop
-echo "debug.hwui.renderer=vulkan" >> ./rom/images/system/system/build.prop
-echo "bhlnk.hypervs.overlay=true" >> ./rom/images/system/system/build.prop
-
-# vendor .prop
-sed -i 's|ro\.hwui\.use_vulkan=|ro\.hwui\.use_vulkan=true|' ./rom/images/vendor/build.prop
-echo "persist.vendor.mi_sf.optimize_for_refresh_rate.enable=1" >> ./rom/images/vendor/build.prop
-echo "ro.vendor.mi_sf.ultimate.perf.support=true"  >> ./rom/images/vendor/build.prop
-echo "ro.surface_flinger.use_content_detection_for_refresh_rate=false" >> ./rom/images/vendor/build.prop
-echo "ro.surface_flinger.set_touch_timer_ms=0" >> ./rom/images/vendor/build.prop
-echo "ro.surface_flinger.set_idle_timer_ms=0" >> ./rom/images/vendor/build.prop
-green "Patching .prop and .xml completed"
-
-# font
-mv -v ./patch_rom/system/system/fonts/MiSansVF.ttf ./rom/images/system/system/fonts > /dev/null 2>&1 && green "Replace Font Successfully" || error "Failed To Change Font"
-
-# debloat
-cp -r ./rom/images/product/data-app/MIMediaEditor tmp > /dev/null 2>&1
-cp -r ./rom/images/product/data-app/MIUICleanMaster tmp > /dev/null 2>&1
-cp -r ./rom/images/product/data-app/MIUINotes tmp > /dev/null 2>&1
-cp -r ./rom/images/product/data-app/MiuiScanner tmp > /dev/null 2>&1
-cp -r ./rom/images/product/data-app/MIUIScreenRecorder tmp > /dev/null 2>&1
-cp -r ./rom/images/product/data-app/MIUISoundRecorderTargetSdk30 tmp > /dev/null 2>&1
-cp -r ./rom/images/product/data-app/MIUIWeather tmp > /dev/null 2>&1
-cp -r ./rom/images/product/data-app/SmartHome tmp > /dev/null 2>&1
-cp -r ./rom/images/product/data-app/ThirdAppAssistant tmp > /dev/null 2>&1
-rm -rf ./rom/images/product/data-app/* > /dev/null 2>&1
-rm -rf ./rom/images/product/app/AnalyticsCore > /dev/null 2>&1
-rm -rf ./rom/images/product/app/MSA > /dev/null 2>&1
-rm -rf ./rom/images/product/priv-app/MIUIBrowser > /dev/null 2>&1
-rm -rf ./rom/images/product/priv-app/MIUIQuickSearchBox > /dev/null 2>&1
-cp -r tmp/* ./rom/images/product/data-app > /dev/null 2>&1 && green "Debloat Completed" || error "Failed To Debloat"
-rm -rf tmp/*
-
-# patch context and fsconfig
-for pname in system product vendor; do
-    python3 bin/contextpatch.py ./rom/images/${pname} ./rom/images/config/${pname}_file_contexts > /dev/null 2>&1 && check_contexts=1 || check_contexts=0
-    python3 bin/fspatch.py ./rom/images/${pname} ./rom/images/config/${pname}_fs_config > /dev/null 2>&1 && check_fs=1 || check_fs=0
-    if [ $check_contexts == "1" ] && [ $check_fs == "1" ]; then
-        green "Patching ${pname} Contexts and Fs_config Completed"
-    else
-        error "Patching ${pname} Contexts and Fs_config Failed"
+for part in system product vendor; do
+    if [[ -f build/baserom/images/${part}.img ]]; then
+        extract_partition build/baserom/images/${part}.img build/baserom/images
+        green "Extracted ${part}"
     fi
 done
-cd ./rom/images
-for pname in system product vendor; do
-    option=`sed -n '3p' ./config/${pname}_fs_options | cut -c28-`
-    mkfs.erofs $option > /dev/null 2>&1
-    rm -rf ${pname}
-    mv ${pname}_repack.img ${pname}.img > /dev/null 2>&1
-    [ -f ${pname}.img ] && green "Packaging ${pname} [EROFS] Is Complete" || error "Packaging ${pname} Failed"
+
+super_list=$(sed '/^#/d;/^\//d;/overlay/d;/^$/d' build/baserom/images/vendor/etc/fstab.qcom | awk '{ print $1}' | sort | uniq)
+green "Partitions of super:"
+green "$super_list"
+
+base_android_version=$(< build/baserom/images/system/system/build.prop grep "ro.system.build.version.release" | awk 'NR==1' | cut -d '=' -f 2)
+green "Android Version: ${base_android_version}"
+base_rom_version=$(< build/baserom/images/vendor/build.prop grep "ro.vendor.build.version.incremental" |awk 'NR==1' |cut -d '=' -f 2)
+
+#baseAospWifiResOverlay=$(find build/baserom/images/product -type f -name "AospWifiResOverlay.apk")
+##portAospWifiResOverlay=$(find build/baserom/images/product -type f -name "AospWifiResOverlay.apk")
+#if [ -f ${baseAospWifiResOverlay} ] && [ -f ${portAospWifiResOverlay} ];then
+#    blue "正在替换 [AospWifiResOverlay.apk]"
+#    cp -rf ${baseAospWifiResOverlay} ${portAospWifiResOverlay}
+#fi
+
+# radio lib
+# blue "信号相关"
+# for radiolib in $(find build/baserom/images/system/system/lib/ -maxdepth 1 -type f -name "*radio*");do
+#     cp -rf $radiolib build/baserom/images/system/system/lib/
+# done
+
+# for radiolib in $(find build/baserom/images/system/system/lib64/ -maxdepth 1 -type f -name "*radio*");do
+#     cp -rf $radiolib build/baserom/images/system/system/lib64/
+# done
+
+
+# audio lib
+# blue "音频相关"
+# for audiolib in $(find build/baserom/images/system/system/lib/ -maxdepth 1 -type f -name "*audio*");do
+#     cp -rf $audiolib build/baserom/images/system/system/lib/
+# done
+
+# for audiolib in $(find build/baserom/images/system/system/lib64/ -maxdepth 1 -type f -name "*audio*");do
+#     cp -rf $audiolib build/baserom/images/system/system/lib64/
+# done
+
+# # bt lib
+# blue "蓝牙相关"
+# for btlib in $(find build/baserom/images/system/system/lib/ -maxdepth 1 -type f -name "*bluetooth*");do
+#     cp -rf $btlib build/baserom/images/system/system/lib/
+# done
+
+# for btlib in $(find build/baserom/images/system/system/lib64/ -maxdepth 1 -type f -name "*bluetooth*");do
+#     cp -rf $btlib build/baserom/images/system/system/lib64/
+# done
+
+# MusicFX
+#baseMusicFX=$(find build/baserom/images/product build/baserom/images/system -type d -name "MusicFX")
+#portMusicFX=$(find build/baserom/images/product build/baserom/images/system -type d -name "MusicFX")
+#if [ -d ${baseMusicFX} ] && [ -d ${portMusicFX} ];then
+#    blue "正在替换 MusicFX"
+##    rm -rf ./${portMusicFX}/*
+ #   cp -rf ./${baseMusicFX}/* ${portMusicFX}/
+#fi
+
+# props from k60
+echo "persist.vendor.mi_sf.optimize_for_refresh_rate.enable=1" >> build/baserom/images/vendor/build.prop
+echo "ro.vendor.mi_sf.ultimate.perf.support=true"  >> build/baserom/images/vendor/build.prop
+
+#echo "debug.sf.set_idle_timer_ms=1100" >> build/baserom/images/vendor/build.prop
+
+#echo "ro.surface_flinger.set_touch_timer_ms=200" >> build/baserom/images/vendor/build.prop
+
+# https://source.android.com/docs/core/graphics/multiple-refresh-rate
+echo "ro.surface_flinger.use_content_detection_for_refresh_rate=false" >> build/baserom/images/vendor/build.prop
+echo "ro.surface_flinger.set_touch_timer_ms=0" >> build/baserom/images/vendor/build.prop
+echo "ro.surface_flinger.set_idle_timer_ms=0" >> build/baserom/images/vendor/build.prop
+
+
+blue "StrongToast UI fix"
+patch_smali "MiuiSystemUI.apk" "MIUIStrongToast\$2.smali" "const\/4 v9\, 0x0" "iget-object v9\, v1\, Lcom\/android\/systemui\/toast\/MIUIStrongToast;->mRLLeft:Landroid\/widget\/RelativeLayout;\\n\\tinvoke-virtual {v9}, Landroid\/widget\/RelativeLayout;->getLeft()I\\n\\tmove-result v9\\n\\tint-to-float v9,v9"
+
+
+if [[ ! -d tmp ]];then
+    mkdir -p tmp/
+fi
+blue "Disalbe Android 14 Apk Signature Verfier"
+mkdir -p tmp/services/
+cp -rf build/baserom/images/system/system/framework/services.jar tmp/services.jar
+
+java -jar bin/apktool/APKEditor.jar d -f -i tmp/services.jar -o tmp/services  > /dev/null 2>&1
+target_method='getMinimumSignatureSchemeVersionForTargetSdk' 
+old_smali_dir=""
+declare -a smali_dirs
+
+while read -r smali_file; do
+    smali_dir=$(echo "$smali_file" | cut -d "/" -f 3)
+
+    if [[ $smali_dir != $old_smali_dir ]]; then
+        smali_dirs+=("$smali_dir")
+    fi
+
+    method_line=$(grep -n "$target_method" "$smali_file" | cut -d ':' -f 1)
+    register_number=$(tail -n +"$method_line" "$smali_file" | grep -m 1 "move-result" | tr -dc '0-9')
+    move_result_end_line=$(awk -v ML=$method_line 'NR>=ML && /move-result /{print NR; exit}' "$smali_file")
+    orginal_line_number=$method_line
+    replace_with_command="const/4 v${register_number}, 0x0"
+    { sed -i "${orginal_line_number},${move_result_end_line}d" "$smali_file" && sed -i "${orginal_line_number}i\\${replace_with_command}" "$smali_file"; } &&    blue "${smali_file}  修改成功" "${smali_file} patched"
+    old_smali_dir=$smali_dir
+done < <(find tmp/services/smali/*/com/android/server/pm/ tmp/services/smali/*/com/android/server/pm/pkg/parsing/ -maxdepth 1 -type f -name "*.smali" -exec grep -H "$target_method" {} \; | cut -d ':' -f 1)
+
+target_canJoinSharedUserId_method='canJoinSharedUserId' 
+find tmp/services/ -type f -name "ReconcilePackageUtils.smali" | while read smali_file; do
+    cp -rfv $smali_file tmp/
+    method_line=$(grep -n "$target_canJoinSharedUserId_method" "$smali_file" | cut -d ':' -f 1)
+
+    register_number=$(tail -n +"$method_line" "$smali_file" | grep -m 1 "move-result" | tr -dc '0-9')
+
+    move_result_end_line=$(awk -v ML=$method_line 'NR>=ML && /move-result /{print NR; exit}' "$smali_file")
+
+    replace_with_command="const/4 v${register_number}, 0x1"
+
+    { sed -i "${method_line},${move_result_end_line}d" "$smali_file" && sed -i "${method_line}i\\${replace_with_command}" "$smali_file"; }
+done
+java -jar bin/apktool/APKEditor.jar b -f -i tmp/services -o tmp/services_patched.jar > /dev/null 2>&1
+cp -rf tmp/services_patched.jar build/baserom/images/system/system/framework/services.jar
+
+
+if [ -f build/baserom/images/system/system/etc/init/hw/init.rc ]; then
+	sed -i '/on boot/a\'$'\n''    chmod 0731 \/data\/system\/theme' build/baserom/images/system/system/etc/init/hw/init.rc
+fi
+
+
+yellow "Debloating..." 
+debloat_apps=("MSA" "mab" "MiBrowser" "MiService" "MIService" "SoterService" "Hybrid" "AnalyticsCore")
+
+for debloat_app in "${debloat_apps[@]}"; do
+    app_dir=$(find build/baserom/images/product -type d -name "*$debloat_app*")
+    
+    if [[ -d "$app_dir" ]]; then
+        yellow "Removing directory: $app_dir"
+        rm -rf "$app_dir"
+    fi
+done
+rm -rf build/baserom/images/product/etc/auto-install*
+rm -rf build/baserom/images/product/data-app/*GalleryLockscreen* >/dev/null 2>&1
+mkdir -p tmp/app
+kept_data_apps=("ThirdAppAssistant" "Weather" "Gallery" "SoundRecorder" "ScreenRecorder" "Calculator" "CleanMaster" "Calendar" "DeskClock" "Compass" "Notes" "MediaEditor" "Scanner")
+for app in "${kept_data_apps[@]}"; do
+    mv build/baserom/images/product/data-app/*"${app}"* tmp/app/ >/dev/null 2>&1
+    done
+rm -rf build/baserom/images/product/data-app/*
+cp -rf tmp/app/* build/baserom/images/product/data-app
+rm -rf tmp/app
+
+blue "Modifying build.prop"
+
+export LC_ALL=en_US.UTF-8
+buildDate=$(date -u +"%a %b %d %H:%M:%S UTC %Y")
+buildUtc=$(date +%s)
+for i in $(find build/baserom/images -type f -name "build.prop");do
+    blue "modifying ${i}"
+    sed -i "s/persist.sys.timezone=.*/persist.sys.timezone=Asia\/Ho_Chi_Minh/g" ${i}
+    sed -i "s/ro.build.user=.*/ro.build.user=${build_user}/g" ${i}
+    sed -i "s/ro.product.mod_device=.*/ro.product.mod_device=${base_rom_code}/g" ${i}
+    sed -i "s/ro.build.host=.*/ro.build.host=${build_host}/g" ${i}
 done
 
-# pack super
-system_size=`stat -c '%n %s' system.img | cut -d ' ' -f 2`
-system_ext_size=`stat -c '%n %s' system_ext.img | cut -d ' ' -f 2`
-product_size=`stat -c '%n %s' product.img | cut -d ' ' -f 2`
-vendor_size=`stat -c '%n %s' vendor.img | cut -d ' ' -f 2`
-odm_size=`stat -c '%n %s' odm.img | cut -d ' ' -f 2`
-mi_ext_size=`stat -c '%n %s' mi_ext.img | cut -d ' ' -f 2`
-sum_size=`echo "$system_size + $system_ext_size + $product_size + $vendor_size + $odm_size + $mi_ext_size" | bc`
-###
-blue "Packing Super..."
-command="--metadata-size 65536 --super-name super --metadata-slots 3 --device super:9126805504 --group qti_dynamic_partitions_a:$sum_size --partition product_a:readonly:$product_size:qti_dynamic_partitions_a --image product_a=./product.img --partition system_a:readonly:$system_size:qti_dynamic_partitions_a --image system_a=./system.img --partition system_ext_a:readonly:$system_ext_size:qti_dynamic_partitions_a --image system_ext_a=./system_ext.img --partition vendor_a:readonly:$vendor_size:qti_dynamic_partitions_a --image vendor_a=./vendor.img --partition odm_a:readonly:$odm_size:qti_dynamic_partitions_a --image odm_a=./odm.img --partition mi_ext_a:readonly:$mi_ext_size:qti_dynamic_partitions_a --image mi_ext_a=./mi_ext.img --group qti_dynamic_partitions_b:0 --partition product_b:readonly:0:qti_dynamic_partitions_b --partition system_b:readonly:0:qti_dynamic_partitions_b --partition system_ext_b:readonly:0:qti_dynamic_partitions_b --partition vendor_b:readonly:0:qti_dynamic_partitions_b --partition odm_b:readonly:0:qti_dynamic_partitions_b --partition mi_ext_b:readonly:0:qti_dynamic_partitions_b --virtual-ab --sparse --output ./super"
-lpmake ${command} > /dev/null 2>&1
-[ -f ./super ] && green "Super [Virtual-A/B] Has Been Packaged" || error "Packaging Super Failed"
+#game spash screen
+echo "debug.game.video.speed=true" >> build/baserom/images/product/etc/build.prop
+echo "debug.game.video.support=true" >> build/baserom/images/product/etc/build.prop
 
-###
-blue "Super Is Being Compressed..."
-zstd --rm ./super -o ./super.zst > /dev/null 2>&1
-[ -f ./super.zst ] && green "Super Has Been Compressed" || error "Compress Super Failed"
-for part in product system system_ext vendor odm mi_ext;
-do
-    rm -rf ${part}.img
+#add 90Hz
+new_fps=$(xmlstarlet sel -t -v "//integer-array[@name='fpsList']/item" mayfly.xml | sort -nr | awk '{print $0 "\n90"}' | sort -nr | tr '\n' ' ')
+xmlstarlet ed -u "//integer-array[@name='fpsList']/item" -v "$(echo $new_fps | tr ' ' '\n')" mayfly.xml > temp.xml && mv temp.xml mayfly.xml
+
+
+targetFrameworkExtRes=$(find build/baserom/images/system_ext -type f -name "framework-ext-res.apk")
+if [[ -f $targetFrameworkExtRes ]] && [[ ${base_android_version} != "15" ]]; then
+    mkdir tmp/  > /dev/null 2>&1 
+    java -jar bin/apktool/APKEditor.jar d -i $targetFrameworkExtRes -o tmp/framework-ext-res -f > /dev/null 2>&1
+    if grep -r config_celluar_shared_support tmp/framework-ext-res/ ; then  
+        yellow "Enable Celluar Sharing feature"
+        for xml in $(find tmp/framework-ext-res -name "*.xml");do
+            sed -i 's|<bool name="config_celluar_shared_support">false</bool>|<bool name="config_celluar_shared_support">true</bool>|g' "$xml"
+        done
+    fi
+    filename=$(basename $targetFrameworkExtRes)
+    java -jar bin/apktool/APKEditor.jar b -i tmp/framework-ext-res -o tmp/$filename -f> /dev/null 2>&1 || error "apktool mod failed"
+        cp -rf tmp/$filename $targetFrameworkExtRes
+fi
+
+targetMiLinkOS2APK=$(find build/baserom -type f -name "MiLinkOS2CN.apk")
+if [[ -f $targetMiLinkOS2APK ]];then
+    cp -rf $targetMiLinkOS2APK tmp/$(basename $targetMiLinkOS2APK).bak
+    java -jar bin/apktool/APKEditor.jar d -i $targetMiLinkOS2APK -o tmp/MiLinkOS2 -f > /dev/null 2>&1
+    targetsmali=$(find tmp/MiLinkOS2 -name "HMindManager.smali")
+    python3 bin/patchmethod.py -d tmp/MiLinkOS2 -k "isSupportCapability() context == null" -return true
+    python3 bin/patchmethod.py $targetsmali J -return true
+    java -jar bin/apktool/APKEditor.jar b -i tmp/MiLinkOS2 -o $targetMiLinkOS2APK -f > /dev/null 2>&1
+
+fi
+
+targetMIUIThemeManagerAPK=$(find build/baserom -type f -name "MIUIThemeManager.apk")
+if [[ -f $targetMIUIThemeManagerAPK ]];then
+    cp -rf $targetMIUIThemeManagerAPK tmp/$(basename $targetMIUIThemeManagerAPK).bak
+    java -jar bin/apktool/APKEditor.jar d -i $targetMIUIThemeManagerAPK -o tmp/MIUIThemeManager -f > /dev/null 2>&1
+    targetsmali=$(find tmp/ -name "o1t.smali" -path "*/basemodule/utils/*")
+    python3 bin/patchmethod.py $targetsmali mcp -return true
+    java -jar bin/apktool/APKEditor.jar b -i tmp/MIUIThemeManager -o $targetMIUIThemeManagerAPK -f > /dev/null 2>&1
+
+fi
+
+targetSettingsAPK=$(find build/baserom -type f -name "Settings.apk")
+if [[ -f $targetSettingsAPK ]];then
+    cp -rf $targetSettingsAPK tmp/$(basename $targetSettingsAPK).bak
+    java -jar bin/apktool/APKEditor.jar d -i $targetSettingsAPK -o tmp/Settings -f > /dev/null 2>&1
+    targetsmali=$(find tmp/ -type f -path "*/com/android/settings/InternalDeviceUtils.smali")
+    python3 bin/patchmethod.py $targetsmali isAiSupported -return true
+    java -jar bin/apktool/APKEditor.jar b -i tmp/Settings -o $targetSettingsAPK -f > /dev/null 2>&1
+fi
+
+
+blue "Integrating perfect icons"  
+git clone --depth=1 https://github.com/pzcn/Perfect-Icons-Completion-Project.git icons &>/dev/null
+for pkg in "$work_dir"/build/baserom/images/product/media/theme/miui_mod_icons/dynamic/*; do
+  if [[ -d "$work_dir"/icons/icons/$pkg ]]; then
+    rm -rf "$work_dir"/icons/icons/$pkg
+  fi
+done
+rm -rf "$work_dir"/icons/icons/com.xiaomi.scanner
+mv "$work_dir"/build/baserom/images/product/media/theme/default/icons "$work_dir"/build/baserom/images/product/media/theme/default/icons.zip
+rm -rf "$work_dir"/build/baserom/images/product/media/theme/default/dynamicicons
+mkdir -p "$work_dir"/icons/res
+mv "$work_dir"/icons/icons "$work_dir"/icons/res/drawable-xxhdpi
+cd "$work_dir"/icons
+zip -qr "$work_dir"/build/baserom/images/product/media/theme/default/icons.zip res
+cd "$work_dir"/icons/themes/Hyper/
+zip -qr "$work_dir"/build/baserom/images/product/media/theme/default/dynamicicons.zip layer_animating_icons
+cd "$work_dir"/icons/themes/common/
+zip -qr "$work_dir"/build/baserom/images/product/media/theme/default/dynamicicons.zip layer_animating_icons
+mv "$work_dir"/build/baserom/images/product/media/theme/default/icons.zip "$work_dir"/build/baserom/images/product/media/theme/default/icons
+mv "$work_dir"/build/baserom/images/product/media/theme/default/dynamicicons.zip "$work_dir"/build/baserom/images/product/media/theme/default/dynamicicons
+rm -rf "$work_dir"/icons
+cd "$work_dir"
+
+if ! is_property_exists ro.miui.surfaceflinger_affinity build/baserom/images/product/etc/build.prop; then
+    echo "ro.miui.surfaceflinger_affinity=true" >> build/baserom/images/product/etc/build.prop
+fi
+
+blue "Disable avb verification."
+disable_avb_verify build/baserom/images/
+
+sum_size=0
+for pname in ${super_list}; do
+    if [ -f "build/baserom/images/${pname}.img" ];then
+        subsize=$(du -sb build/baserom/images/${pname}.img | tr -cd 0-9)
+        sum_size=$((sum_size + subsize))
+        unset subsize
+    fi
 done
 
-# cleanup
-cd ${work_dir}
-blue "Packing and Cleaning Up..."
-rm rom/images/cc
-cd rom
-zip -r haydn_rom.zip * > /dev/null 2>&1
-cd ${work_dir}
-mv -v rom/haydn_rom.zip . > /dev/null 2>&1
-rm -rf ./rom
-[ -f ./haydn_rom.zip ] && green "Done, Prepare to Upload..." || error "Failed"
+blue "Packing img..."
+for pname in ${super_list}; do
+            blue "Packing ${pname}.img with $pack_type filesystem"
+            python3 bin/fspatch.py build/baserom/images/${pname} build/baserom/images/config/${pname}_fs_config
+            python3 bin/contextpatch.py build/baserom/images/${pname} build/baserom/images/config/${pname}_file_contexts
+            #sudo perl -pi -e 's/\\@/@/g' build/baserom/images/config/${pname}_file_contexts
+            mkfs.erofs -zlz4hc,9 --mount-point /${pname} --fs-config-file build/baserom/images/config/${pname}_fs_config --file-contexts build/baserom/images/config/${pname}_file_contexts build/baserom/images/${pname}.img build/baserom/images/${pname}
+            if [ -f "build/baserom/images/${pname}.img" ]; then
+                green "Packing ${pname}.img successfully with erofs format"
+                rm -rf build/baserom/images/${pname}
+            else
+                error "Failed to pack ${pname} parition"
+                exit 1
+            fi
+done
+os_type="hyperos"
+for img in $(find build/baserom/ -type f -name "vbmeta*.img"); do
+    python3 bin/patch-vbmeta.py ${img} > /dev/null 2>&1
+done
 
+
+blue "Packing super.img"
+lpargs="-F --virtual-ab --output build/baserom/images/super.img --metadata-size 65536 --super-name super --metadata-slots 3 --device super:auto --group=qti_dynamic_partitions_a:${sum_size} --group=qti_dynamic_partitions_b:${sum_size}"
+
+for pname in ${super_list};do
+    if [ -f "build/baserom/images/${pname}.img" ];then
+        subsize=$(du -sb build/baserom/images/${pname}.img | tr -cd 0-9)
+        green "Super sub-partition [$pname] size: [$subsize]"
+        args="--partition ${pname}_a:readonly:${subsize}:qti_dynamic_partitions_a --image ${pname}_a=build/baserom/images/${pname}.img --partition ${pname}_b:readonly:0:qti_dynamic_partitions_b"
+        lpargs="$lpargs $args"
+        unset subsize
+        unset args
+    fi
+done
+lpmake $lpargs > /dev/null 2>&1
+
+if [ -f "build/baserom/images/super.img" ]; then
+    green "Pakcing super.img done."
+else
+    error "Unable to pack super.img."
+    exit 1
+fi
+
+for pname in ${super_list};do
+    rm -rf build/baserom/images/${pname}.img
+done
+
+
+
+blue "Comprising super.img"
+zstd --rm build/baserom/images/super.img -o build/baserom/images/super.zst
+mkdir -p out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/
+
+
+blue "Generating flashing script"
+
+mkdir -p out/${os_type}_${device_code}_${base_rom_version}/bin/windows/
+mv -f build/baserom/images/super.zst out/${os_type}_${device_code}_${base_rom_version}/
+#firmware
+cp -rf bin/flash/platform-tools-windows/* out/${os_type}_${device_code}_${base_rom_version}/bin/windows/
+cp -rf bin/flash/mac_linux_flash_script.sh out/${os_type}_${device_code}_${base_rom_version}/
+cp -rf bin/flash/windows_flash_script.bat out/${os_type}_${device_code}_${base_rom_version}/
+
+cp -rf bin/flash/update-binary out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/
+
+mkdir -p out/${os_type}_${device_code}_${base_rom_version}/firmware-update
+
+
+cp -f build/baserom/images/*.img out/${os_type}_${device_code}_${base_rom_version}/firmware-update/
+for fwimg in $(ls out/${os_type}_${device_code}_${base_rom_version}/firmware-update | cut -d "." -f 1 | grep -vE "super|cust|preloader"); do
+    if [[ $fwimg == *"reserve"* ]]; then
+        continue
+    elif [[ $fwimg == "mdm_oem_stanvbk" ]] || [[ $fwimg == "spunvm" ]] ;then
+        sed -i "/REM firmware/a \\\bin\\\windows\\\fastboot.exe flash "${fwimg}" firmware-update\/"${fwimg}".img" out/${os_type}_${device_code}_${base_rom_version}/windows_flash_script.bat
+        sed -i "/# firmware/a package_extract_file \"firmware-update/${fwimg}\" \"/dev/block/bootdevice/by-name/${part}\"" out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/update-binary
+    elif [ "$(echo ${fwimg} | grep vbmeta)" != "" ];then
+        sed -i "/REM firmware/a \\\bin\\\windows\\\fastboot.exe --disable-verity --disable-verification flash "${fwimg}"_b firmware-update\/"${fwimg}".img" out/${os_type}_${device_code}_${base_rom_version}/windows_flash_script.bat
+        sed -i "/REM firmware/a \\\bin\\\windows\\\fastboot.exe --disable-verity --disable-verification flash "${fwimg}"_a firmware-update\/"${fwimg}".img" out/${os_type}_${device_code}_${base_rom_version}/windows_flash_script.bat
+        sed -i "/# firmware/a package_extract_file \"firmware-update/${fwimg}_a\" \"/dev/block/bootdevice/by-name/${part}\"" out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/update-binary
+        sed -i "/# firmware/a package_extract_file \"firmware-update/${fwimg}_b\" \"/dev/block/bootdevice/by-name/${part}\"" out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/update-binary
+    else
+        sed -i "/REM firmware/a \\\bin\\\windows\\\fastboot.exe flash "${fwimg}"_b firmware-update\/"${fwimg}".img" out/${os_type}_${device_code}_${base_rom_version}/windows_flash_script.bat
+        sed -i "/REM firmware/a \\\bin\\\windows\\\fastboot.exe flash "${fwimg}"_a firmware-update\/"${fwimg}".img" out/${os_type}_${device_code}_${base_rom_version}/windows_flash_script.bat
+        sed -i "/# firmware/a package_extract_file \"firmware-update/${fwimg}_a\" \"/dev/block/bootdevice/by-name/${part}\"" out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/update-binary
+        sed -i "/# firmware/a package_extract_file \"firmware-update/${fwimg}_b\" \"/dev/block/bootdevice/by-name/${part}\"" out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/update-binary
+    fi
+done
+
+cp -rf bin/flash/zstd out/${os_type}_${device_code}_${base_rom_version}/META-INF/
+
+sed -i "s/portversion/${base_rom_version}/g" out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/update-binary
+sed -i "s/baseversion/${base_rom_version}/g" out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/update-binary
+sed -i "s/andVersion/${base_android_version}/g" out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/update-binary
+sed -i "s/device_code/${base_rom_code}/g" out/${os_type}_${device_code}_${base_rom_version}/META-INF/com/google/android/update-binary
+sed -i "s/device_code/${base_rom_code}/g" out/${os_type}_${device_code}_${base_rom_version}/mac_linux_flash_script.sh
+sed -i "s/device_code/${base_rom_code}/g" out/${os_type}_${device_code}_${base_rom_version}/windows_flash_script.bat
+busybox unix2dos out/${os_type}_${device_code}_${base_rom_version}/windows_flash_script.bat
+
+find out/${os_type}_${device_code}_${base_rom_version} | xargs touch
+pushd out/${os_type}_${device_code}_${base_rom_version}/ >/dev/null || exit
+zip -r ${os_type}_${device_code}_${base_rom_version}.zip ./*
+mv ${os_type}_${device_code}_${base_rom_version}.zip ../
+popd >/dev/null || exit
+pack_timestamp=$(date +"%m%d%H%M")
+hash=$(md5sum out/${os_type}_${device_code}_${base_rom_version}.zip | head -c 10)
+mv out/${os_type}_${device_code}_${base_rom_version}.zip out/${os_type}_${device_code}_${base_rom_version}_${hash}_${pack_timestamp}.zip
+
+green "Building completed"    
+green "Output: "
+green "out/${os_type}_${device_code}_${base_rom_version}_${hash}_${pack_timestamp}.zip"
