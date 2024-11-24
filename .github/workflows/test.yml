@@ -18,11 +18,11 @@ jobs:
                 sudo apt update
                 sudo apt upgrade
                 sudo apt install git -y
-                git clone https://github.com/toraidl/hyperos_port.git
-
+                
         - name: Build
           run: |
-                mv -f build.sh hyperos_port
+                git clone https://github.com/toraidl/hyperos_port.git
+                [-f build.sh] && cp -rf build.sh hyperos_port || echo "loi"
                 cd hyperos_port
                 sudo ./setup.sh
                 sudo ./build.sh ${{ github.event.inputs.ROM_URL }}
