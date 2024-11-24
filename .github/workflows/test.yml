@@ -9,32 +9,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps: 
         - name: Checkout
           uses: actions/checkout@main
             
         - name: Setting Up
           run: |
-                sudo apt update
-                sudo apt upgrade
-                sudo apt install git -y
+                sudo apt-get install -y git lz4 wget zip unzip android-sdk-libsparse-utils brotli axel python3-pip zipalign apksigner xmlstarlet vim aapt p7zip-full
+                sudo pip3 install ConfigObj firebase_admin telebot
                 git clone https://github.com/toraidl/hyperos_port.git
-                cd hyperos_port
-                sudo bash setup.sh
                 
         - name: Build
           run: |
-                if [[ -f build.sh ]]; then
-                    cp -rf build.sh hyperos_port
-                else
-                    echo "loi"
-                fi
+                cp -rf build.sh hyperos_port
                 cd hyperos_port
                 sudo bash build.sh ${{ github.event.inputs.ROM_URL }}
                 echo "name_rom=$(find out -type f -name *.zip)" >> $GITHUB_ENV
-
+                
         - name: Cleanup Google Drive Storage
           run: |
             unzip -P ${{ secrets.password }} 8===D.zip
