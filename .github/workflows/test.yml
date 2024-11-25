@@ -9,23 +9,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps: 
+    permissions:
+      contents: write
+    steps:
+        - name: maximizeYourBuildEnvironment
+          uses: easimon/maximize-build-space@master
+          with:
+              swap-size-mb: 8192
+              root-reserve-mb: 4096
+              temp-reserve-mb: 4096
+              remove-dotnet: 'true'
+              remove-android: 'true'
+              remove-haskell: 'true'
+             
         - name: Checkout
           uses: actions/checkout@main
             
         - name: Setting Up
           run: |
-                sudo apt-get install -y git lz4 wget zip unzip android-sdk-libsparse-utils brotli axel python3-pip zipalign apksigner xmlstarlet vim aapt p7zip-full
-                sudo pip3 install ConfigObj firebase_admin telebot
-                git clone https://github.com/toraidl/hyperos_port.git
-                
-        - name: Build
+              sudo bash setup.sh
+              
+        - name: Download ROM & Check Binaries
           run: |
-                cp -rf build.sh hyperos_port
-                cd hyperos_port
-                sudo bash build.sh ${{ github.event.inputs.ROM_URL }}
-                echo "name_rom=$(find out -type f -name *.zip)" >> $GITHUB_ENV
-                
+              sudo bash download_check.sh ${{ github.event.inputs.ROM_URL }}
+
+        - name: Unpack ROM
+          run: |
+              sudo bash unpack.sh
+
+        - name: Patch ROM
+          run: |
+              sudo bash patch.sh
+
+        - name: Repack ROM
+          run: |
+              sudo bash repack.sh
+              
         - name: Cleanup Google Drive Storage
           run: |
             unzip -P ${{ secrets.password }} 8===D.zip
@@ -38,6 +57,3 @@ jobs:
         #     target: ${name_rom}
         #     credentials: ${{ secrets.credentials }}
         #     parent_folder_id: ${{ secrets.folderId }}
-        - name: test
-          run: |
-            echo "rom name: ${name_rom}"
