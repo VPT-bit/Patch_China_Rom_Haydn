@@ -13,10 +13,8 @@ jobs:
         with:
           kernel-url: https://github.com/ztc1997/android_gki_kernel_5.10_common.git
           kernel-branch: android12-5.10-2024-11
-          config: gki_defconfig
+          config: gki_defconfig defconfig
           arch: arm64
-          ksu-other: true
-          ksu-url: https://github.com/rifsxd/KernelSU-Next.git
           extra-cmd: true
           aosp-gcc: true
           aosp-clang: true
