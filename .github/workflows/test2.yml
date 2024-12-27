@@ -13,7 +13,7 @@ jobs:
         with:
           kernel-url: https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git
           kernel-branch: mayfly-s-oss
-          config: mayfly_GKI.config
+          config: gki_defconfig mayfly_GKI.config
           arch: arm64
           ksu-other: true
           ksu-url: https://github.com/rifsxd/KernelSU-Next.git
