@@ -21,7 +21,7 @@ jobs:
           aosp-gcc: true
           aosp-clang: true
           android-version: 14
-          aosp-clang-version: r487747
+          aosp-clang-version: r487747c
           release: true
           access-token: ${{ secrets.GITHUB_TOKEN }}
           
