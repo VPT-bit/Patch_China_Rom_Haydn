@@ -20,7 +20,7 @@ jobs:
           extra-cmd: true
           aosp-gcc: true
           aosp-clang: true
-          android-version: 12
+          android-version: 14
           aosp-clang-version: r487747
           release: true
           access-token: ${{ secrets.GITHUB_TOKEN }}
